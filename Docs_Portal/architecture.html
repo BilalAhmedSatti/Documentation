@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture — Banking + Takaful Platform Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="container">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" fill="none"><path d="M13 1 24 7.5v11L13 25 2 18.5v-11z" stroke="#17B8AE" stroke-width="1.6"/><circle cx="13" cy="13" r="3.2" fill="#17B8AE"/></svg>
+      <span>Platform Docs<br><small>Banking &amp; Takaful</small></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="architecture.html" class="active">Architecture</a></li>
+      <li><a href="catalog.html">Document Library</a></li>
+      <li><a href="dependencies.html">Dependency Map</a></li>
+      <li><a href="roadmap.html">Roadmap</a></li>
+    </ul>
+    <a class="nav-cta" href="documents/Banking_Takaful_Platform_Documentation.zip"><span>Download all</span> \u2193</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">\u2630</button>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:0;">
+  <div class="container page-header">
+    <div class="eyebrow">Architecture</div>
+    <h1>How the pieces fit together</h1>
+    <p>Hexagonal services, a shared adapter layer, one repository topology, and a stack decision that keeps most of the platform in one language.</p>
+  </div>
+</header>
+
+<section class="section-paper" style="padding-top:44px;">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow"><span>Core pattern</span></div>
+      <h2>Two apps, one shared core, layered</h2>
+      <p>Every service is hexagonal: domain logic in the middle, ports at the edge, adapters translating to the outside world. Zoomed out, the whole platform follows the same shape.</p>
+    </div>
+
+    <div style="display:grid; gap:10px; max-width:900px;">
+      <div style="background:#fff;border:1px solid var(--paper-line);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div><b style="font-family:var(--f-display)">Applications</b><div class="meta-line" style="color:var(--paper-muted);font-size:13px;">Own only what's genuinely theirs</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;"><span class="chip chip-foundation">Digital Banking &amp; Remittance</span><span class="chip" style="background:#34B37A1A;color:#1E8449;">Takaful</span></div>
+      </div>
+      <div style="text-align:center;color:var(--paper-muted);font-size:13px;">calls \u2193</div>
+      <div style="background:var(--ink);border-radius:12px;padding:18px 20px;">
+        <div style="color:#fff;font-family:var(--f-display);font-weight:700;margin-bottom:10px;">Shared adapter platform \u2014 8 ports, both apps, one certification</div>
+        <div id="archAdapterChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+      <div style="text-align:center;color:var(--paper-muted);font-size:13px;">binds to \u2193</div>
+      <div style="background:#fff;border:1px solid var(--paper-line);border-radius:12px;padding:16px 20px;">
+        <b style="font-family:var(--f-display)">External providers, per market</b>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--paper-muted);">
+          <span class="chip chip-optional">NADRA \u00b7 Raast \u00b7 SBP/FMU (PK)</span>
+          <span class="chip chip-optional">UAE Pass \u00b7 Aani \u00b7 CBUAE (AE)</span>
+          <span class="chip chip-optional">Absher/Yakeen \u00b7 sarie \u00b7 SAMA (SA)</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:18px;"><a class="textlink" style="color:var(--teal-dim);font-weight:600;text-decoration:none;" href="dependencies.html">Trace exactly what depends on what \u2192</a></p>
+  </div>
+</section>
+
+<section class="section-paper" style="padding-top:0;">
+  <div class="container">
+
+    <div class="field-note">
+      <figure class="fn-figure">
+        <img src="assets/img/repo_deps.png" alt="Repository dependency graph">
+        <figcaption>Figure \u2014 repository dependency graph (Document 28)</figcaption>
+      </figure>
+      <div class="fn-text">
+        <div class="eyebrow">Repository topology</div>
+        <h3>Eight repositories, one direction of dependency</h3>
+        <p>platform-packages sits at the root; everything depends downward onto it. The two apps depend on platform-packages and on platform-adapters (contract-verified via Pact) \u2014 never the reverse.</p>
+        <ul>
+          <li>Three placements are counter-intuitive by design: the FX library lives inside <code>banking-app</code>, not the adapters repo; OIDC ships as a client package; Persistence is dual-language.</li>
+          <li>The shared adapters live in one workspace but version and deploy independently, per adapter.</li>
+        </ul>
+        <a class="textlink" href="documents/01_Blueprint_Specifications/28_Repository_Catalog_and_Specification.docx">Open Document 28 \u2197</a>
+      </div>
+    </div>
+
+    <div class="field-note rev">
+      <figure class="fn-figure">
+        <img src="assets/img/10_branching.png" alt="Branching and environment promotion diagram">
+        <figcaption>Figure \u2014 GitHub Flow + tagged releases (Document 27)</figcaption>
+      </figure>
+      <div class="fn-text">
+        <div class="eyebrow">Branching &amp; release flow</div>
+        <h3>Trunk-based, promoted by tag \u2014 not by branch</h3>
+        <p>Short-lived feature branches merge to a protected <code>main</code>. Environments are fed by promoting the exact same signed artifact through tags and approvals: develop auto-deploys, staging needs one approval, production needs two \u2014 per region.</p>
+        <ul>
+          <li>No long-lived <code>develop</code> branch \u2014 environments are a deployment concern, not a branching one.</li>
+          <li>Hotfixes branch from the production tag and reconcile back to main the same day.</li>
+        </ul>
+        <a class="textlink" href="documents/01_Blueprint_Specifications/27_Repository_Branching_and_Development_Readiness.docx">Open Document 27 \u2197</a>
+      </div>
+    </div>
+
+    <div class="field-note">
+      <div class="fn-figure" style="display:flex;flex-direction:column;justify-content:center;gap:14px;padding:26px 22px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;background:#F7F5EE;border-radius:10px;">
+          <div><b style="font-family:var(--f-display)">NestJS 10 / TypeScript</b><div class="meta-line" style="color:var(--paper-muted);">Default for every service &amp; adapter</div></div>
+          <span class="chip chip-service">~92% of services</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;background:#FDF3E3;border-radius:10px;">
+          <div><b style="font-family:var(--f-display)">Java 21 / Spring Boot 3.3</b><div class="meta-line" style="color:var(--paper-muted);">The calculation core only</div></div>
+          <span class="chip chip-jvm">Ledger \u00b7 Pricing \u00b7 FX</span>
+        </div>
+        <p style="font-size:13px;color:var(--paper-muted);margin:6px 2px 0;">A float or rounding error in the ledger or a quote is catastrophic \u2014 exact BigDecimal arithmetic and JVM throughput justify leaving the TypeScript default in exactly these three places.</p>
+      </div>
+      <div class="fn-text">
+        <div class="eyebrow">Technology stack</div>
+        <h3>One language by default, two by exception</h3>
+        <p>Every shared adapter, every domain service and every BFF is NestJS/TypeScript. The exception is drawn as narrowly as possible: Ledger, Pricing and the in-process FX library \u2014 nothing else.</p>
+        <ul>
+          <li>Three guardrails compensate for leaving the JVM elsewhere: integer minor-unit money (<code>@platform/money</code>), dependency-cruiser boundary tests, and strict TypeScript config.</li>
+          <li>Every TS \u2194 Java seam is locked by Pact contracts in CI.</li>
+        </ul>
+        <a class="textlink" href="documents/01_Blueprint_Specifications/01_Technology_Stack_and_Decision_Record.docx">Open Document 01 \u2197</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>Confidential \u2014 Internal Use \u00b7 Design &amp; blueprint stage, nothing built yet</span>
+      <span>Blueprint v3.1</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script>
+  const sharedTags = COMPONENTS.filter(c => c.tags.includes("shared"));
+  document.getElementById("archAdapterChips").innerHTML = sharedTags.map(c =>
+    `<span class="chip" style="background:#ffffff14;color:#C6D1E0;">${c.num} \u00b7 ${c.name}</span>`
+  ).join("");
+</script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

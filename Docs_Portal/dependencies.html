@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dependency Map — Banking + Takaful Platform Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="on-dark">
+
+<nav class="site-nav" id="siteNav">
+  <div class="container">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" fill="none"><path d="M13 1 24 7.5v11L13 25 2 18.5v-11z" stroke="#17B8AE" stroke-width="1.6"/><circle cx="13" cy="13" r="3.2" fill="#17B8AE"/></svg>
+      <span>Platform Docs<br><small>Banking &amp; Takaful</small></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="catalog.html">Document Library</a></li>
+      <li><a href="dependencies.html" class="active">Dependency Map</a></li>
+      <li><a href="roadmap.html">Roadmap</a></li>
+    </ul>
+    <a class="nav-cta" href="documents/Banking_Takaful_Platform_Documentation.zip"><span>Download all</span> \u2193</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">\u2630</button>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:30px;">
+  <div class="container page-header" style="padding-bottom:0;">
+    <div class="eyebrow">Dependency map</div>
+    <h1>What depends on what, and why</h1>
+    <p>All 24 services and adapters, both applications, and the external providers they bind to. Hover or click any node to trace its connections and open its documents.</p>
+  </div>
+</header>
+
+<section class="section-dark" style="padding-top:0;">
+  <div class="container">
+    <div class="graph-page-canvas">
+      <div class="graph-toolbar">
+        <div class="graph-legend">
+          <span class="lg"><span class="dot" style="background:#34B37A"></span>Applications</span>
+          <span class="lg"><span class="dot" style="background:#17B8AE"></span>Services</span>
+          <span class="lg"><span class="dot" style="background:#E2A33D"></span>Adapters</span>
+          <span class="lg"><span class="dot" style="background:#B9770E"></span>New build</span>
+          <span class="lg"><span class="dot" style="background:#4A5D78"></span>External / provider</span>
+        </div>
+        <div class="search-box" style="max-width:260px;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.4"/><path d="M11 11l3.4 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <input type="text" id="graphSearch" placeholder="Find a component\u2026" style="background:#ffffff10;border-color:#ffffff28;color:#fff;">
+        </div>
+      </div>
+      <div class="graph-scroll" style="overflow-x:auto;">
+        <svg id="depSvg" class="dep-svg" viewBox="0 0 100 100"></svg>
+      </div>
+      <div class="node-panel" id="nodePanel">
+        <button class="np-close" id="npClose" aria-label="Close">\u2715</button>
+        <div id="npBody"></div>
+      </div>
+      <div class="graph-hint">Layered top to bottom: applications call services and adapters; services and adapters depend on each other and on external providers. Hover isolates a node's direct connections; click opens its documents.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section-paper">
+  <div class="container">
+    <div class="field-note" style="border-bottom:none;">
+      <figure class="fn-figure">
+        <img src="assets/img/critpath.png" alt="Critical path diagram">
+        <figcaption>Figure \u2014 the critical path versus everything that runs beside it (Document 29)</figcaption>
+      </figure>
+      <div class="fn-text">
+        <div class="eyebrow">Why this matters for scheduling</div>
+        <h3>One chain decides the go-live date</h3>
+        <p>Sprint 0 \u2192 Control Plane \u2192 Ledger \u2192 Pricing + FX \u2192 Payments + Payout rail \u2192 go-live. Everything else in the graph above has slack \u2014 it's necessary, but a delay there doesn't move the date the way a delay on this chain does.</p>
+        <ul>
+          <li>External certification (NADRA, Raast, SBP) is tracked separately because it can dominate the date regardless of engineering progress.</li>
+          <li>E-Signature (26) must be built before Credit Bureau (24) \u2014 a legal ordering, not an architectural preference.</li>
+        </ul>
+        <a class="textlink" style="color:var(--teal-dim);" href="documents/05_Plans_and_Milestones/29_Development_Plan_Sequencing_and_Milestones.docx">Open Document 29 \u2197</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>Confidential \u2014 Internal Use \u00b7 Design &amp; blueprint stage, nothing built yet</span>
+      <span>Blueprint v3.1</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/graph.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  const depSvg = document.getElementById("depSvg");
+  const panel = document.getElementById("nodePanel");
+  const npBody = document.getElementById("npBody");
+
+  function openPanel(node){
+    let html = `<h4>${node.label}</h4>`;
+    if (node.kind === "external"){
+      html += `<p>External system \u2014 not part of the platform codebase. Shown for context only.</p>`;
+    } else if (node.kind === "app"){
+      html += `<p>Application. See the Architecture page for how it's structured.</p>
+        <div class="np-links"><a href="architecture.html">View architecture <span>\u2192</span></a></div>`;
+    } else {
+      const c = node.ref;
+      html += `<p>${c.summary}</p>
+        <div class="np-links">
+          <a href="${c.blueprint}" target="_blank" rel="noopener">Blueprint specification <span>\u2197</span></a>
+          <a href="${c.design}" target="_blank" rel="noopener">Design companion <span>\u2197</span></a>
+          <a href="${c.feature}" target="_blank" rel="noopener">Feature specification <span>\u2197</span></a>
+        </div>
+        <div class="np-rel"><b>Runtime</b>${c.runtime} \u00b7 ${c.squad}</div>`;
+    }
+    npBody.innerHTML = html;
+    panel.classList.add("show");
+  }
+  document.getElementById("npClose").addEventListener("click", ()=> panel.classList.remove("show"));
+
+  renderDependencyGraph(depSvg, "full", { onSelect: openPanel });
+
+  document.getElementById("graphSearch").addEventListener("input", (e)=>{
+    const q = e.target.value.trim().toLowerCase();
+    if (!q){ depSvg._clearFocus(); return; }
+    const model = depSvg._model;
+    const match = model.nodes.find(n=> n.label.toLowerCase().includes(q) || n.id.toLowerCase().includes(q));
+    if (match) depSvg._focusNode(match.id);
+  });
+</script>
+</body>
+</html>

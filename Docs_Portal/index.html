@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banking + Takaful Platform — Documentation Portal</title>
+<meta name="description" content="The complete engineering documentation for the multi-tenant digital banking &amp; remittance platform and its Takaful sibling app.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="on-dark">
+
+<nav class="site-nav" id="siteNav">
+  <div class="container">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" fill="none"><path d="M13 1 24 7.5v11L13 25 2 18.5v-11z" stroke="#17B8AE" stroke-width="1.6"/><circle cx="13" cy="13" r="3.2" fill="#17B8AE"/></svg>
+      <span>Platform Docs<br><small>Banking &amp; Takaful</small></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Overview</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="catalog.html">Document Library</a></li>
+      <li><a href="dependencies.html">Dependency Map</a></li>
+      <li><a href="roadmap.html">Roadmap</a></li>
+    </ul>
+    <a class="nav-cta" href="documents/Banking_Takaful_Platform_Documentation.zip"><span>Download all</span> \u2193</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">\u2630</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">Engineering documentation portal</div>
+      <h1>Two regulated products.<br>One shared platform <em>core</em>.</h1>
+      <p class="lede">Every blueprint, design companion, feature spec, decision record and delivery plan behind the multi-tenant Digital Banking &amp; Remittance platform \u2014 and its Takaful sibling \u2014 across Pakistan, UAE and Saudi Arabia. Status: design &amp; blueprint stage.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="catalog.html">Browse the document library \u2192</a>
+        <a class="btn btn-ghost" href="dependencies.html">Explore the dependency map</a>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><b id="statBlueprint">29</b><span>Blueprint docs</span></div>
+        <div class="stat"><b>24</b><span>Feature specs</span></div>
+        <div class="stat"><b>8</b><span>Shared adapters</span></div>
+        <div class="stat"><b>3</b><span>Launch markets</span></div>
+        <div class="stat"><b>9</b><span>Milestones</span></div>
+      </div>
+    </div>
+    <div class="hero-graph-mount">
+      <div class="graph-card">
+        <header>
+          <span class="tag-pill">LIVE MAP \u00b7 shared adapters</span>
+          <span class="tag-pill">hover to trace</span>
+        </header>
+        <svg id="heroGraph" class="dep-svg" viewBox="0 0 100 100"></svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section-paper">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow" style="color:#0E7C75"><span style="color:#0E7C75">How it's organized</span></div>
+      <h2>One core, two applications, three markets</h2>
+      <p>The regulated plumbing \u2014 identity, screening, payments, tax, signatures \u2014 is built once as a shared adapter layer. Each application owns only what's genuinely its own.</p>
+    </div>
+    <div class="lane-grid">
+      <div class="lane">
+        <div class="lane-icon" style="background:#17B8AE1A;color:#0E7C75;font-family:var(--f-display);font-weight:700;">A</div>
+        <h3>Two applications</h3>
+        <p>Digital Banking &amp; Remittance owns the ledger, payments sagas and corridors. Takaful owns policy administration, underwriting, claims and the participant pool. Neither reimplements the other's plumbing.</p>
+        <a class="textlink" href="architecture.html">See how they're structured \u2192</a>
+      </div>
+      <div class="lane">
+        <div class="lane-icon" style="background:#E2A33D1A;color:#946117;font-family:var(--f-display);font-weight:700;">S</div>
+        <h3>Shared adapter platform</h3>
+        <p>Identity/KYC, Screening/AML, Credit Bureau, Payment Rails, Country Tax, E-Signature, Notification and the Control Plane serve both apps behind stable ports \u2014 designed once, certified once.</p>
+        <a class="textlink" href="dependencies.html">Trace the dependencies \u2192</a>
+      </div>
+      <div class="lane">
+        <div class="lane-icon" style="background:#34B37A1A;color:#1E8449;font-family:var(--f-display);font-weight:700;">M</div>
+        <h3>Three markets, nine gates</h3>
+        <p>Pakistan first, then UAE, then in-Kingdom Saudi Arabia. Nine milestones (M0\u2013M8) with demonstrable exit criteria carry the programme from an empty repo to three markets live.</p>
+        <a class="textlink" href="roadmap.html">View the roadmap \u2192</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark">
+  <div class="container">
+    <div class="section-head">
+      <h2>Where to start</h2>
+      <p>If you're picking this up for the first time, these four documents orient you fastest.</p>
+    </div>
+    <div class="lane-grid">
+      <div class="lane" style="background:var(--panel);border-color:var(--panel-line-solid);">
+        <span class="badge-num service">00</span>
+        <h3 style="margin-top:14px;color:#fff;">Master Architecture Blueprint</h3>
+        <p style="color:#AEBBCC;">The whole system in one document: hexagonal core, multi-tenant topology, shared adapter strategy.</p>
+        <a class="textlink" style="color:#5CE0D6" href="documents/01_Blueprint_Specifications/00_Master_Architecture_Blueprint_v3.docx">Open document \u2197</a>
+      </div>
+      <div class="lane" style="background:var(--panel);border-color:var(--panel-line-solid);">
+        <span class="badge-num service">29</span>
+        <h3 style="margin-top:14px;color:#fff;">Development Plan &amp; Milestones</h3>
+        <p style="color:#AEBBCC;">Squads, the critical path, nine phases, the sprint timeline and every milestone's exit criteria.</p>
+        <a class="textlink" style="color:#5CE0D6" href="documents/05_Plans_and_Milestones/29_Development_Plan_Sequencing_and_Milestones.docx">Open document \u2197</a>
+      </div>
+      <div class="lane" style="background:var(--panel);border-color:var(--panel-line-solid);">
+        <span class="badge-num service">27</span>
+        <h3 style="margin-top:14px;color:#fff;">Repository &amp; Branching Readiness</h3>
+        <p style="color:#AEBBCC;">The day-one runbook: GitHub org, branch model, environments, CI checks, tooling checklist.</p>
+        <a class="textlink" style="color:#5CE0D6" href="documents/01_Blueprint_Specifications/27_Repository_Branching_and_Development_Readiness.docx">Open document \u2197</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-paper" style="padding-top:0;">
+  <div class="container">
+    <div style="background:linear-gradient(120deg,#101d30,#16283f); border-radius:20px; padding:38px 40px; display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; box-shadow:var(--shadow-dark);">
+      <div>
+        <div class="eyebrow">Everything, in one archive</div>
+        <h3 style="color:#fff;font-size:22px;margin:10px 0 4px;">98 files \u00b7 organized into six categories</h3>
+        <p style="color:#AEBBCC;margin:0;max-width:52ch;">Blueprints, design companions, feature specs, decision records, plans and presentations \u2014 zipped with the same folder structure shown here.</p>
+      </div>
+      <a class="btn btn-primary" href="documents/Banking_Takaful_Platform_Documentation.zip">Download the full archive \u2193</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <a href="architecture.html">Architecture</a>
+          <a href="catalog.html">Document library</a>
+          <a href="dependencies.html">Dependency map</a>
+          <a href="roadmap.html">Roadmap</a>
+        </div>
+        <div class="footer-col">
+          <h5>Start here</h5>
+          <a href="documents/01_Blueprint_Specifications/00_Master_Architecture_Blueprint_v3.docx">00 \u00b7 Master Architecture</a>
+          <a href="documents/01_Blueprint_Specifications/01_Technology_Stack_and_Decision_Record.docx">01 \u00b7 Technology Stack</a>
+          <a href="documents/05_Plans_and_Milestones/29_Development_Plan_Sequencing_and_Milestones.docx">29 \u00b7 Development Plan</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Confidential \u2014 Internal Use \u00b7 Design &amp; blueprint stage, nothing built yet</span>
+      <span>Blueprint v3.1 \u00b7 Portal generated 29 July 2026</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/graph.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  renderDependencyGraph(document.getElementById('heroGraph'), 'hero', {});
+</script>
+</body>
+</html>

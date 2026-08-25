@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roadmap — Banking + Takaful Platform Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="on-dark">
+
+<nav class="site-nav" id="siteNav">
+  <div class="container">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" fill="none"><path d="M13 1 24 7.5v11L13 25 2 18.5v-11z" stroke="#17B8AE" stroke-width="1.6"/><circle cx="13" cy="13" r="3.2" fill="#17B8AE"/></svg>
+      <span>Platform Docs<br><small>Banking &amp; Takaful</small></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="catalog.html">Document Library</a></li>
+      <li><a href="dependencies.html">Dependency Map</a></li>
+      <li><a href="roadmap.html" class="active">Roadmap</a></li>
+    </ul>
+    <a class="nav-cta" href="documents/Banking_Takaful_Platform_Documentation.zip"><span>Download all</span> \u2193</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">\u2630</button>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:10px;">
+  <div class="container page-header" style="padding-bottom:0;">
+    <div class="eyebrow">Roadmap &amp; milestones</div>
+    <h1>Nine gates, from an empty repo to three markets live</h1>
+    <p>Each milestone has a demonstrable exit criterion \u2014 not a date. M0 and M1 are foundation; M5 is the first real tenant; M8 is all three markets live.</p>
+  </div>
+</header>
+
+<section class="section-dark" style="padding-top:10px;">
+  <div class="container">
+    <div class="milestone-rail" id="milestoneRail"></div>
+  </div>
+</section>
+
+<section class="section-paper">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow" style="color:var(--teal-dim)"><span style="color:var(--teal-dim)">Delivery phases</span></div>
+      <h2>Phase by phase</h2>
+      <p>Sequential where the dependency graph forces it; parallel everywhere else. Full detail \u2014 squads, streams and exit criteria \u2014 is in Document 29.</p>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="phase-table">
+        <thead><tr><th>Phase</th><th>Focus</th><th>Duration</th><th>Detail</th><th>Gate</th></tr></thead>
+        <tbody id="phaseTableBody"></tbody>
+      </table>
+    </div>
+    <p style="margin-top:18px;"><a class="textlink" style="color:var(--teal-dim);font-weight:600;text-decoration:none;" href="documents/05_Plans_and_Milestones/29_Development_Plan_Sequencing_and_Milestones.docx">Open Document 29 \u2014 full plan with squads and risks \u2197</a></p>
+  </div>
+</section>
+
+<section class="section-paper" style="padding-top:0;">
+  <div class="container">
+    <div class="field-note">
+      <figure class="fn-figure">
+        <img src="assets/img/gantt.png" alt="Sprint-level timeline across all squads">
+        <figcaption>Figure \u2014 parallel tracks and milestones across roughly 33 sprints (Document 29)</figcaption>
+      </figure>
+      <div class="fn-text">
+        <div class="eyebrow">Sprint timeline</div>
+        <h3>Six squads, six tracks, nine gates</h3>
+        <p>Pakistan go-live (M5) lands around sprint 21 \u2014 roughly ten months at a two-week cadence. The Platform Adapters and Identity tracks stay close to continuously busy; the JVM track has deliberate gaps that absorb critical-path pressure.</p>
+        <a class="textlink" href="documents/05_Plans_and_Milestones/29_Development_Plan_Sequencing_and_Milestones.docx">Open Document 29 \u2197</a>
+      </div>
+    </div>
+
+    <div class="field-note rev">
+      <figure class="fn-figure">
+        <img src="assets/img/ledger_ms.png" alt="Ledger service milestone sequence">
+        <figcaption>Figure \u2014 a component-level milestone plan, derived from the programme plan</figcaption>
+      </figure>
+      <div class="fn-text">
+        <div class="eyebrow">Component-level example</div>
+        <h3>The same discipline, one service deep</h3>
+        <p>The Ledger \u2014 on the critical path \u2014 gets its own six-milestone sequence between programme gates M1 and M2: money &amp; domain core with no database at all, then persistence, holds, balances, and finally consumer-readiness.</p>
+        <ul>
+          <li>L2 (posting &amp; append-only) is flagged as the milestone to protect \u2014 cheap to build correctly now, expensive to retrofit later.</li>
+        </ul>
+        <a class="textlink" href="documents/05_Plans_and_Milestones/Ledger_04_Milestone_Plan.docx">Open the Ledger milestone plan \u2197</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>Confidential \u2014 Internal Use \u00b7 Design &amp; blueprint stage, nothing built yet</span>
+      <span>Blueprint v3.1</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  document.getElementById("milestoneRail").innerHTML = MILESTONES.map(m => `
+    <div class="m-node ${m.done ? 'done' : ''}">
+      <div class="m-dot">${m.id}</div>
+      <h4>${m.name}</h4>
+      <p>${m.desc}</p>
+      <div class="m-sprint">${m.sprint}</div>
+    </div>`).join("");
+
+  document.getElementById("phaseTableBody").innerHTML = PHASES.map(p => `
+    <tr>
+      <td><b>${p.phase}</b></td>
+      <td>${p.name}</td>
+      <td style="font-family:var(--f-mono);font-size:12.5px;color:var(--paper-muted);">${p.duration}</td>
+      <td style="color:var(--paper-muted);">${p.detail}</td>
+      <td><span class="chip chip-foundation">${p.gate}</span></td>
+    </tr>`).join("");
+</script>
+</body>
+</html>

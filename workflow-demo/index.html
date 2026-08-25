@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Onboarding · Workflow Demo</title>
+  <meta name="description" content="End-to-end banking platform workflows: login/register through services into PostgreSQL, TigerBeetle, Redpanda and Redis.">
+  <link rel="stylesheet" href="assets/css/workflow.css?v=31">
+</head>
+<body>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Workflow navigation">
+      <a class="brand" href="#/onboarding">
+        <svg class="brand-mark" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          <path d="M13 1 24 7.5v11L13 25 2 18.5v-11z" stroke="#14B8A6" stroke-width="1.6"/>
+          <circle cx="13" cy="13" r="3.2" fill="#14B8A6"/>
+        </svg>
+        <span>
+          <strong>Workflows</strong>
+          <small>Demo</small>
+        </span>
+      </a>
+
+      <div class="nav-label">Menu</div>
+      <p class="nav-hint">Select a workflow.</p>
+      <ul class="wf-nav" id="wfNav"></ul>
+
+      <div class="sidebar-foot">
+        <a href="../Docs_Portal/index.html">Docs</a>
+        ·
+        <a href="../banking-implementation-task-listVersion2.html">Tasks</a>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0">
+          <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">Menu</button>
+          <div class="crumb" id="crumb">Onboarding / Overview</div>
+        </div>
+        <a class="doc-chip" id="docChip" href="../Docs_Portal/documents/02_Design_Companions/02_identity.design.md" target="_blank" rel="noopener">Onboarding</a>
+      </header>
+      <main class="content" id="page" aria-live="polite"></main>
+    </div>
+  </div>
+
+  <script src="assets/js/diagrams.js?v=31"></script>
+  <script src="assets/js/workflows.js?v=31"></script>
+  <script src="assets/js/app.js?v=31"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Library — Banking + Takaful Platform Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="site-nav" id="siteNav">
+  <div class="container">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 26 26" fill="none"><path d="M13 1 24 7.5v11L13 25 2 18.5v-11z" stroke="#17B8AE" stroke-width="1.6"/><circle cx="13" cy="13" r="3.2" fill="#17B8AE"/></svg>
+      <span>Platform Docs<br><small>Banking &amp; Takaful</small></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="architecture.html">Architecture</a></li>
+      <li><a href="catalog.html" class="active">Document Library</a></li>
+      <li><a href="dependencies.html">Dependency Map</a></li>
+      <li><a href="roadmap.html">Roadmap</a></li>
+    </ul>
+    <a class="nav-cta" href="documents/Banking_Takaful_Platform_Documentation.zip"><span>Download all</span> \u2193</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">\u2630</button>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:26px;">
+  <div class="container page-header" style="padding-bottom:0;">
+    <div class="eyebrow">Document library</div>
+    <h1>Every document, in one place</h1>
+    <p>98 files across six categories. Search by name or number, filter by type, or browse the full set. Each card links straight to the file \u2014 and to its siblings.</p>
+  </div>
+</header>
+
+<div class="section-paper catalog-toolbar">
+  <div class="container">
+    <div class="toolbar-row">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.4"/><path d="M11 11l3.4 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input type="text" id="catSearch" placeholder="Search by title or number \u2026 e.g. 'ledger' or '17'">
+      </div>
+      <div class="filter-group" id="catFilters">
+        <button class="filter-btn active" data-cat-filter="All">All categories</button>
+        <button class="filter-btn" data-cat-filter="Blueprint Specification">Blueprint</button>
+        <button class="filter-btn" data-cat-filter="Design Companion">Design</button>
+        <button class="filter-btn" data-cat-filter="Feature Specification">Feature spec</button>
+        <button class="filter-btn" data-cat-filter="Decision Record">ADR</button>
+        <button class="filter-btn" data-cat-filter="Plan & Milestone">Plans</button>
+        <button class="filter-btn" data-cat-filter="Presentation">Decks</button>
+      </div>
+      <span class="result-count" id="resultCount">\u2014</span>
+    </div>
+    <div class="toolbar-row" style="margin-top:10px;">
+      <div class="filter-group" id="tagFilters">
+        <button class="filter-btn active" data-tag-filter="All">All components</button>
+        <button class="filter-btn" data-tag-filter="Service">Services</button>
+        <button class="filter-btn" data-tag-filter="Adapter">Adapters</button>
+        <button class="filter-btn" data-tag-filter="Shared">Shared</button>
+        <button class="filter-btn" data-tag-filter="New">New build</button>
+        <button class="filter-btn" data-tag-filter="Jvm">JVM</button>
+        <button class="filter-btn" data-tag-filter="Foundation">Foundation</button>
+        <button class="filter-btn" data-tag-filter="Critical-path">Critical path</button>
+        <button class="filter-btn" data-tag-filter="Optional">Optional</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section-paper" style="padding-top:24px;">
+  <div class="container">
+    <div class="catalog-groups" id="catalogGroups"></div>
+    <div class="no-results" id="noResults">
+      <p style="font-size:16px;">No documents match that search.</p>
+      <p style="font-size:13.5px;">Try a different term, or clear the category/component filters above.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>Confidential \u2014 Internal Use \u00b7 Design &amp; blueprint stage, nothing built yet</span>
+      <span>Blueprint v3.1</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>initCatalogPage();</script>
+</body>
+</html>
