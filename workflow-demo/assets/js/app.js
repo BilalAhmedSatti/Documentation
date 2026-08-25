@@ -84,7 +84,7 @@
 
     const first = wf.steps?.[0];
     const nextBtn = first
-      ? `<a class="btn btn-primary" href="${hashFor(wf.id, first.id)}">Next →</a>`
+      ? `<a class="btn btn-primary" href="${hashFor(wf.id, first.id)}">Lets Dive In</a>`
       : "";
 
     const overviewNav = { prev: "<span></span>", next: nextBtn };
