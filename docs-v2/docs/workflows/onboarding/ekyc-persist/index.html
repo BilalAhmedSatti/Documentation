@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>06 - eKYC evidence &amp; case</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-onboarding-ekyc-persist" data-section="customer-journeys" data-wf="onboarding">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Onboarding · Stage 06</p>
+        <h1>06 - eKYC evidence &amp; case</h1>
+        <p class="lede">Verification case in PostgreSQL; files only in object storage.</p>
+        
+          
+    <div class="stage-page stage-page--teal">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">06</span>
+          <span class="stage-badge stage-badge--wf">Onboarding</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">eKYC: photo files go to object storage; only a reference and case status live in PostgreSQL. Timeout or doubt → MANUAL_REVIEW — never invent a pass.</p>
+        
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>verification_cases row with evidence_ref; APPROVED or REVIEW.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="onboarding" data-step="ekyc-persist" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>apps/web</li><li>identity</li><li>eKYC</li><li>Object storage</li><li>PostgreSQL</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS identity</li><li>eKYC SPI</li><li>S3-compatible store</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · verification_cases</li><li>Object storage · evidence</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>POST /verifications</li><li>POST /evidence</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/identity</code></td></tr><tr><td><strong>Trigger</strong></td><td>VF1–VF3</td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/02_identity.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 06 · Evidence store + case write</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Binaries are NOT in Postgres — only evidence_ref.</li><li>PUT object storage + INSERT verification_cases together.</li><li>Timeout → MANUAL_REVIEW (fail safe).</li><li>Pack chooses which eKYC provider runs.</li></ul></div>
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>apps/web</strong></td>
+                      <td>Customer uploads ID images and a selfie from the app.<br><em class="stage-why">Evidence capture is a channel action.</em><br><small class="stage-tip">Point at START web.</small></td>
+                      <td><code class="stage-save">Multipart upload to identity</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>identity</strong></td>
+                      <td>Identity opens a VerificationCase, stores blobs in object storage, and saves the case row with evidence_ref.<br><em class="stage-why">Keep PII binaries out of SQL; keep case status queryable.</em><br><small class="stage-tip">Point at both purple writes under identity.</small></td>
+                      <td><code class="stage-save">PUT object storage + INSERT verification_cases</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>eKYC adapter</strong></td>
+                      <td>Provider runs document check, liveness, and national-ID match per market rules.<br><em class="stage-why">Pack-selected vendor — not hard-coded.</em><br><small class="stage-tip">Point at eKYC adapter.</small></td>
+                      <td><code class="stage-save">Provider result recorded on the case</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>Outcome</strong></td>
+                      <td>APPROVED continues; REVIEW queues humans; timeout → MANUAL_REVIEW.<br><em class="stage-why">Never silently approve on failure.</em><br><small class="stage-tip">Point at END outcome.</small></td>
+                      <td><code class="stage-save">Case status updated</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>No inline PII in Postgres</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>evidence_ref only</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Fail → MANUAL_REVIEW</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/onboarding/screening-save/"><small>Previous</small><strong>05 - AML screen persisted</strong></a>
+        <a href="/docs/workflows/onboarding/tier-persist/"><small>Next</small><strong>07 - Risk tier written</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

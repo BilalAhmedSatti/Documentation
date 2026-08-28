@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Vocabulary</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="the-vocabulary" data-section="the-vocabulary">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">The Vocabulary</p>
+        <h1>The Vocabulary</h1>
+        <p class="lede">Every term in one place — what it means in plain English, and what it corresponds to inside our system. Rows shaded coral are pairs most often confused.</p>
+        
+      <div class="callout vocab-brief">
+        <strong>In brief — how to use this page</strong>
+        <ul>
+          <li><strong>Three columns, three audiences.</strong> The term, the plain-English meaning, and the thing it maps to in software.</li>
+          <li><strong>The third column is the useful one for engineers.</strong> Every concept resolves to a table, a posting, a state, or a port — not an abstraction slide.</li>
+          <li><strong>Coral rows are traps.</strong> Terms that sound alike, get conflated, and mean different things — including pairs wrong in inherited sketches.</li>
+        </ul>
+      </div>
+
+      <p>These words must mean the same thing in product meetings, compliance reviews, and pull requests. When two teams use the same word for different tables, reconciliation never finishes.</p>
+
+      <h2 id="platform">Platform topology</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Tenant</strong></td>
+              <td>Which operator / market context this request belongs to</td>
+              <td><code>tenant_id</code> on every request, row, event, log, metric — isolation P1</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Control plane</strong></td>
+              <td>Global switches and registry — not customer money</td>
+              <td>Service <strong>12</strong> · tenants, packs, entitlements, billing config · <strong>no regulated customer PII</strong></td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Data plane</strong></td>
+              <td>Where regulated data and money actually live</td>
+              <td>Regional cells PK / AE / SA · full service set · KSA stays in-Kingdom</td>
+            </tr>
+            <tr>
+              <td><strong>Market pack</strong></td>
+              <td>Bundle of rules for a country</td>
+              <td>Control-plane config: lists, limits, tax packs, adapter bindings — version-pinned</td>
+            </tr>
+            <tr>
+              <td><strong>Port / adapter</strong></td>
+              <td>Contract inside; wire format outside</td>
+              <td>Domain calls <code>EkycProviderPort</code>, <code>PayoutPort</code>, … · adapter implements NADRA, Raast, etc.</td>
+            </tr>
+            <tr>
+              <td><strong>BFF</strong></td>
+              <td>Gateway the apps talk to</td>
+              <td>Service <strong>11</strong> · tenant resolution, auth, rate limits · never raw domain exposure</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="money">Money &amp; ledger</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>SoR</strong><br><small>system of record</small></td>
+              <td>The one place auditors trust for a fact</td>
+              <td>For <strong>value</strong>, always Ledger <strong>04</strong> — nowhere else</td>
+            </tr>
+            <tr>
+              <td><strong>Journal</strong></td>
+              <td>One financial event, balanced</td>
+              <td>Group of postings that sum to zero per currency · append-only</td>
+            </tr>
+            <tr>
+              <td><strong>Posting</strong></td>
+              <td>One line of the journal</td>
+              <td>Account, direction, <code>amount_minor</code>, currency — never UPDATEd</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Balance</strong></td>
+              <td>Total funds in an account</td>
+              <td>Ledger projection from postings — <strong>not</strong> a wallet column</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Available balance</strong></td>
+              <td>What you can still spend</td>
+              <td>Balance minus active holds — what limits and UI "available" should use</td>
+            </tr>
+            <tr>
+              <td><strong>Hold</strong></td>
+              <td>Money ring-fenced, not spent</td>
+              <td><code>placeHold</code> → PLACED → CAPTURED or RELEASED (exactly one terminal)</td>
+            </tr>
+            <tr>
+              <td><strong>Settle</strong></td>
+              <td>Movement is final</td>
+              <td><code>captureHold</code> + journal · saga terminal SETTLED</td>
+            </tr>
+            <tr>
+              <td><strong>Minor units</strong></td>
+              <td>Paisa not rupees</td>
+              <td><code>bigint</code> (TS) / <code>long</code> (Java) · ESLint bans <code>number</code> for amounts</td>
+            </tr>
+            <tr>
+              <td><strong>Reversal</strong></td>
+              <td>Undo done correctly</td>
+              <td>Equal-and-opposite journal linked to original — never DELETE or UPDATE posting</td>
+            </tr>
+            <tr>
+              <td><strong>Outbox</strong></td>
+              <td>Reliable "tell everyone else"</td>
+              <td>Outbox row in same DB tx as business write · Debezium → Kafka</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="payments">Payments &amp; saga</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr class="trap">
+              <td><strong>Quote</strong></td>
+              <td>Firm price shown to customer</td>
+              <td>Pricing <strong>10</strong> response with fees, tax, FX provenance · <code>quote_id</code> on transfer</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Transfer</strong></td>
+              <td>The whole send attempt</td>
+              <td><code>transfers</code> aggregate + <code>TransferState</code> machine in Payments <strong>05</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Corridor</strong></td>
+              <td>From country A to country B</td>
+              <td>Config: source/dest ISO + <code>boundAdapter</code> rail key (raast, aani, sarie, xborder-partner)</td>
+            </tr>
+            <tr>
+              <td><strong>Saga</strong></td>
+              <td>Multi-step process with compensations</td>
+              <td>Persisted state machine + <code>saga_steps</code> — not a heavyweight engine</td>
+            </tr>
+            <tr>
+              <td><strong>Compensation</strong></td>
+              <td>Undo when the world refuses</td>
+              <td>C1 screen-fail · C2 rail-reject (release hold) · C3 settlement-fail (ops path)</td>
+            </tr>
+            <tr>
+              <td><strong>Idempotency-Key</strong></td>
+              <td>Same request twice ⇒ same outcome</td>
+              <td>Header on every mutation · unique per tenant · replay stored result</td>
+            </tr>
+            <tr>
+              <td><strong>Payout</strong></td>
+              <td>Instruction to the rail</td>
+              <td><code>PayoutPort</code> → adapter <strong>19</strong> · webhook/poll for terminal status</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="compliance">Compliance &amp; identity</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr class="trap">
+              <td><strong>eKYC</strong></td>
+              <td>Prove this person is who they claim</td>
+              <td>Identity <strong>02</strong> + adapter <strong>16</strong> · verification case · timeout ⇒ MANUAL_REVIEW</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Screening (AML)</strong></td>
+              <td>Check against sanctions / PEP lists</td>
+              <td>Screening <strong>03</strong> + adapter <strong>15</strong> · CLEAR / HOLD / REJECT · <strong>not</strong> identity verification</td>
+            </tr>
+            <tr>
+              <td><strong>CLEAR</strong></td>
+              <td>Proceed</td>
+              <td>Saga continues · never returned on provider timeout</td>
+            </tr>
+            <tr>
+              <td><strong>HOLD</strong></td>
+              <td>Wait for human decision</td>
+              <td>Case opened · maker-checker on HIGH · saga waits on event</td>
+            </tr>
+            <tr>
+              <td><strong>REJECT</strong></td>
+              <td>Stop — do not proceed</td>
+              <td>Journey ends · customer informed · case retained</td>
+            </tr>
+            <tr>
+              <td><strong>Risk tier</strong></td>
+              <td>How risky we think this customer is</td>
+              <td>UNRATED → LOW | MEDIUM | HIGH · drives limits · history append-only</td>
+            </tr>
+            <tr>
+              <td><strong>Maker-checker</strong></td>
+              <td>Two people for dangerous decisions</td>
+              <td>HIGH case disposition · ops override above threshold</td>
+            </tr>
+            <tr>
+              <td><strong>KYB</strong></td>
+              <td>Know your business</td>
+              <td>Corporate journey · UBO graph · same fail-closed screening as retail</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="products">Products &amp; channels</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Wallet</strong></td>
+              <td>Named product the customer holds</td>
+              <td>Wallets <strong>06</strong> product instance · statement · links to ledger account(s)</td>
+            </tr>
+            <tr>
+              <td><strong>Retail onboarding</strong></td>
+              <td>Become a customer who can hold money</td>
+              <td>8-stage workflow · ends with TigerBeetle account CREATE</td>
+            </tr>
+            <tr>
+              <td><strong>Remittance</strong></td>
+              <td>Cross-border or domestic send</td>
+              <td>Payments saga · primary corridors UAE→PK, KSA→PK</td>
+            </tr>
+            <tr>
+              <td><strong>Bill payment</strong></td>
+              <td>Pay a utility or biller</td>
+              <td>Separate 4-stage saga in Payments · select → create → confirm → debit</td>
+            </tr>
+            <tr>
+              <td><strong>Agent assisted</strong></td>
+              <td>Staff helps customer in branch</td>
+              <td>AOB grant · agent headers on same sagas · audit before commission</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="rails">Rails &amp; adapters (launch bindings)</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Binding</th><th>Market</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr><td><code>raast</code></td><td>PK→PK</td><td>Payout adapter <strong>19</strong> · ISO 20022 pacs.008 / pacs.002</td></tr>
+            <tr><td><code>aani</code></td><td>AE→AE</td><td>Al Etihad Payments instant rail</td></tr>
+            <tr><td><code>sarie</code></td><td>SA→SA</td><td>SAMA IPS · in-Kingdom only</td></tr>
+            <tr><td><code>xborder-partner</code></td><td>AE→PK, SA→PK</td><td>Partner API until direct scheme certified</td></tr>
+            <tr><td>NADRA</td><td>PK identity</td><td>eKYC adapter <strong>16</strong> · CNIC verification</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="traps">The traps, gathered</h2>
+      <div class="trap-box">
+        <p><strong>Wallet balance vs ledger balance</strong> — product view versus vault truth.</p>
+        <p><strong>Hold vs settle</strong> — reservation versus final posting.</p>
+        <p><strong>Available vs total balance</strong> — what you can spend versus what you own.</p>
+        <p><strong>eKYC vs AML screening</strong> — identity proof versus sanctions lists.</p>
+        <p><strong>Quote vs transfer</strong> — firm price versus saga aggregate.</p>
+        <p><strong>Control plane vs data plane</strong> — configuration versus regulated data.</p>
+        <p><strong>Timeout vs CLEAR</strong> — fail closed means HOLD — never silent pass.</p>
+      </div>
+
+      <div class="footer-nav">
+        <a href="/docs/how-the-money-works/"><small>Previous</small><strong>How the Money Works</strong></a>
+        <a href="/docs/who-governs-it/"><small>Next</small><strong>Who Governs It</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

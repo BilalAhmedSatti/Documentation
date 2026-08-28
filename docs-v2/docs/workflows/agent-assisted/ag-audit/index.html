@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>04 - Audit &amp; commission</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-agent-assisted-ag-audit" data-section="agent-journeys" data-wf="agent-assisted">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Agent Assisted · Stage 04</p>
+        <h1>04 - Audit &amp; commission</h1>
+        <p class="lede">Emit agent.action.v1 for commission schemes when configured.</p>
+        
+          
+    <div class="stage-page stage-page--rose">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">04</span>
+          <span class="stage-badge stage-badge--wf">Agent Assisted</span>
+          <span class="stage-badge stage-badge--opt">Optional</span>
+        </div>
+        <p class="stage-lead">Commission is configuration; audit trail is not optional. Meter event if configured Event for metering.</p>
+        <div class="stage-write-chip">
+        <span class="op">PUBLISH</span>
+        <span class="store">Redpanda</span>
+        <code>agent.action.v1</code>
+        <em>Downstream billing</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Traceable assisted sale.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="agent-assisted" data-step="ag-audit" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>billing</li><li>Redpanda</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS</li><li>Redpanda</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>agent.action.v1 events</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>Outbox publish</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/billing</code></td></tr><tr><td><strong>Trigger</strong></td><td>Ops</td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 04 · Audit</h2>
+        
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>Domain</strong></td>
+                      <td></td>
+                      <td><code class="stage-save">Human / channel entry</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>agent.action.v1</strong></td>
+                      <td>PUBLISH on Redpanda · agent.action.v1<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
+                      <td><code class="stage-save">PUBLISH → Redpanda · agent.action.v1</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+    <h3 id="flow">Flow nodes</h3>
+    <div class="table-wrap stage-flow-table">
+      <table>
+        <thead><tr><th>Node</th><th>Type</th><th>Detail</th><th>Durable?</th></tr></thead>
+        <tbody>
+          <tr>
+                <td><strong>Domain</strong></td>
+                <td><code>start</code></td>
+                <td></td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>agent.action.v1</strong></td>
+                <td><code>event</code></td>
+                <td>PUBLISH Redpanda agent.action.v1</td>
+                <td><span class="pill ok">PUBLISH</span></td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Audit before commission</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>PII minimised in events</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/agent-assisted/ag-action/"><small>Previous</small><strong>03 - Perform action</strong></a>
+        <a href="/docs/workflows/agent-assisted/"><small>Done</small><strong>Back to Agent Assisted</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

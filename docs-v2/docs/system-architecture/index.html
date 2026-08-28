@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>System Architecture</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="system-architecture" data-section="system-architecture">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">System Architecture</p>
+        <h1>System Architecture</h1>
+        <p class="lede">Hexagonal services, control plane, regional data planes.</p>
+        
+      <h2 id="shape">Shape</h2>
+      <p><strong>Apps</strong> (customer web, staff console) → <strong>BFF / gateway</strong> → <strong>domain services</strong> → <strong>ports</strong> → <strong>market adapters</strong> → external providers (NADRA, Raast, screening vendors, etc.).</p>
+      <p>Each domain service is <strong>hexagonal</strong>: <code>domain/</code> imports nothing; <code>application/</code> imports domain + ports; only <code>adapters/</code> import frameworks and vendor SDKs. Enforced by dependency-cruiser (TS) and ArchUnit (Java) — build-blocking.</p>
+
+      <h2 id="planes">Control plane vs data planes</h2>
+      <ul>
+        <li><strong>Global control plane</strong> — tenant registry, config &amp; entitlements, billing, global OIDC. No regulated customer data.</li>
+        <li><strong>Regional data planes</strong> — PK (Karachi/Islamabad), AE (Dubai/Abu Dhabi), SA (Riyadh, in-Kingdom). Full service set per cell.</li>
+        <li><strong>Gateway</strong> resolves tenant → region; KSA never leaves the Kingdom.</li>
+      </ul>
+
+      <h2 id="invariants">Invariant rules (every service)</h2>
+      <ol>
+        <li>Hexagonal boundaries — build-blocking in CI</li>
+        <li>Integer minor units — <code>@platform/money</code> in TS; no native <code>number</code> for amounts</li>
+        <li>Transactional outbox + Avro/Kafka envelope on every publish</li>
+        <li><code>Idempotency-Key</code> on every mutation</li>
+        <li>Tenant isolation — P1; 100% isolation test coverage</li>
+        <li>KSA residency routing</li>
+        <li>OpenAPI 3.1 + Pact on every boundary (mandatory TS↔JVM seams)</li>
+      </ol>
+
+      <h2 id="critical">Critical path to Pakistan go-live</h2>
+      <p>Control plane → Ledger → Pricing/FX → Payments + Payout rail → live NADRA + Raast certification.</p>
+
+      <h2 id="map">End-to-end</h2>
+      <p>See <a href="/docs/end-to-end-map/">The End-to-End Map</a> and <a href="/docs/platform-anatomy/">Platform Anatomy</a> for repo-level naming.</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

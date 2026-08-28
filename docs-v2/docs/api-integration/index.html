@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The API &amp; Integration Surface</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="api-integration" data-section="api-integration">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">The API &amp; Integration Surface</p>
+        <h1>The API &amp; Integration Surface</h1>
+        <p class="lede">BFF/gateway, webhooks, and partner contracts.</p>
+        
+      <h2 id="bff">BFF &amp; gateway</h2>
+      <p>Customer and partner traffic terminates at BFF/gateway. Tenant resolution, auth, rate limits, and OpenAPI contracts enforced here — domain services never exposed raw.</p>
+      <p><a href="/docs/workflows/onboarding/register-login/">Onboarding · Register / Login</a> shows the first customer-facing API path.</p>
+
+      <h2 id="webhooks">Webhooks</h2>
+      <p>Inbound provider webhooks (eKYC result, rail status, card auth) verified and idempotent. Example: <a href="/docs/workflows/debit-cards/dc-auth/">Card authorise webhook</a>.</p>
+
+      <h2 id="contracts">Contracts</h2>
+      <p>OpenAPI 3.1 published per service. Pact verification blocks CI on TS↔JVM seams (Payments→Ledger, Payments→Pricing).</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

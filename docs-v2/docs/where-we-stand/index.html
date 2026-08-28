@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Where We Stand</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="where-we-stand" data-section="where-we-stand">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Where We Stand</p>
+        <h1>Where We Stand</h1>
+        <p class="lede">Five minutes. What we are building, three corrections we made to the inherited plan, and the answers we still need from the business.</p>
+        
+        <div class="actions">
+          <button class="btn" type="button" onclick="navigator.clipboard.writeText(location.href)">Copy link</button>
+          <a class="btn" href="/docs/start-here/">Open index</a>
+        </div>
+
+        <p>We are building <strong>the machine a digital bank and remittance operator runs on</strong> — not the shop window. Scope is <strong>Digital Banking &amp; Remittance only</strong> across Pakistan, UAE and Saudi Arabia (Blueprint v3.1 banking track). Three corrections still matter. Two questions are still yours to answer. A local banking pilot can move money; Pakistan go-live still cannot.</p>
+
+        <div class="stats">
+          <div class="stat"><b>1</b><span>product in this documentation set: Digital Banking &amp; Remittance — ledger, wallets, corridors, and the send-money saga.</span></div>
+          <div class="stat"><b>12</b><span>banking services in the blueprint set (identity through notification), plus market adapters behind stable ports.</span></div>
+          <div class="stat"><b>3</b><span>launch markets and 9 milestones (M0–M8). Pakistan first, then UAE, then in-Kingdom Saudi Arabia.</span></div>
+          <div class="stat"><b>311</b><span>tasks traced to the banking monorepo — 31 done, 63 partial, 214 not started (17 Aug 2026).</span></div>
+        </div>
+
+        <div class="callout">
+          <strong>Scope of this site</strong>
+          These pages describe <strong>Digital Banking &amp; Remittance only</strong>. Broader multi-product framing in other portals is out of scope here. Optional engineering library: <a href="https://document.digitalbank.zekiexperts.com/index.html" target="_blank" rel="noopener">document.digitalbank.zekiexperts.com</a> — use banking services and adapters only.
+        </div>
+
+        <h2 id="building">What we are building</h2>
+        <p>The shop window sells. <strong>The machine has to survive an audit.</strong> We are building the machine for digital banking and remittance.</p>
+        <p>Identity and KYC, sanctions screening, the double-entry ledger, the send-money saga, wallets, pricing, FX provenance, reconciliation, regulatory reporting, and the customer app and staff console that sit on top. Market providers (NADRA, Raast, and later UAE/KSA equivalents) plug in through adapters — the banking domain does not reimplement rails inside every service.</p>
+        <p>That distinction explains most of the engineering priorities: <strong>a platform that sells well and cannot survive an audit has no second year.</strong></p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Launching with</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Pakistan domestic money movement (on-us + simulated rail)</strong></td><td><span class="pill part">Pilot live locally</span></td></tr>
+              <tr><td><strong>Retail onboarding + mock eKYC + risk tier</strong></td><td><span class="pill part">Partial — mock providers</span></td></tr>
+              <tr><td><strong>Screening + HIGH maker-checker</strong></td><td><span class="pill part">Partial — not live lists</span></td></tr>
+              <tr><td><strong>Ledger L1–L5 (TigerBeetle)</strong></td><td><span class="pill ok">Implemented in pilot</span></td></tr>
+              <tr><td><strong>Real NADRA / Raast / OIDC / tax / notifications</strong></td><td><span class="pill block">Not started</span></td></tr>
+              <tr><td><strong>UAE then KSA markets</strong></td><td><span class="pill settled">Sequenced after PK</span></td></tr>
+              <tr><td><strong>Cards / core-banking host</strong></td><td><span class="pill settled">Deferred until licensed need</span></td></tr>
+              <tr><td><strong>Multi-tenant ready, PK-first operator</strong></td><td><span class="pill settled">Settled in architecture</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="corrections">Three corrections we made</h2>
+        <p>We asked one question of every claim in the inherited documents: <strong>which requirement makes this true?</strong> Three patterns kept failing that test.</p>
+
+        <div class="correction">
+          <div class="n">01 · Balances live in one place</div>
+          <h3>Many services holding money → Ledger only</h3>
+          <p>The temptation is to cache balances in wallets, payments, or the BFF for speed. That creates three truths about the same customer's money. Auditors find it; reconciliation never finishes.</p>
+          <p><strong>Correction:</strong> the Ledger is the sole system of record for value. Wallets compose product views from Ledger balances. Payments place holds and post settlements — they do not invent balances.</p>
+        </div>
+
+        <div class="correction">
+          <div class="n">02 · Fail closed on compliance</div>
+          <h3>Timeout = clear → Timeout = HOLD</h3>
+          <p>Inherited sketches sometimes treated a screening timeout as "proceed." That is how sanctioned traffic gets a receipt.</p>
+          <p><strong>Correction:</strong> screening timeout or circuit open means <strong>HOLD</strong>, never CLEAR. HIGH cases need maker-checker. Provider failure on eKYC means MANUAL_REVIEW — never auto-approve.</p>
+        </div>
+
+        <div class="correction">
+          <div class="n">03 · Size from demand, not from a diagram</div>
+          <h3>Diagram-shaped spend → requirement-shaped spend</h3>
+          <p>Stack choices and infrastructure envelopes were sometimes derived from boxes on a slide rather than participant volume, corridor mix, and residency rules (especially KSA in-Kingdom data).</p>
+          <p><strong>Correction:</strong> NestJS/TypeScript by default; Java only for Ledger, Pricing, and FX. Money as integer minor units. Residency routing is a requirement, not an optional optimisation.</p>
+        </div>
+
+        <div class="callout">
+          <strong>The pattern behind all three</strong>
+          Each was a case of the technology being chosen from the shape of a diagram rather than from what the business and the regulator actually need. That inversion is expensive — and it will recur if nobody watches for it.
+        </div>
+
+        <h2 id="need">What we need from the business</h2>
+        <p>Two questions are holding the critical path. <strong>Neither is purely technical</strong>, and neither can be closed by the engineering team alone.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Question</th><th>Blocks</th><th>Owner</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Which live market providers, on what contracts — NADRA, Raast, IdP, tax, messaging?</strong></td>
+                <td>Pakistan go-live. The pilot uses mocks and simulated rails. Certification calendars can dominate the date.</td>
+                <td>Commercial / Ops</td>
+              </tr>
+              <tr>
+                <td><strong>Year-three participant volume and product mix (domestic vs corridors)?</strong></td>
+                <td>Nothing today — but every capacity and cost figure is a working assumption until answered.</td>
+                <td>Business</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Smaller items sit with docs and R&amp;D rather than blocking the pilot: confirmed tax packs, notification templates, whether corporate onboarding ships at launch, and hosting provider. Those change configuration — not the shape of the machine.</p>
+
+        <h3 id="identity-questions">Three questions about what we are, not what we build</h3>
+        <p>These shape the documents rather than the software. Guessing quietly would be worse than leaving them open.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Question</th><th>What it affects</th><th>Owner</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Who holds the banking / remittance licences, and who operates the platform?</strong></td>
+                <td>Tenant model, branding, who the regulator talks to.</td>
+                <td>Business</td>
+              </tr>
+              <tr>
+                <td><strong>Who are we for, and why would they choose us?</strong></td>
+                <td>Product emphasis, corridor priority, which surfaces ship first.</td>
+                <td>Business</td>
+              </tr>
+              <tr>
+                <td><strong>Is a second tenant imminent?</strong></td>
+                <td>Whether branding, domains, terminology, and provisioning move into launch scope now.</td>
+                <td>Business</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="docs">Where the documentation stands</h2>
+        <p>Banking track of Blueprint set <strong>v3.1</strong>: master architecture, tech stack, twelve services, market adapters, feature specs, design companions, ADRs, and the M0–M8 plan. The domain explains the requirements; the requirements explain the architecture; the architecture explains the technology.</p>
+        <p>Not a pile — a derivation. Every claim should trace to a requirement or be marked as an assumption. Decisions that gave the system its shape live in ADRs with alternatives rejected and conditions that would reverse them.</p>
+        <p>Banking-oriented start docs: <strong>00</strong> (Master Architecture), <strong>01</strong> (Technology Stack), <strong>02–13</strong> (services), <strong>27</strong> (Repo &amp; branching), <strong>29</strong> (Development plan).</p>
+        <p>Implementation reality (17 Aug 2026 banking monorepo review): <strong>311</strong> tasks — <strong>31</strong> done, <strong>63</strong> partial, <strong>214</strong> not started. The blueprint "design stage" and the pilot's "login-to-money-movement" reality are both true; they answer different questions.</p>
+
+        <div class="callout warn">
+          <strong>If you read nothing else</strong>
+          Read <a href="/docs/one-payment-followed/">One Payment, Followed</a> and <a href="/docs/money-model-correction/">Money Model Correction</a>. Together they explain why the Ledger and the payment saga look the way they do — and why shortcutting either one fails an audit.
+        </div>
+
+        <div class="card-grid">
+          <a class="card" href="/docs/start-here/"><strong>Start Here</strong><span>Pick a reading path — or read straight down.</span></a>
+          <a class="card" href="/docs/money-model-correction/"><strong>Money Model Correction</strong><span>Share this with anyone still designing as if wallets hold balances.</span></a>
+          <a class="card" href="/docs/what-we-do-not-know/"><strong>What We Do Not Know</strong><span>Open questions, owners, and what waiting costs.</span></a>
+        </div>
+
+        <div class="footer-nav">
+          <a href="/docs/start-here/"><small>Previous</small><strong>Start Here</strong></a>
+          <a href="/docs/money-model-correction/"><small>Next</small><strong>Money Model Correction</strong></a>
+        </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

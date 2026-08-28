@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Operator Journeys</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="operator-journeys" data-section="identity-kyc-aml">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Operator Journeys</p>
+        <h1>Operator Journeys</h1>
+        <p class="lede">Staff console work — AML case disposition, tenant provisioning, entitlements, and overrides — every sensitive action logged with operator id and maker-checker where required.</p>
+        
+        
+      <div class="journey-hero journey-hero--operator">
+        <div class="journey-hero-inner">
+          <p class="journey-hero-kicker">Journey</p>
+          <h2 class="journey-hero-title">Operator &amp; staff console</h2>
+          <p class="journey-hero-sub">Operators work in apps/console on screening cases and control-plane config. Regulated customer data stays in data planes — control plane holds packs and entitlements only.</p>
+        </div>
+        <div class="journey-stats"><div class="journey-stat"><b>2</b><span>workflow families — AML + tenant ops</span></div><div class="journey-stat"><b>8</b><span>stages across screening &amp; provisioning</span></div><div class="journey-stat"><b>4</b><span>eyes — maker-checker on HIGH / overrides</span></div></div>
+      </div>
+
+        <div class="callout vocab-brief">
+          <strong>In brief — operator journeys</strong>
+          <ul>
+            <li><strong>AML cases</strong> — disposition with maker-checker on HIGH; events unblock waiting sagas.</li>
+            <li><strong>Tenant ops</strong> — provision tenant → market pack → branding → immutable ops audit.</li>
+            <li><strong>Overrides</strong> — ex-gratia and manual fixes need attributable, immutable ops_audit rows.</li>
+          </ul>
+        </div>
+
+        
+      <section class="journey-panel journey-panel--rose" id="aml">
+        <div class="journey-panel-head">
+          <h2>Screening &amp; AML cases</h2>
+          <p>Four stages: open screening request → call provider → open case on hit → dispose with outbox event. Saga in COMPLIANCE_HOLD waits on <code>screening.case.resolved.v1</code>.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/screening-aml/sa-request/">Start at Screening request →</a>
+        </div>
+        <div class="wf-embed" data-workflow="screening-aml" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/screening-aml/sa-request/">
+        <span class="n">01</span>
+        <span class="t"><strong>Screening request</strong><em>Inbound UC creates immutable screening request.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/screening-aml/sa-provider/">
+        <span class="n">02</span>
+        <span class="t"><strong>Provider screen</strong><em>Call list provider; fail-safe HOLD on errors.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/screening-aml/sa-case/">
+        <span class="n">03</span>
+        <span class="t"><strong>Open case</strong><em>Hits open Case aggregate in PostgreSQL.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/screening-aml/sa-dispose/">
+        <span class="n">04</span>
+        <span class="t"><strong>Disposition</strong><em>DispositionCaseUC closes case and publishes resolved.v1.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        <div class="journey-panel journey-panel--slate" id="case-work">
+          <h2>What operators do on a case</h2>
+          <div class="table-wrap vocab-table">
+            <table>
+              <thead><tr><th>Disposition</th><th>Effect on customer journey</th><th>Controls</th></tr></thead>
+              <tbody>
+                <tr><td><strong>CLEAR</strong></td><td>Saga resumes; payment can hold and payout</td><td>Analyst documents reason; list version recorded</td></tr>
+                <tr><td><strong>HOLD</strong></td><td>Remains queued; customer informed per policy</td><td>Escalation timer; senior review</td></tr>
+                <tr><td><strong>REJECT</strong></td><td>Journey terminal; no money movement</td><td>STR consideration per policy</td></tr>
+                <tr class="trap"><td><strong>HIGH severity</strong></td><td>Cannot self-approve</td><td>Maker-checker — second operator id required</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        
+      <section class="journey-panel journey-panel--blue" id="tenant">
+        <div class="journey-panel-head">
+          <h2>Tenant operations</h2>
+          <p>Provision a tenant, attach PK/AE/SA market pack, set branding and product entitlements, log every change in ops_audit. No customer PII in control plane DB.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/tenant-ops/to-provision/">Start at Provision tenant →</a>
+        </div>
+        <div class="wf-embed" data-workflow="tenant-ops" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/tenant-ops/to-provision/">
+        <span class="n">01</span>
+        <span class="t"><strong>Provision tenant</strong><em>Create tenant with market and residency flags.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/tenant-ops/to-pack/">
+        <span class="n">02</span>
+        <span class="t"><strong>Attach market pack</strong><em>Load PK / AE / SA compliance and product pack.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/tenant-ops/to-brand/">
+        <span class="n">03</span>
+        <span class="t"><strong>Branding &amp; entitlements</strong><em>Logo, corridors, product toggles for the operator.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/tenant-ops/to-audit/">
+        <span class="n">04</span>
+        <span class="t"><strong>Ops audit</strong><em>Every override and provisioning step logged with operator id.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        <h2 id="console">apps/console — operator surface</h2>
+        <p><code>apps/console</code> is the staff channel for cases, tenant configuration, and assisted overrides. It calls BFF/gateway APIs — never raw domain services. Every override must answer: <strong>who</strong>, <strong>when</strong>, <strong>what changed</strong>, and <strong>why</strong> — stored in <code>ops_audit</code>, not application logs alone.</p>
+
+        <div class="footer-nav">
+          <a href="/docs/agent-journeys/"><small>Previous</small><strong>Agent Journeys</strong></a>
+          <a href="/docs/platform-external/"><small>Next</small><strong>Platform &amp; External</strong></a>
+        </div>
+      
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

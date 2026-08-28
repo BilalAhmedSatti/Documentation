@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 - Load market rules</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-onboarding-control-plane" data-section="customer-journeys" data-wf="onboarding">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Onboarding · Stage 03</p>
+        <h1>03 - Load market rules</h1>
+        <p class="lede">Load the rulebook for this bank market from PostgreSQL before KYC starts.</p>
+        
+          
+    <div class="stage-page stage-page--amber">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">03</span>
+          <span class="stage-badge stage-badge--wf">Onboarding</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Before ID checks, we load this bank/market’s rulebook from PostgreSQL: which ID provider, which watchlists, how risk is scored. Rules are data — not hard-coded in identity.</p>
+        <div class="stage-write-chip">
+        <span class="op">INSERT</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>cases / verification</code>
+        <em>Durable evidence of checks</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Identity knows which checks to run for this market.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="onboarding" data-step="control-plane" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>services/bff</li><li>services/control-plane</li><li>services/identity</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS · control-plane</li><li>PostgreSQL config tables</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · tenants / packs / entitlements</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>Look up market rules</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/control-plane</code></td></tr><tr><td><strong>Trigger</strong></td><td>services/control-plane</td></tr><tr><td><strong>API</strong></td><td><code>screenEntity + VerificationCase</code></td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/02_identity.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 03 · Load the market rulebook</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Say: “Same product code, different market rules from the database.”</li><li>Pack / rulebook = providers + lists + risk model.</li><li>This step is mostly a READ, not an INSERT.</li><li>If rules were hard-coded, every market change would need a code release.</li></ul></div>
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>BFF</strong></td>
+                      <td>BFF already knows which bank/market the signed-in request belongs to.<br><em class="stage-why">Wrong market = wrong ID provider and wrong lists.</em><br><small class="stage-tip">Point at START — market context.</small></td>
+                      <td><code class="stage-save">Nothing saved</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>control-plane</strong></td>
+                      <td>control-plane reads the rulebook tables for that market: tenants / packs.<br><em class="stage-why">Configuration lives in PostgreSQL so ops can change it safely.</em><br><small class="stage-tip">Point at purple READ — config, not customer PII.</small></td>
+                      <td><code class="stage-save">READ → PostgreSQL (tenants / packs)</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>identity</strong></td>
+                      <td>Identity keeps those rules for the rest of KYC and screening.<br><em class="stage-why">Next steps must follow the market pack.</em><br><small class="stage-tip">Point at END — ready for KYC.</small></td>
+                      <td><code class="stage-save">Rules kept for this journey (in memory / context)</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Market id is present</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Rules come from the database</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>No hard-coded market rules</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/onboarding/auth-persist/"><small>Previous</small><strong>02 - Auth credentials saved</strong></a>
+        <a href="/docs/workflows/onboarding/customer-register/"><small>Next</small><strong>04 - Create customer record</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

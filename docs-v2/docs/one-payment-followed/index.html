@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Payment, Followed</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="one-payment-followed" data-section="one-payment-followed">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">One Payment, Followed</p>
+        <h1>One Payment, Followed</h1>
+        <p class="lede">Before any of the detail: the whole send-money system happening to one payment, in order. Ten minutes, and the rest of this set stops being a list of documents.</p>
+        
+        <h2 id="saga">The saga</h2>
+        <p><strong>Quote → Screen → Hold → Payout → Settle.</strong> Three compensations when the world refuses to cooperate: screen-fail, rail-reject, settlement-fail.</p>
+
+        <p><a href="/docs/workflows/fund-transfer/">Open Fund Transfer stages (menu) →</a></p>
+        <div class="wf-embed" data-workflow="fund-transfer" data-view="overview"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Step</th><th>Who</th><th>What becomes true</th></tr></thead>
+            <tbody>
+              <tr><td><strong>01 Quote</strong></td><td>Pricing (+ FX / tax packs)</td><td>Customer sees a firm quote; provenance recorded</td></tr>
+              <tr><td><strong>02 Screen</strong></td><td>Screening &amp; AML</td><td>CLEAR continues; HOLD or REJECT stops; timeout = HOLD</td></tr>
+              <tr><td><strong>03 Hold</strong></td><td>Ledger</td><td>Funds reserved — not spent yet</td></tr>
+              <tr><td><strong>04 Payout</strong></td><td>Payments + payout rail adapter</td><td>Raast / Aani / sarie / partner instructed</td></tr>
+              <tr><td><strong>05 Settle</strong></td><td>Ledger + Payments</td><td>Postings final; saga closes</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="compensations">Compensations</h2>
+        <ul>
+          <li><strong>C1 Screen-fail</strong> — never held; customer informed; case if needed.</li>
+          <li><strong>C2 Rail-reject</strong> — release hold; saga fails closed.</li>
+          <li><strong>C3 Settlement-fail</strong> — operational path; money must not vanish into ambiguity.</li>
+        </ul>
+
+        <h2 id="invariants">Invariants that must stay true</h2>
+        <ul>
+          <li><code>tenant_id</code> on every request, event, row, and log line.</li>
+          <li><code>Idempotency-Key</code> on every mutating call.</li>
+          <li>Integer minor units only.</li>
+          <li>KSA data never leaves the Kingdom when residency demands it.</li>
+          <li>Isolation failures are release-blocking P1.</li>
+        </ul>
+
+        <div class="callout">
+          <strong>Onboarding is a different journey</strong>
+          Register → screen → eKYC → risk tier → open wallets/ledger accounts. Provider timeout on eKYC means MANUAL_REVIEW — never silent approve. See <a href="/docs/workflows/onboarding/register-login/">Customer Journeys · Onboarding</a>.
+        </div>
+
+        <div class="footer-nav">
+          <a href="/docs/what-we-do-not-know/"><small>Previous</small><strong>What We Do Not Know</strong></a>
+          <a href="/docs/customer-journeys/"><small>Next</small><strong>Customer Journeys</strong></a>
+        </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

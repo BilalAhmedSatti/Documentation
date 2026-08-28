@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Infrastructure &amp; Cost</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="infrastructure-cost" data-section="infrastructure-cost">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Infrastructure &amp; Cost</p>
+        <h1>Infrastructure &amp; Cost</h1>
+        <p class="lede">Size from volume and residency — not from the number of boxes on a diagram.</p>
+        
+      <h2 id="drivers">Cost drivers</h2>
+      <ul>
+        <li>Year-three volume and corridor mix (still open — see <a href="/docs/what-we-do-not-know/">What We Do Not Know</a>)</li>
+        <li>Three regional data planes + in-Kingdom KSA cell</li>
+        <li>Provider fees (NADRA, screening, rails) dominate unit economics at low volume</li>
+      </ul>
+      <h2 id="nfr">NFR anchors</h2>
+      <p>p99 read &lt; 800 ms · command &lt; 1.5 s (excl. providers) · outbox lag p99 &lt; 2 s · Enterprise RPO ≤ 5 min / RTO ≤ 30 min per cell.</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

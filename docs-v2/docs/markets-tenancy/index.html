@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Markets &amp; Tenancy</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="markets-tenancy" data-section="markets-tenancy">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Markets &amp; Tenancy</p>
+        <h1>Markets &amp; Tenancy</h1>
+        <p class="lede">Pakistan → UAE → KSA. One control plane; data planes honour residency.</p>
+        
+      <h2 id="sequence">Market sequence</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Market</th><th>Regulator context</th><th>Identity</th><th>Domestic rail</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pakistan</strong></td><td>SBP / FMU</td><td>NADRA CNIC</td><td>Raast</td></tr>
+          <tr><td><strong>UAE</strong></td><td>CBUAE</td><td>Emirates ID / UAE Pass</td><td>Aani</td></tr>
+          <tr><td><strong>Saudi Arabia</strong></td><td>SAMA / SAFIU</td><td>Absher / Yakeen</td><td>sarie (in-Kingdom)</td></tr>
+        </tbody>
+      </table></div>
+      <p>Pakistan is the first commercial bar. UAE follows. KSA requires <strong>in-Kingdom</strong> data residency — routing enforced at gateway and datastore.</p>
+
+      <h2 id="tenancy">Tenancy model</h2>
+      <ul>
+        <li><code>tenant_id</code> on every request, event, database row, and log line.</li>
+        <li>Isolation: bridge by default, silo on demand, pool where safe.</li>
+        <li>Cross-tenant access bugs are <strong>release-blocking P1</strong> — tested in CI.</li>
+        <li>Control plane resolves effective config per tenant; no regulated data in CP.</li>
+      </ul>
+
+      <h2 id="tenant-ops">Provisioning a tenant</h2>
+      <p>Operators provision markets through the control plane: tenant → market pack → branding → audit. See <a href="/docs/workflows/tenant-ops/to-provision/">Tenant Ops · Provision</a>.</p>
+      <div class="wf-embed" data-workflow="tenant-ops" data-view="overview"></div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>04 - Screen business</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-corporate-kyb-ck-screen" data-section="corporate-journeys" data-wf="corporate-kyb">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Corporate KYB · Stage 04</p>
+        <h1>04 - Screen business</h1>
+        <p class="lede">screenEntity on the business legal entity and every captured UBO — same fail-closed policy as retail onboarding.</p>
+        
+          
+    <div class="stage-page stage-page--rose">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">04</span>
+          <span class="stage-badge stage-badge--wf">Corporate KYB</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Compliance gate for KYB. The business is not trusted because documents were uploaded — it is trusted only after list screening returns CLEAR or a case is dispositioned. This is the same discipline as retail onboarding, applied to a legal entity graph.</p>
+        <div class="stage-write-chip">
+        <span class="op">INSERT</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>cases</code>
+        <em>Fail-closed on hit/timeout</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>CLEAR → continue to business risk tier. HOLD → operator case queue. REJECT → KYB stops.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="corporate-kyb" data-step="ck-screen" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>services/identity — invokes screenEntity after EDD</li><li>services/screening (03) — orchestrates request + case</li><li>Adapter 15 — external list provider</li><li>apps/console — operator disposition on HOLD</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS screening</li><li>NestJS identity client</li><li>PostgreSQL 16</li><li>Redpanda outbox</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL screening_requests — immutable request row</li><li>PostgreSQL cases — disposition + severity</li><li>Redpanda screening.case.resolved.v1 — unblocks waiting sagas</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>ScreenEntityUC</li><li>ScreeningPort.screenEntity</li><li>POST internal screen API</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/screening</code></td></tr><tr><td><strong>Trigger</strong></td><td>ScreenEntityUC · onboarding scope</td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/02_identity.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 04 · Screen business &amp; UBOs</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Say: “Every owner on the UBO graph is screened, not just the company name.”</li><li>Timeout is HOLD — if anyone says “the provider was down so we passed,” that is wrong.</li><li>Point at cases INSERT on the diagram — that is what the regulator asks for on a hit.</li><li>HIGH needs two operator IDs before disposition — not one analyst closing their own hit.</li></ul></div>
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>identity</strong></td>
+                      <td>After EDD cases exist, identity packages business + UBO facts and calls screenEntity.<br><em class="stage-why">Screening is a separate service — identity does not embed list logic.</em></td>
+                      <td><code class="stage-save">HTTP call to screening</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>screening</strong></td>
+                      <td>Open immutable screening_requests row; apply tenant pack list scope.<br><em class="stage-why">Request id correlates provider callback, case, and audit.</em></td>
+                      <td><code class="stage-save">INSERT screening_requests</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>Adapter 15</strong></td>
+                      <td>Provider scores names against configured lists (pilot: fixed-test-list mock).<br><em class="stage-why">Live lists gate Pakistan go-live certification.</em></td>
+                      <td><code class="stage-save">Provider response (transient)</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>Disposition</strong></td>
+                      <td>CLEAR continues KYB. HIT opens cases row with severity. Timeout ⇒ HOLD.<br><em class="stage-why">Fail closed — never silent pass on compliance paths.</em></td>
+                      <td><code class="stage-save">INSERT cases on hit/HOLD</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">05</td>
+                      <td><strong>Operator (if HOLD)</strong></td>
+                      <td>Console disposition with maker-checker on HIGH; publishes resolved event.<br><em class="stage-why">Sagas waiting on COMPLIANCE_HOLD unblock on event.</em></td>
+                      <td><code class="stage-save">PUBLISH screening.case.resolved.v1</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Never CLEAR on provider timeout or circuit open</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>HIGH severity requires maker-checker before disposition</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Each UBO screened — not only the business entity</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Case row durable before operator works queue</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>List version / pack scope recorded on request</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/corporate-kyb/ck-edd/"><small>Previous</small><strong>03 - Enhanced due diligence</strong></a>
+        <a href="/docs/workflows/corporate-kyb/ck-tier/"><small>Next</small><strong>05 - Business risk tier</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

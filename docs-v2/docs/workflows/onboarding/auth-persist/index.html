@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>02 - Auth credentials saved</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-onboarding-auth-persist" data-section="customer-journeys" data-wf="onboarding">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Onboarding · Stage 02</p>
+        <h1>02 - Auth credentials saved</h1>
+        <p class="lede">First durable write: hashed credentials into PostgreSQL.</p>
+        
+          
+    <div class="stage-page stage-page--blue">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">02</span>
+          <span class="stage-badge stage-badge--wf">Onboarding</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">First real business save: identity hashes the password and inserts a credentials row in PostgreSQL. Then it returns a session/JWT so the customer is signed in.</p>
+        <div class="stage-write-chip">
+        <span class="op">INSERT</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>customers</code>
+        <em>Persist profile + tier = UNRATED</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>credentials row exists (hashed secret). Client has a token. Login later will SELECT this same table.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="onboarding" data-step="auth-persist" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>services/bff</li><li>services/identity</li><li>PostgreSQL 16</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS · AuthRegisterService</li><li>auth-kit</li><li>PostgreSQL 16</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · credentials</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>POST /v1/auth/register</li><li>POST /v1/auth/login</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/identity</code></td></tr><tr><td><strong>Trigger</strong></td><td>POST /v1/auth/register</td></tr><tr><td><strong>API</strong></td><td><code>POST /v1/customers</code></td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/02_identity.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 02 · Credentials saved</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Call out: “This is the first PostgreSQL INSERT in onboarding.”</li><li>Never store plain passwords — only a hash.</li><li>Login uses the same credentials table (SELECT), register uses INSERT.</li><li>Still no customers profile row — that is Step 04.</li></ul></div>
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>services/bff</strong></td>
+                      <td>BFF already knows the market. It forwards the register or login body to identity.<br><em class="stage-why">Channel never calls identity DB tables itself.</em><br><small class="stage-tip">Point at START BFF.</small></td>
+                      <td><code class="stage-save">Nothing saved yet</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>identity</strong></td>
+                      <td>Identity hashes the password and writes email, name, and hash into PostgreSQL credentials.<br><em class="stage-why">Auth must be durable before we create a customer profile.</em><br><small class="stage-tip">Point at the purple INSERT box — main teaching moment.</small></td>
+                      <td><code class="stage-save">INSERT → PostgreSQL 16 (credentials)</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>JWT / session</strong></td>
+                      <td>A token goes back to apps/web. The customer is signed in for the next screens.<br><em class="stage-why">Later APIs need an authenticated caller.</em><br><small class="stage-tip">Point at END — signed-in state.</small></td>
+                      <td><code class="stage-save">Token on the client — secret never stored plain</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>credentials INSERT</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Secret hashed</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Login uses same table</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/onboarding/register-login/"><small>Previous</small><strong>01 - Register / Login</strong></a>
+        <a href="/docs/workflows/onboarding/control-plane/"><small>Next</small><strong>03 - Load market rules</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

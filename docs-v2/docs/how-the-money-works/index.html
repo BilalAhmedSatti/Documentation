@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How the Money Works</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="how-the-money-works" data-section="how-the-money-works">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">How the Money Works</p>
+        <h1>How the Money Works</h1>
+        <p class="lede">Three surfaces touch money — only one holds the truth. This page follows one domestic send from quote to settlement and names every durable write.</p>
+        
+      <div class="callout vocab-brief">
+        <strong>In brief — the money model</strong>
+        <ul>
+          <li><strong>One SoR.</strong> Service <strong>04 Ledger</strong> owns value. Wallets label products. Payments orchestrate. Channels display.</li>
+          <li><strong>Holds before spends.</strong> Funds are reserved on the ledger before the rail is instructed — not after.</li>
+          <li><strong>Integers only.</strong> Minor units (<code>bigint</code> / <code>long</code>) — never floating-point money.</li>
+          <li><strong>Corrections are reversals.</strong> Append-only journals; mistakes are equal-and-opposite postings, never edits.</li>
+        </ul>
+      </div>
+
+      <h2 id="surfaces">Four surfaces — one truth</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Surface</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Ledger</strong></td>
+              <td>The vault's ledger book — every debit and credit</td>
+              <td><code>jvm/ledger</code> · append-only <code>journals</code> + <code>postings</code> · TigerBeetle in pilot · holds PLACED → CAPTURED | RELEASED</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Wallet</strong></td>
+              <td>What the customer thinks they own — "my PKR wallet"</td>
+              <td><code>services/wallets</code> · product instance + statement · <strong>reads ledger projections</strong> — never authoritative balance column</td>
+            </tr>
+            <tr>
+              <td><strong>Payments</strong></td>
+              <td>The choreographer of a send</td>
+              <td><code>services/payments</code> · <code>transfers</code> row + <code>saga_steps</code> · calls Pricing, Screening, Ledger, Payout ports</td>
+            </tr>
+            <tr>
+              <td><strong>Channel</strong></td>
+              <td>What the customer sees on screen</td>
+              <td><code>apps/web</code> · forms and display · <strong>no durable money truth</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="trap-wallet">The trap — wallet balance vs ledger balance</h2>
+      <div class="trap-box">
+        <div class="table-wrap vocab-table">
+          <table>
+            <thead><tr><th></th><th>Wallet "balance" in the UI</th><th>Ledger balance</th></tr></thead>
+            <tbody>
+              <tr><td>What is it?</td><td>A <strong>product view</strong> composed for display</td><td>The <strong>authoritative</strong> amount after postings and holds</td></tr>
+              <tr><td>Can two services disagree?</td><td>Yes — if you cache wrongly</td><td>No — single SoR by design</td></tr>
+              <tr><td>What reconciliation matches?</td><td>Not the cache — the ledger</td><td>Ledger ↔ payments ↔ rail statement</td></tr>
+              <tr><td>If you merge the concepts?</td><td>Auditor finds duplicate truths</td><td>Cannot unpick after live money moved</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>See <a href="/docs/money-model-correction/">Money Model Correction</a> — share it with anyone drafting "update balance in wallet service".</p>
+      </div>
+
+      <h2 id="saga">One payment, five ledger touchpoints</h2>
+      <p>Retail send-money saga: <strong>Quote → Screen → Hold → Payout → Settle.</strong> Full narrative: <a href="/docs/one-payment-followed/">One Payment, Followed</a>.</p>
+      <div class="wf-embed" data-workflow="fund-transfer" data-view="pipeline"></div>
+
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Step</th><th>What becomes true</th><th>Durable write (purple on diagrams)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>01 Initiate</strong></td><td>Transfer exists; state INITIATED</td><td>PostgreSQL <code>transfers</code> INSERT + saga step 0</td></tr>
+            <tr><td><strong>02 Quote</strong></td><td>Firm price with fee/tax/FX provenance</td><td><code>transfers.quote_id</code> UPDATE · Pricing (10) via REST</td></tr>
+            <tr><td><strong>03 Screen</strong></td><td>CLEAR continues; HOLD waits; timeout ⇒ HOLD</td><td>Screening case INSERT if hit · event <code>screening.case.resolved.v1</code></td></tr>
+            <tr class="trap">
+              <td><strong>04 Hold</strong></td>
+              <td>Money <strong>reserved</strong> — not spent yet</td>
+              <td>Ledger <code>placeHold</code> · hold PLACED · reduces <strong>available</strong> not "balance" semantics in channel</td>
+            </tr>
+            <tr><td><strong>05 Payout</strong></td><td>Rail instructed; status unknown until confirmed</td><td>Payout ref on transfer · adapter call to Raast/Aani/sarie/partner</td></tr>
+            <tr><td><strong>06 Settle</strong></td><td>Saga terminal; customer movement complete</td><td><code>captureHold</code> + balanced journal · <code>payments.transfer.completed.v1</code> outbox</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="hold-settle">Hold vs settle — the second trap</h2>
+      <div class="trap-box">
+        <div class="table-wrap vocab-table">
+          <table>
+            <thead><tr><th></th><th>Hold</th><th>Settle (capture)</th></tr></thead>
+            <tbody>
+              <tr><td>Plain English</td><td>"Ring-fence this amount"</td><td>"This amount is now finally moved"</td></tr>
+              <tr><td>Ledger state</td><td>PLACED — reduces available balance</td><td>CAPTURED — posting lines written</td></tr>
+              <tr><td>Customer experience</td><td>Balance may look unchanged; available drops</td><td>Movement completes; statement shows posting</td></tr>
+              <tr><td>On rail reject</td><td>RELEASED — funds freed</td><td>Never captured — compensation C2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2 id="rules">Rules that never bend</h2>
+      <ul>
+        <li><strong>Idempotency-Key</strong> on every mutation — replay returns the same result.</li>
+        <li><strong>Transactional outbox</strong> — business row + outbox row in one DB transaction; no dual-write to Kafka.</li>
+        <li><strong>FX provenance (ADR-0002)</strong> — rate is input to posting; recorded at quote; not looked up mid-posting.</li>
+        <li><strong>Integer minor units</strong> — paisa, fils, halalas as integers end-to-end.</li>
+      </ul>
+
+      <div class="footer-nav">
+        <a href="/docs/why-digital-banking/"><small>Previous</small><strong>Why Digital Banking Exists</strong></a>
+        <a href="/docs/the-vocabulary/"><small>Next</small><strong>The Vocabulary</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

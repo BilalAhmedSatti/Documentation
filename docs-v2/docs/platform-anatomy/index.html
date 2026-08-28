@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Platform Anatomy</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="platform-anatomy" data-section="platform-anatomy">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Platform Anatomy</p>
+        <h1>Platform Anatomy</h1>
+        <p class="lede">Moving parts named the way engineers name them in the monorepo.</p>
+        
+      <h2 id="apps">Applications</h2>
+      <ul>
+        <li><code>apps/web</code> — customer channel (forms and display; no money truth)</li>
+        <li><code>apps/console</code> — staff console (cases, tenants, overrides with audit)</li>
+      </ul>
+
+      <h2 id="services">Domain services (pilot snapshot)</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Service</th><th>Repo path</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Control plane</td><td><code>services/control-plane</code></td><td><span class="pill part">Partial</span></td></tr>
+          <tr><td>Identity</td><td><code>services/identity</code></td><td><span class="pill part">Partial</span></td></tr>
+          <tr><td>Screening</td><td><code>services/screening</code></td><td><span class="pill part">Partial</span></td></tr>
+          <tr><td>Payments</td><td><code>services/payments</code></td><td><span class="pill part">Partial</span></td></tr>
+          <tr><td>Wallets</td><td><code>services/wallets</code></td><td><span class="pill part">Partial</span></td></tr>
+          <tr><td>BFF</td><td><code>services/bff</code></td><td><span class="pill part">Partial</span></td></tr>
+          <tr><td>Ledger</td><td><code>jvm/ledger</code></td><td><span class="pill part">Partial — TigerBeetle pilot</span></td></tr>
+          <tr><td>Pricing</td><td><code>jvm/pricing</code></td><td><span class="pill part">Partial</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="adapters">Adapters</h2>
+      <p>Market-specific implementations behind ports: <code>adapters/ekyc-nadra</code>, <code>adapters/payout-raast</code>, screening vendor adapters, IdP, messaging. Sandbox mocks ship first; live certs gate go-live.</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

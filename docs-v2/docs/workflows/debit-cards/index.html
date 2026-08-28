@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Debit Cards</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-debit-cards" data-section="customer-journeys" data-wf="debit-cards">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Workflow · Debit Cards</p>
+        <h1>Debit Cards</h1>
+        <p class="lede">Card issuing + auth webhook: tokenised refs only (no PAN). Issue writes Postgres metadata; auth places TigerBeetle hold via jvm/ledger. Timeout ⇒ DECLINE.</p>
+        
+        <p><span class="pill ok">Ready</span> workflow pack in this documentation set.</p>
+<div class="callout"><strong>Pipeline outcome</strong> ACTIVE card; auth APPROVE/DECLINE with hold or release.</div>
+<h2 id="overview-story">Overview</h2><p>Issuance in Services; token metadata in Postgres; auth hold in TigerBeetle.</p>
+<p><strong>Design companion:</strong> <code>../Docs_Portal/documents/02_Design_Companions/07_cards.design.md</code> (engineering library in <code>Docs_Portal</code>).</p>
+        <div class="wf-embed" data-workflow="debit-cards" data-view="overview"></div>
+        <h2 id="stages">Stages</h2>
+        <p>Pick a stage below or use the sidebar under the matching journey section. Each stage page includes actors, APIs, data writes, walkthrough, and acceptance checklist.</p>
+        <div class="doc-wf-stage-links">
+      <a class="doc-wf-stage-link accent-teal" href="/docs/workflows/debit-cards/dc-request/">
+        <span class="n">01</span>
+        <span class="t"><strong>Request card</strong><em>Customer requests virtual/physical debit card.</em></span>
+        <span class="c">Open →</span>
+      </a>
+      <a class="doc-wf-stage-link accent-blue" href="/docs/workflows/debit-cards/dc-issue/">
+        <span class="n">02</span>
+        <span class="t"><strong>Issue tokenised card</strong><em>Processor issues card; platform stores tokenisedRef only.</em></span>
+        <span class="c">Open →</span>
+      </a>
+      <a class="doc-wf-stage-link accent-amber" href="/docs/workflows/debit-cards/dc-activate/">
+        <span class="n">03</span>
+        <span class="t"><strong>Activate card</strong><em>Flip status ACTIVE; warm auth cache.</em></span>
+        <span class="c">Open →</span>
+      </a>
+      <a class="doc-wf-stage-link accent-rose" href="/docs/workflows/debit-cards/dc-auth/">
+        <span class="n">04</span>
+        <span class="t"><strong>Authorize (webhook)</strong><em>Processor auth webhook: cache lookup + placeHold; timeout ⇒ DECLINE.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

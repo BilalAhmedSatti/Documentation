@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Technology Choices</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="technology-choices" data-section="technology-choices">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Technology Choices</p>
+        <h1>Technology Choices</h1>
+        <p class="lede">NestJS/TS by default; Java only for Ledger, Pricing, FX.</p>
+        
+      <h2 id="split">The split</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Runtime</th><th>Services</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>NestJS 10 / TypeScript strict</td><td>Identity, Screening, Payments, Wallets, BFF, Control plane, …</td><td>One toolchain for most squads; fast iteration</td></tr>
+          <tr><td>Java 21 + Spring Boot 3.3</td><td>Ledger (04), Pricing (10), FX lib (17)</td><td>Exact money arithmetic; ArchUnit; posting hot path</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="money">Money guardrails</h2>
+      <ul>
+        <li>TS: <code>@platform/money</code> with <code>bigint</code>; ESLint bans native <code>number</code> for amounts.</li>
+        <li>Java: <code>Money(long amountMinor, Currency)</code> — no float paths.</li>
+      </ul>
+
+      <h2 id="infra">Data &amp; messaging</h2>
+      <p>PostgreSQL 16 per service (tenant-scoped). Kafka + Avro schemas. Redis for balance read-model cache. TigerBeetle in ledger pilot path.</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

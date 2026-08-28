@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The End-to-End Map</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="end-to-end-map" data-section="end-to-end-map">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">The End-to-End Map</p>
+        <h1>The End-to-End Map</h1>
+        <p class="lede">From channel click to rail and back to the Ledger — plus every workflow.</p>
+        
+      <h2 id="map">Happy-path map</h2>
+      <ol>
+        <li>Customer acts in <code>apps/web</code> → BFF authenticates and resolves tenant</li>
+        <li>Domain services enforce tenant + policy (tier, limits, entitlements)</li>
+        <li>Screening gates onboarding and every payment</li>
+        <li>Pricing returns firm quote with tax/FX provenance</li>
+        <li>Ledger places hold — funds reserved, not spent</li>
+        <li>Payout adapter instructs rail (Raast / Aani / sarie / x-border)</li>
+        <li>Ledger captures hold and posts settlement journal</li>
+        <li>Outbox events feed notification, reporting, reconciliation</li>
+        <li>Ops reconcile ledger ↔ payments ↔ rail statements</li>
+      </ol>
+
+      <h2 id="workflows">All workflows</h2>
+      <div class="wf-embed" data-view="gallery"></div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

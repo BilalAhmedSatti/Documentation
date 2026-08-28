@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Design</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="data-design" data-section="data-design">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Data Design</p>
+        <h1>Data Design</h1>
+        <p class="lede">Tenant-scoped rows, outbox events, integer money, residency.</p>
+        
+      <h2 id="invariants">Invariants</h2>
+      <ul>
+        <li><code>tenant_id</code> on every regulated table — even under silo isolation (defence in depth).</li>
+        <li>Transactional outbox: business row + outbox row in one DB transaction; Debezium relay to Kafka.</li>
+        <li>Minor-unit integers for all money columns (<code>amount_minor bigint</code>).</li>
+        <li>PII in object storage with pointer in DB — not inline in events.</li>
+        <li>KSA residency: <code>home_region = sa</code> routes to in-Kingdom cell only.</li>
+      </ul>
+
+      <h2 id="events">Event envelope</h2>
+      <p>Topic: <code>‹capability›.‹entity›.‹event›.v‹n›</code>. Envelope fields: <code>event_id</code>, <code>event_type</code>, <code>event_version</code>, <code>tenant_id</code>, <code>occurred_at</code>, <code>correlation_id</code>, <code>causation_id</code>, <code>payload</code>. Consumers idempotent on <code>event_id</code>.</p>
+
+      <h2 id="isolation">Isolation testing</h2>
+      <p>Cross-tenant read/write attempts must fail in CI. Isolation bugs are release-blocking P1.</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

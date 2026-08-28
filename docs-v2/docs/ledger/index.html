@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ledger</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="ledger" data-section="ledger">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Ledger</p>
+        <h1>Ledger</h1>
+        <p class="lede">Service 04 — double-entry system of record for value.</p>
+        
+      <h2 id="rules">Rules</h2>
+      <ul>
+        <li><strong>Nothing else may hold an authoritative balance.</strong></li>
+        <li>Append-only journals; balances are projections from postings.</li>
+        <li>Holds: PLACED → CAPTURED | RELEASED (exactly one terminal outcome).</li>
+        <li>Integer minor units; Java <code>Money(long amountMinor, Currency)</code> on the JVM island.</li>
+        <li>FX rate is an <em>input</em> to a posting — never looked up mid-posting (ADR-0002).</li>
+      </ul>
+
+      <h2 id="holds">Holds in the payment saga</h2>
+      <p>Payments calls <code>placeHold</code> before payout, <code>captureHold</code> on settle, or <code>releaseHold</code> on compensation. See <a href="/docs/workflows/fund-transfer/ft-hold/">Hold stage</a> and <a href="/docs/workflows/fund-transfer/ft-settle/">Settle stage</a>.</p>
+      <div class="wf-embed" data-workflow="fund-transfer" data-view="pipeline"></div>
+
+      <h2 id="events">Events</h2>
+      <p><code>ledger.journal.posted.v1</code>, <code>ledger.hold.placed.v1</code>, <code>ledger.hold.captured.v1</code>, <code>ledger.hold.released.v1</code> — all via transactional outbox.</p>
+
+      <div class="callout"><strong>Money model</strong> If anyone designs “update balance in wallet service”, send them to <a href="/docs/money-model-correction/">Money Model Correction</a>.</div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 - Open case</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-screening-aml-sa-case" data-section="identity-kyc-aml" data-wf="screening-aml">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Screening &amp; AML · Stage 03</p>
+        <h1>03 - Open case</h1>
+        <p class="lede">Hits open Case aggregate in PostgreSQL.</p>
+        
+          
+    <div class="stage-page stage-page--amber">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">03</span>
+          <span class="stage-badge stage-badge--wf">Screening &amp; AML</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Status OPEN → INVESTIGATING. HIGH severity needs maker-checker. Open on hit Decision gate; INSERT case on hit.</p>
+        <div class="stage-write-chip">
+        <span class="op">INSERT</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>cases</code>
+        
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Durable case for investigation.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="screening-aml" data-step="sa-case" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>screening</li><li>analyst</li><li>PostgreSQL</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS screening</li><li>Case aggregate</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · cases</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>CaseRepository.save</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/screening</code></td></tr><tr><td><strong>Trigger</strong></td><td>On hit</td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/03_screening_aml.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 03 · Case write</h2>
+        
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>screening</strong></td>
+                      <td>Evaluate hits</td>
+                      <td><code class="stage-save">Human / channel entry</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>Hit?</strong></td>
+                      <td>Clear / case</td>
+                      <td><code class="stage-save">In-flight processing</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>cases</strong></td>
+                      <td>INSERT on PostgreSQL 16 · cases<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
+                      <td><code class="stage-save">INSERT → PostgreSQL 16 · cases</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>OPEN</strong></td>
+                      <td>Queue analyst</td>
+                      <td><code class="stage-save">Terminal state</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+    <h3 id="flow">Flow nodes</h3>
+    <div class="table-wrap stage-flow-table">
+      <table>
+        <thead><tr><th>Node</th><th>Type</th><th>Detail</th><th>Durable?</th></tr></thead>
+        <tbody>
+          <tr>
+                <td><strong>screening</strong></td>
+                <td><code>start</code></td>
+                <td>Evaluate hits</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>Hit?</strong></td>
+                <td><code>decision</code></td>
+                <td>Clear / case</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>cases</strong></td>
+                <td><code>db</code></td>
+                <td>INSERT PostgreSQL 16 cases</td>
+                <td><span class="pill ok">INSERT</span></td>
+              </tr><tr>
+                <td><strong>OPEN</strong></td>
+                <td><code>end</code></td>
+                <td>Queue analyst</td>
+                <td><span class="pill settled">—</span></td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Case durable</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Severity set</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/screening-aml/sa-provider/"><small>Previous</small><strong>02 - Provider screen</strong></a>
+        <a href="/docs/workflows/screening-aml/sa-dispose/"><small>Next</small><strong>04 - Disposition</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

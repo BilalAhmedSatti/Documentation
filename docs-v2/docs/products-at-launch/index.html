@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Products at Launch</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="products-at-launch" data-section="products-at-launch">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Products at Launch</p>
+        <h1>Products at Launch</h1>
+        <p class="lede">What ships for Pakistan first — and what waits.</p>
+        
+      <h2 id="retail">Retail (Pakistan pilot path)</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Product</th><th>Description</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Retail wallet</td><td>PKR wallet product composing ledger balance</td><td><span class="pill part">Pilot path</span></td></tr>
+          <tr><td>Domestic send</td><td>PK→PK via Raast adapter (when certified)</td><td><span class="pill part">Specified</span></td></tr>
+          <tr><td>Bill payments</td><td>Biller catalogue, confirm, debit saga</td><td><span class="pill part">Specified</span></td></tr>
+          <tr><td>Remittance corridors</td><td>UAE→PK, KSA→PK (primary), reverse</td><td><span class="pill part">Blueprint — AE/SA later</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="deferred">Deferred by programme plan</h2>
+      <ul>
+        <li><strong>Debit card issuing</strong> — workflow specified; product deferred until licensed need.</li>
+        <li><strong>Core-banking host adapter</strong> — only when a tenant requires CBS integration.</li>
+        <li><strong>Corporate / KYB at launch</strong> — open question; see <a href="/docs/what-we-do-not-know/">What We Do Not Know</a>.</li>
+      </ul>
+
+      <h2 id="workflows">Related workflows</h2>
+      <div class="card-grid">
+        <a class="card" href="/docs/workflows/onboarding/register-login/"><strong>Onboarding</strong><span>8 stages — register through wallet + ledger</span></a>
+        <a class="card" href="/docs/workflows/fund-transfer/ft-initiate/"><strong>Fund Transfer</strong><span>5 stages — quote through settle</span></a>
+        <a class="card" href="/docs/workflows/bill-payments/bp-select/"><strong>Bill Payments</strong><span>4 stages — select through debit</span></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

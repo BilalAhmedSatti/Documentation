@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>04 - Create customer record</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-onboarding-customer-register" data-section="customer-journeys" data-wf="onboarding">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Onboarding · Stage 04</p>
+        <h1>04 - Create customer record</h1>
+        <p class="lede">POST /v1/customers inserts the customer SoR row and emits an event.</p>
+        
+          
+    <div class="stage-page stage-page--rose">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">04</span>
+          <span class="stage-badge stage-badge--wf">Onboarding</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Now the person becomes a Customer in our system of record: insert customers + history, then publish registered.v1 so other services learn a new customer exists.</p>
+        <div class="stage-write-chip">
+        <span class="op">UPDATE</span>
+        <span class="store">PostgreSQL + Redpanda</span>
+        <code>risk_tier</code>
+        <em>Persist tier and notify consumers</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>CustomerId exists, tier = UNRATED, event on Redpanda.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="onboarding" data-step="customer-register" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>apps/web</li><li>services/identity</li><li>PostgreSQL</li><li>Redpanda</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS · RegisterCustomerService</li><li>Outbox → Redpanda</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · customers</li><li>PostgreSQL · customer_history</li><li>Redpanda · registered.v1</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>POST /v1/customers → 201 customerId</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/identity</code></td></tr><tr><td><strong>Trigger</strong></td><td>CR1 · BANK-001</td></tr><tr><td><strong>API</strong></td><td><code>RiskTier engine</code></td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/02_identity.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 04 · Customer + event writes</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>CustomerId is the key forever — quote it when explaining later steps.</li><li>UNRATED means not risk-scored yet — money limits come after tier.</li><li>Outbox pattern: write DB first, then publish — no lost events.</li><li>Two Postgres writes + one bus publish in this step.</li></ul></div>
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>apps/web</strong></td>
+                      <td>Signed-in customer submits personal profile details.<br><em class="stage-why">Profile data is separate from login credentials.</em><br><small class="stage-tip">Point at START web.</small></td>
+                      <td><code class="stage-save">Nothing in the channel</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>identity</strong></td>
+                      <td>RegisterCustomer creates the customer row at tier UNRATED and appends history.<br><em class="stage-why">Canonical CustomerId for KYC, screening, and wallets.</em><br><small class="stage-tip">Point at both purple INSERTs under identity.</small></td>
+                      <td><code class="stage-save">INSERT customers + INSERT customer_history</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>Outbox → Redpanda</strong></td>
+                      <td>We enqueue registered.v1 and publish to Redpanda so downstream services can react.<br><em class="stage-why">Other services should not poll the customers table.</em><br><small class="stage-tip">Point at purple PUBLISH — event bus.</small></td>
+                      <td><code class="stage-save">PUBLISH → Redpanda (identity.customer.registered.v1)</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>CustomerId returned</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>tier = UNRATED</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Outbox event</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/onboarding/control-plane/"><small>Previous</small><strong>03 - Load market rules</strong></a>
+        <a href="/docs/workflows/onboarding/screening-save/"><small>Next</small><strong>05 - AML screen persisted</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

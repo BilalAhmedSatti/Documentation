@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Build Backlog</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="build-backlog" data-section="build-backlog">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Build Backlog</p>
+        <h1>Build Backlog</h1>
+        <p class="lede">311 traced tasks from blueprint set v3.1 (17 Aug 2026 snapshot).</p>
+        
+      <div class="stats">
+        <div class="stat"><b>31</b><span>Done</span></div>
+        <div class="stat"><b>63</b><span>Partial</span></div>
+        <div class="stat"><b>214</b><span>Not started</span></div>
+        <div class="stat"><b>311</b><span>Total traced</span></div>
+      </div>
+
+      <h2 id="gaps">Known engineering gaps</h2>
+      <ul>
+        <li>Isolation router and KSA residency not fully enforced in pilot</li>
+        <li>Most SPI adapters mock or absent — live certs block PK go-live</li>
+        <li>Compliance reporting and reconciliation services not built</li>
+        <li>Customer UI is a narrow on-us demo, not full product</li>
+        <li>CI / Pact / isolation suites incomplete vs blueprint bar</li>
+      </ul>
+
+      <h2 id="bars">Two bars</h2>
+      <p><strong>Blueprint bar:</strong> live providers, residency, reporting, recon, CI — required for regulated go-live.</p>
+      <p><strong>Pilot bar:</strong> login-to-money-movement on mocks — partly true today.</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

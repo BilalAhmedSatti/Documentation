@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>01 - Register / Login</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-onboarding-register-login" data-section="customer-journeys" data-wf="onboarding">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Onboarding · Stage 01</p>
+        <h1>01 - Register / Login</h1>
+        <p class="lede">Customer opens apps/web and chooses Register or Login.</p>
+        
+          
+    <div class="stage-page stage-page--teal">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">01</span>
+          <span class="stage-badge stage-badge--wf">Onboarding</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">This is the front door of the bank. The customer never talks to a database. They use the web app; the BFF is the gateway; Redis may slow down attackers; then we hand the request to identity.</p>
+        <div class="stage-write-chip">
+        <span class="op">INSERT</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>credentials</code>
+        <em>Store hashed secret for future logins</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>We have a tenant-scoped auth request ready for identity. No customer profile row exists yet — that comes later.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="onboarding" data-step="register-login" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>Customer</li><li>apps/web</li><li>services/bff</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>React · apps/web</li><li>NestJS · services/bff</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>Redis rate-limit keys (optional)</li><li>No customers INSERT yet</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>POST /auth/register | /auth/login</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>apps/web</code></td></tr><tr><td><strong>Trigger</strong></td><td>Channel entry</td></tr><tr><td><strong>API</strong></td><td><code>POST /auth/register|login</code></td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/02_identity.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 01 · Channel into the platform</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Start here: “Nobody reaches PostgreSQL from the browser.”</li><li>Name the three actors: Customer → apps/web → BFF.</li><li>Redis here is only rate-limiting, not customer data.</li><li>If asked “is the user registered yet?” — No. Credentials are saved in the next step.</li></ul></div>
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>Customer</strong></td>
+                      <td>A real person opens the bank app and taps Register or Login. That is the only human action in this step.<br><em class="stage-why">Every onboarding journey starts with a channel action, not a database write.</em><br><small class="stage-tip">Point at START Customer — human entry.</small></td>
+                      <td><code class="stage-save">Nothing saved yet</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>apps/web</strong></td>
+                      <td>The React app collects email and password, validates the form, and sends HTTPS to the BFF. The browser never opens a DB connection.<br><em class="stage-why">Keeps secrets and routing off the client; UI is only a form.</em><br><small class="stage-tip">Point at apps/web — UI only.</small></td>
+                      <td><code class="stage-save">Nothing durable in the browser</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>services/bff</strong></td>
+                      <td>The BFF figures out which bank/market this request belongs to, can bump a Redis counter to block brute-force, then forwards auth to identity.<br><em class="stage-why">One gateway for all channel calls; multi-market rules start here.</em><br><small class="stage-tip">Point down the purple arrow into Redis if you mention throttling.</small></td>
+                      <td><code class="stage-save">Optional Redis INCR on rate-limit keys (throttle only — not customer data)</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>Hand-off</strong></td>
+                      <td>We stop here on purpose. The next slide is where identity hashes the password and inserts the credentials row in PostgreSQL.<br><em class="stage-why">Separates “enter the platform” from “save credentials”.</em><br><small class="stage-tip">Point at END — teaser for Step 02.</small></td>
+                      <td><code class="stage-save">No customers INSERT in this step</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Register + Login available</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Tenant at BFF</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>No customers row yet</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/onboarding/"><small>Overview</small><strong>Onboarding</strong></a>
+        <a href="/docs/workflows/onboarding/auth-persist/"><small>Next</small><strong>02 - Auth credentials saved</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

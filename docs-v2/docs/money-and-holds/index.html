@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Money &amp; Holds</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="money-and-holds" data-section="money-and-holds">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Money &amp; Holds</p>
+        <h1>Money &amp; Holds</h1>
+        <p class="lede">Reservation versus settlement.</p>
+        
+      <h2 id="hold">Hold lifecycle</h2>
+      <p><strong>PLACED</strong> — funds reserved when screening clears and before payout.<br>
+      <strong>CAPTURED</strong> — hold converted to final postings on settle.<br>
+      <strong>RELEASED</strong> — hold released on compensation (rail reject, cancel).</p>
+      <p>Stages: <a href="/docs/workflows/fund-transfer/ft-hold/">Hold</a> · <a href="/docs/workflows/fund-transfer/ft-settle/">Settle</a></p>
+      <div class="wf-embed" data-workflow="fund-transfer" data-view="pipeline"></div>
+
+      <h2 id="card">Card authorisation (deferred product)</h2>
+      <p>When cards activate: authorisation hold pattern mirrors payment holds. <a href="/docs/workflows/debit-cards/dc-auth/">Debit Cards · Authorize</a></p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

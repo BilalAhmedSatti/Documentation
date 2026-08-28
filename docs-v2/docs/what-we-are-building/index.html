@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>What We Are Building</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="what-we-are-building" data-section="what-we-are-building">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">What We Are Building</p>
+        <h1>What We Are Building</h1>
+        <p class="lede">The machine behind digital banking and remittance — identity through rails.</p>
+        
+      <h2 id="machine">The machine, not the shop window</h2>
+      <p>We are building <strong>the machine a digital bank and remittance operator runs on</strong> — not the marketing site. Scope is <strong>Digital Banking &amp; Remittance</strong> across Pakistan, UAE and Saudi Arabia (Blueprint v3.1 banking track).</p>
+      <p>That means: identity and KYC, sanctions screening, the double-entry ledger, the send-money saga, wallets, pricing, FX provenance, reconciliation, regulatory reporting, and the customer app and staff console. Market providers (NADRA, Raast, and later UAE/KSA equivalents) plug in through <strong>adapters</strong> — the banking domain does not reimplement rails inside every service.</p>
+
+      <h2 id="services">Twelve domain services + adapters</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Component</th><th>Runtime</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>02</td><td>Identity, KYC/KYB &amp; Onboarding</td><td>NestJS/TS</td><td>Customer SoR, verification, risk tier</td></tr>
+          <tr><td>03</td><td>Screening &amp; AML</td><td>NestJS/TS</td><td>Compliance gate — onboarding and every payment</td></tr>
+          <tr><td>04</td><td><strong>Ledger</strong></td><td>Java 21</td><td>Double-entry SoR for value; holds &amp; postings</td></tr>
+          <tr><td>05</td><td>Payments &amp; Remittance</td><td>NestJS/TS</td><td>Send-money saga orchestration</td></tr>
+          <tr><td>06</td><td>Wallets &amp; Accounts</td><td>NestJS/TS</td><td>Product shells composing ledger balances</td></tr>
+          <tr><td>07</td><td>Card Issuing</td><td>NestJS/TS</td><td><span class="pill settled">Deferred</span> until licensed need</td></tr>
+          <tr><td>08</td><td>Compliance Reporting</td><td>NestJS/TS</td><td>STR/SAR and market returns</td></tr>
+          <tr><td>09</td><td>Reconciliation</td><td>NestJS/TS</td><td>Ledger ↔ payments ↔ rail statements</td></tr>
+          <tr><td>10</td><td>Pricing, Billing &amp; Metering</td><td>Java 21</td><td>Quotes, fees, FX/tax packs</td></tr>
+          <tr><td>11</td><td>Developer Platform / BFF</td><td>NestJS/TS</td><td>API gateway, webhooks, partner surface</td></tr>
+          <tr><td>12</td><td>Control Plane</td><td>NestJS/TS</td><td>Tenant registry, config, entitlements</td></tr>
+          <tr><td>13</td><td>Notification</td><td>NestJS/TS</td><td>Customer and ops messaging</td></tr>
+          <tr><td>15–22</td><td>Market adapters</td><td>TS (+ FX lib)</td><td>eKYC, screening, payout rails, IdP, messaging</td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="launch">Launch posture (Pakistan first)</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Capability</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Retail wallet + domestic send</td><td><span class="pill part">Pilot path — login-to-money on mocks</span></td></tr>
+          <tr><td>Bill payments</td><td><span class="pill part">Specified in blueprint</span></td></tr>
+          <tr><td>Live NADRA / Raast</td><td><span class="pill settled">Not certified — blocks PK go-live</span></td></tr>
+          <tr><td>Cards</td><td><span class="pill settled">Deferred</span></td></tr>
+          <tr><td>Core-banking host adapter</td><td><span class="pill settled">Deferred</span></td></tr>
+        </tbody>
+      </table></div>
+
+      <h2 id="topology">Topology</h2>
+      <p><strong>Global control plane</strong> (tenant registry, config, billing, OIDC) holds no regulated customer data. <strong>Regional data planes</strong> (PK → AE → SA) run the full service set in cells. KSA data stays in-Kingdom when residency requires it.</p>
+      <p>See <a href="/docs/system-architecture/">System Architecture</a> for hexagonal boundaries and <a href="/docs/markets-tenancy/">Markets &amp; Tenancy</a> for rollout sequence.</p>
+
+      <h2 id="journeys">How to read the journeys</h2>
+      <p>Workflow stages with diagrams live in the sidebar under <strong>Journeys</strong> and <strong>Capability guides</strong>. Start with:</p>
+      <ul>
+        <li><a href="/docs/workflows/onboarding/register-login/">Onboarding · Register / Login</a></li>
+        <li><a href="/docs/one-payment-followed/">One Payment, Followed</a> — the send-money saga in plain language</li>
+        <li><a href="/docs/workflows/fund-transfer/ft-initiate/">Fund Transfer · Initiate</a></li>
+      </ul>
+
+      <div class="callout warn"><strong>Implementation reality (17 Aug 2026)</strong> 311 traced tasks — 31 done, 63 partial, 214 not started. Blueprint “design stage” and pilot “login-to-money” are both true; they answer different questions. Details: <a href="/docs/build-backlog/">Build Backlog</a>.</div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 - Activate card</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-debit-cards-dc-activate" data-section="customer-journeys" data-wf="debit-cards">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Debit Cards · Stage 03</p>
+        <h1>03 - Activate card</h1>
+        <p class="lede">Flip status ACTIVE; warm auth cache.</p>
+        
+          
+    <div class="stage-page stage-page--amber">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">03</span>
+          <span class="stage-badge stage-badge--wf">Debit Cards</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Spend controls cached at edge; invalidated on change events. Status ACTIVE UPDATE status; optional cache warm.</p>
+        <div class="stage-write-chip">
+        <span class="op">UPDATE</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>cards.status</code>
+        
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Card ACTIVE for authorizations.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="debit-cards" data-step="dc-activate" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>cards</li><li>PostgreSQL</li><li>Redis cache</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS cards</li><li>Edge cache</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · cards.status</li><li>Cache · controls</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>POST /v1/cards/{id}/activate</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/cards</code></td></tr><tr><td><strong>Trigger</strong></td><td>Status ACTIVE</td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/07_cards.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 03 · Activate write</h2>
+        
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>cards</strong></td>
+                      <td>Activate</td>
+                      <td><code class="stage-save">Human / channel entry</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>status = ACTIVE</strong></td>
+                      <td>UPDATE on PostgreSQL 16 · status = ACTIVE<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
+                      <td><code class="stage-save">UPDATE → PostgreSQL 16 · status = ACTIVE</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>controls cache</strong></td>
+                      <td>SET on Redis / edge · controls cache<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
+                      <td><code class="stage-save">SET → Redis / edge · controls cache</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>ACTIVE</strong></td>
+                      <td>Auth ready</td>
+                      <td><code class="stage-save">Terminal state</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+    <h3 id="flow">Flow nodes</h3>
+    <div class="table-wrap stage-flow-table">
+      <table>
+        <thead><tr><th>Node</th><th>Type</th><th>Detail</th><th>Durable?</th></tr></thead>
+        <tbody>
+          <tr>
+                <td><strong>cards</strong></td>
+                <td><code>start</code></td>
+                <td>Activate</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>status = ACTIVE</strong></td>
+                <td><code>db</code></td>
+                <td>UPDATE PostgreSQL 16 status = ACTIVE</td>
+                <td><span class="pill ok">UPDATE</span></td>
+              </tr><tr>
+                <td><strong>controls cache</strong></td>
+                <td><code>db</code></td>
+                <td>SET Redis / edge controls cache</td>
+                <td><span class="pill ok">SET</span></td>
+              </tr><tr>
+                <td><strong>ACTIVE</strong></td>
+                <td><code>end</code></td>
+                <td>Auth ready</td>
+                <td><span class="pill settled">—</span></td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Cache warm</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Controls versioned</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/debit-cards/dc-issue/"><small>Previous</small><strong>02 - Issue tokenised card</strong></a>
+        <a href="/docs/workflows/debit-cards/dc-auth/"><small>Next</small><strong>04 - Authorize (webhook)</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pricing &amp; Quotes</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="pricing-quotes" data-section="pricing-quotes">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Pricing &amp; Quotes</p>
+        <h1>Pricing &amp; Quotes</h1>
+        <p class="lede">Deterministic quotes with tax and FX provenance.</p>
+        
+      <h2 id="quote">What a quote contains</h2>
+      <p>Firm price for a corridor and amount: fees, tax components, FX rate with provenance (ADR-0002), expiry, and idempotency key linkage. Pricing runs on the JVM island (service 10).</p>
+      <p>First saga step: <a href="/docs/workflows/fund-transfer/ft-quote/">Fund Transfer · Quote</a>.</p>
+      <div class="wf-embed" data-workflow="fund-transfer" data-view="pipeline"></div>
+      <div class="callout warn"><strong>Tax packs</strong> Fail-closed behaviour for quotes needs Finance/Compliance sign-off — see <a href="/docs/what-we-do-not-know/">What We Do Not Know</a>.</div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

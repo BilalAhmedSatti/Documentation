@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Identity, KYC &amp; AML</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="identity-kyc-aml" data-section="identity-kyc-aml" data-wf="screening-aml">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Identity, KYC &amp; AML</p>
+        <h1>Identity, KYC &amp; AML</h1>
+        <p class="lede">Services 02 and 03 — who the customer is, and whether they may proceed.</p>
+        
+      <h2 id="identity">Identity &amp; onboarding (service 02)</h2>
+      <p>System of record for customers and businesses and their verification state. Orchestrates eKYC adapters; emits risk tier consumed by Screening, Wallets, and Payments.</p>
+      <ul>
+        <li><strong>Risk tiers:</strong> UNRATED → LOW | MEDIUM | HIGH after verification + screening signals.</li>
+        <li><strong>Launch providers:</strong> NADRA CNIC (PK), Emirates ID/UAE Pass (AE), Absher/Yakeen (SA).</li>
+        <li><strong>Fail-safe:</strong> provider timeout ⇒ <code>MANUAL_REVIEW</code> — never auto-approve.</li>
+        <li><strong>Events:</strong> <code>identity.customer.registered.v1</code>, <code>identity.verification.completed.v1</code>, <code>identity.risk_tier.changed.v1</code>.</li>
+      </ul>
+      <p>Walk the stages: <a href="/docs/workflows/onboarding/register-login/">Onboarding · Register / Login</a> through <a href="/docs/workflows/onboarding/wallet-ledger/">Wallet + Ledger</a>.</p>
+      <div class="wf-embed" data-workflow="onboarding" data-view="overview"></div>
+
+      <h2 id="aml">Screening &amp; AML (service 03)</h2>
+      <p>Compliance gate for <strong>onboarding and every money movement</strong>. Real-time screen target p99 &lt; 700 ms excluding provider latency.</p>
+      <ul>
+        <li><strong>Lists:</strong> UN Consolidated, OFAC SDN, plus domestic (NACTA, UAE Local Terrorist List, KSA designated persons).</li>
+        <li><strong>Dispositions:</strong> CLEAR continues; HOLD queues for review; REJECT stops the journey.</li>
+        <li><strong>Fail closed:</strong> provider failure, timeout, or circuit-open ⇒ HOLD — never pass silently.</li>
+        <li><strong>HIGH cases:</strong> maker-checker required before disposition.</li>
+      </ul>
+      <p>Stages in the sidebar below, or start at <a href="/docs/workflows/screening-aml/sa-request/">Screening · Request</a>.</p>
+      <div class="wf-embed" data-workflow="screening-aml" data-view="overview"></div>
+
+      <h2 id="sequence">Onboarding sequence (happy path)</h2>
+      <ol>
+        <li>Client registers → Identity persists customer (tier = UNRATED)</li>
+        <li>Screening runs onboarding-scope check</li>
+        <li>Client starts verification → eKYC adapter (NADRA / UAE Pass / Yakeen)</li>
+        <li>Identity recomputes risk tier from verification + screening + geography</li>
+        <li>Wallets + Ledger accounts opened for approved tier</li>
+      </ol>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

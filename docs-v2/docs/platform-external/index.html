@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Platform &amp; External</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="platform-external" data-section="platform-external" data-wf="market-adapters">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Platform &amp; External</p>
+        <h1>Platform &amp; External</h1>
+        <p class="lede">Where the bank stops and the market provider begins — hexagonal ports, certified adapters, and fail-closed behaviour when the outside world is slow or down.</p>
+        
+        
+      <div class="journey-hero journey-hero--platform">
+        <div class="journey-hero-inner">
+          <p class="journey-hero-kicker">Journey</p>
+          <h2 class="journey-hero-title">Platform boundary &amp; market adapters</h2>
+          <p class="journey-hero-sub">Domain services call ports. Adapters translate to NADRA, Raast, screening vendors, IdP, tax, and messaging. Certification calendars can dominate Pakistan go-live.</p>
+        </div>
+        <div class="journey-stats"><div class="journey-stat"><b>5</b><span>adapter stages — port to saga resume</span></div><div class="journey-stat"><b>6+</b><span>launch adapters — PK first</span></div><div class="journey-stat"><b>0</b><span>vendor SDKs in domain/ — forbidden</span></div></div>
+      </div>
+
+        <div class="callout vocab-brief">
+          <strong>In brief — platform &amp; external</strong>
+          <ul>
+            <li><strong>Hexagonal rule:</strong> <code>domain/</code> and <code>application/</code> never import provider SDKs.</li>
+            <li><strong>Market pack</strong> selects which adapter implementation binds to each port per tenant.</li>
+            <li><strong>Fail closed:</strong> provider timeout on compliance paths ⇒ HOLD or MANUAL_REVIEW — never silent CLEAR.</li>
+          </ul>
+        </div>
+
+        <h2 id="boundary">The boundary in one picture</h2>
+        <div class="journey-boundary-diagram">
+          <div class="journey-boundary-col journey-boundary-col--bank">
+            <span class="journey-boundary-label">Inside the bank</span>
+            <ul>
+              <li>Domain services (02–13)</li>
+              <li>Ports (stable interfaces)</li>
+              <li>Ledger, screening decisions</li>
+            </ul>
+          </div>
+          <div class="journey-boundary-mid">
+            <span>Port</span>
+            <span class="journey-boundary-arrow">→</span>
+            <span>Adapter</span>
+          </div>
+          <div class="journey-boundary-col journey-boundary-col--ext">
+            <span class="journey-boundary-label">Outside the bank</span>
+            <ul>
+              <li>NADRA · Raast · lists vendor</li>
+              <li>OIDC · tax · messaging</li>
+              <li>Partner x-border APIs</li>
+            </ul>
+          </div>
+        </div>
+
+        
+      <section class="journey-panel journey-panel--violet" id="workflow">
+        <div class="journey-panel-head">
+          <h2>Adapter invocation workflow</h2>
+          <p>Five stages: domain invokes port → translate via market pack → HTTPS to provider → normalise to CLEAR/HOLD/REJECT → outbox event resumes saga.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/market-adapters/ma-port/">Start at Port invocation →</a>
+        </div>
+        <div class="wf-embed" data-workflow="market-adapters" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/market-adapters/ma-port/">
+        <span class="n">01</span>
+        <span class="t"><strong>Port invocation</strong><em>Identity, payments, or screening calls a port — never the provider directly.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/market-adapters/ma-translate/">
+        <span class="n">02</span>
+        <span class="t"><strong>Translate payload</strong><em>Map canonical domain request to provider format.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/market-adapters/ma-provider/">
+        <span class="n">03</span>
+        <span class="t"><strong>Provider request</strong><em>HTTPS call to live or simulated provider.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/market-adapters/ma-normalise/">
+        <span class="n">04</span>
+        <span class="t"><strong>Normalise &amp; persist</strong><em>Map provider codes to CLEAR / HOLD / REJECT.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-violet" href="/docs/workflows/market-adapters/ma-resume/">
+        <span class="n">05</span>
+        <span class="t"><strong>Resume domain saga</strong><em>Publish adapter.result.v1; onboarding or payment saga continues.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        <h2 id="adapters">Launch adapters (Pakistan)</h2>
+        <div class="table-wrap vocab-table">
+          <table>
+            <thead><tr><th>#</th><th>Adapter</th><th>Provider</th><th>Port consumer</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>16</td><td>eKYC</td><td>NADRA CNIC</td><td>Identity onboarding</td><td><span class="pill block">Not certified</span></td></tr>
+              <tr><td>15</td><td>Screening</td><td>Lists vendor + NACTA</td><td>Screening 03 · every payment</td><td><span class="pill part">Mock in pilot</span></td></tr>
+              <tr><td>19</td><td>Payout rail</td><td>Raast</td><td>Payments saga payout step</td><td><span class="pill block">Not certified</span></td></tr>
+              <tr><td>22</td><td>IdP</td><td>OIDC provider</td><td>BFF auth</td><td><span class="pill block">Not started</span></td></tr>
+              <tr><td>25</td><td>Tax</td><td>Tax authority</td><td>Pricing quotes</td><td><span class="pill block">Not started</span></td></tr>
+              <tr><td>21</td><td>Notification</td><td>Messaging provider</td><td>Notification 13</td><td><span class="pill block">Not started</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="certs">Certification &amp; mocks</h2>
+        <p>Pilot uses sandbox mocks and simulated rails — login-to-money works locally. <strong>Pakistan go-live</strong> waits on commercial contracts and provider certification. The slowest cert sets the date.</p>
+
+        <div class="trap-box">
+          <p><strong>The trap:</strong> embedding Raast or NADRA client code inside Payments or Identity “for speed.” It breaks hexagonal boundaries, duplicates wire logic, and makes certification per-service instead of per-adapter.</p>
+        </div>
+
+        <div class="footer-nav">
+          <a href="/docs/operator-journeys/"><small>Previous</small><strong>Operator Journeys</strong></a>
+          <a href="/docs/identity-kyc-aml/"><small>Next</small><strong>Identity, KYC &amp; AML</strong></a>
+        </div>
+      
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

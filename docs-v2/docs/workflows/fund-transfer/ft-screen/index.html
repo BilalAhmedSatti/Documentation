@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 - Transaction screen</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-fund-transfer-ft-screen" data-section="customer-journeys" data-wf="fund-transfer">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Fund Transfer · Stage 03</p>
+        <h1>03 - Transaction screen</h1>
+        <p class="lede">screenTransaction — HOLD never passes. Cases land in PostgreSQL.</p>
+        
+          
+    <div class="stage-page stage-page--amber">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">03</span>
+          <span class="stage-badge stage-badge--wf">Fund Transfer</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Provider score in process lane; case INSERT on hit.</p>
+        <div class="stage-write-chip">
+        <span class="op">INSERT</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>screening / saga</code>
+        
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>SCREEN_CLEAR or COMPLIANCE_HOLD.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="fund-transfer" data-step="ft-screen" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>payments</li><li>screening</li><li>PostgreSQL</li><li>Redpanda</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS screening</li><li>Adapter 15</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · cases</li><li>Redpanda · resolved.v1</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>ScreeningPort.screenTransaction</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/screening</code></td></tr><tr><td><strong>Trigger</strong></td><td>services/screening</td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/05_payments.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 03 · Screen + case write</h2>
+        
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>payments</strong></td>
+                      <td>screenTransaction</td>
+                      <td><code class="stage-save">Human / channel entry</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>screening</strong></td>
+                      <td>Lists + score</td>
+                      <td><code class="stage-save">In-flight processing</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>Hit?</strong></td>
+                      <td>Clear / HOLD</td>
+                      <td><code class="stage-save">In-flight processing</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>screening cases</strong></td>
+                      <td>INSERT on PostgreSQL 16 · screening cases<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
+                      <td><code class="stage-save">INSERT → PostgreSQL 16 · screening cases</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">05</td>
+                      <td><strong>SCREEN_CLEAR</strong></td>
+                      <td>Continue saga</td>
+                      <td><code class="stage-save">Terminal state</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+    <h3 id="flow">Flow nodes</h3>
+    <div class="table-wrap stage-flow-table">
+      <table>
+        <thead><tr><th>Node</th><th>Type</th><th>Detail</th><th>Durable?</th></tr></thead>
+        <tbody>
+          <tr>
+                <td><strong>payments</strong></td>
+                <td><code>start</code></td>
+                <td>screenTransaction</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>screening</strong></td>
+                <td><code>process</code></td>
+                <td>Lists + score</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>Hit?</strong></td>
+                <td><code>decision</code></td>
+                <td>Clear / HOLD</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>screening cases</strong></td>
+                <td><code>db</code></td>
+                <td>INSERT PostgreSQL 16 screening cases</td>
+                <td><span class="pill ok">INSERT</span></td>
+              </tr><tr>
+                <td><strong>SCREEN_CLEAR</strong></td>
+                <td><code>end</code></td>
+                <td>Continue saga</td>
+                <td><span class="pill settled">—</span></td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Failure = HOLD</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Case durable</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Saga waits on event</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/fund-transfer/ft-quote/"><small>Previous</small><strong>02 - Price quote</strong></a>
+        <a href="/docs/workflows/fund-transfer/ft-hold/"><small>Next</small><strong>04 - Place funds hold</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Decisions</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="decisions" data-section="decisions">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Decisions</p>
+        <h1>Decisions</h1>
+        <p class="lede">ADRs and stack decisions that gave the banking system its shape.</p>
+        
+      <h2 id="adrs">Key decisions</h2>
+      <ul>
+        <li><strong>Ledger as sole balance SoR</strong> — wallets and channels compose views only</li>
+        <li><strong>Fail-closed screening</strong> — timeout/circuit ⇒ HOLD, never pass</li>
+        <li><strong>NestJS default / JVM islands</strong> — Java only for Ledger, Pricing, FX lib</li>
+        <li><strong>ADR-0002 FX provenance</strong> — rate is input to posting; provenance recorded for audit</li>
+        <li><strong>Transactional outbox</strong> — no dual-write to Kafka</li>
+        <li><strong>Hexagonal + Pact</strong> — boundaries enforced in CI</li>
+      </ul>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

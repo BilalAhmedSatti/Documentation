@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>05 - Resume domain saga</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-market-adapters-ma-resume" data-section="platform-external" data-wf="market-adapters">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Market Adapters · Stage 05</p>
+        <h1>05 - Resume domain saga</h1>
+        <p class="lede">Publish adapter.result.v1; onboarding or payment saga continues.</p>
+        
+          
+    <div class="stage-page stage-page--violet">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">05</span>
+          <span class="stage-badge stage-badge--wf">Market Adapters</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Circuit open on provider ⇒ HOLD, never silent CLEAR. CLEAR / HOLD / REJECT Saga unblocked.</p>
+        <div class="stage-write-chip">
+        <span class="op">PUBLISH</span>
+        <span class="store">Redpanda</span>
+        <code>adapter.result.v1</code>
+        <em>Unblock domain</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Downstream continues or compensates.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="market-adapters" data-step="ma-resume" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>Outbox</li><li>Redpanda</li><li>Domain saga</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>Transactional outbox</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>adapter.result.v1</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>Outbox publish</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>domain services</code></td></tr><tr><td><strong>Trigger</strong></td><td>Event</td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 05 · Resume</h2>
+        
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>Adapter</strong></td>
+                      <td></td>
+                      <td><code class="stage-save">Human / channel entry</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>adapter.result.v1</strong></td>
+                      <td>PUBLISH on Redpanda · adapter.result.v1<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
+                      <td><code class="stage-save">PUBLISH → Redpanda · adapter.result.v1</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>Saga</strong></td>
+                      <td></td>
+                      <td><code class="stage-save">Terminal state</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+    <h3 id="flow">Flow nodes</h3>
+    <div class="table-wrap stage-flow-table">
+      <table>
+        <thead><tr><th>Node</th><th>Type</th><th>Detail</th><th>Durable?</th></tr></thead>
+        <tbody>
+          <tr>
+                <td><strong>Adapter</strong></td>
+                <td><code>start</code></td>
+                <td></td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>adapter.result.v1</strong></td>
+                <td><code>event</code></td>
+                <td>PUBLISH Redpanda adapter.result.v1</td>
+                <td><span class="pill ok">PUBLISH</span></td>
+              </tr><tr>
+                <td><strong>Saga</strong></td>
+                <td><code>end</code></td>
+                <td></td>
+                <td><span class="pill settled">—</span></td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Idempotent consumer</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Compensation if needed</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/market-adapters/ma-normalise/"><small>Previous</small><strong>04 - Normalise &amp; persist</strong></a>
+        <a href="/docs/workflows/market-adapters/"><small>Done</small><strong>Back to Market Adapters</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

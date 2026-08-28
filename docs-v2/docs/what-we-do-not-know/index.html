@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>What We Do Not Know</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="what-we-do-not-know" data-section="what-we-do-not-know">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">What We Do Not Know</p>
+        <h1>What We Do Not Know</h1>
+        <p class="lede">Every unanswered question in one register — who owns it, what it blocks, and what waiting costs. No document elsewhere in this set should silently invent an answer.</p>
+        
+        <h2 id="blocking">Blocking</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Question</th><th>Blocks</th><th>Owner</th><th>Waiting costs</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Live provider contracts: NADRA, Raast, IdP, tax, messaging</strong></td>
+                <td>Pakistan go-live certification</td>
+                <td>Commercial / Ops</td>
+                <td>Pilot stays on mocks; date slips to the slowest cert</td>
+              </tr>
+              <tr>
+                <td><strong>Year-three volume and corridor mix</strong></td>
+                <td>Capacity and cost envelopes</td>
+                <td>Business</td>
+                <td>Infrastructure either overbuilt or underbuilt</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="config">Configuration — needed to launch, not to build</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Question</th><th>Owner</th></tr></thead>
+            <tbody>
+              <tr><td>Tax packs and fail-closed behaviour for quotes</td><td>Finance / Compliance</td></tr>
+              <tr><td>Notification templates and sender identities per tenant</td><td>Ops / Brand</td></tr>
+              <tr><td>Corporate / KYB at launch or later</td><td>Product</td></tr>
+              <tr><td>Hosting provider and regions for AE / KSA</td><td>Platform</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="identity">Identity of the programme</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Question</th><th>Affects</th><th>Owner</th></tr></thead>
+            <tbody>
+              <tr><td>Who holds the licence vs who runs the platform?</td><td>Tenant model, regulator relationship</td><td>Business</td></tr>
+              <tr><td>Target segment and why customers choose us</td><td>Product and channel priority</td><td>Business</td></tr>
+              <tr><td>Is a second tenant imminent?</td><td>Branding / domain / provisioning scope</td><td>Business</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="engineering">Known engineering gaps (not unknowns — unfinished work)</h2>
+        <p>As of the 17 Aug 2026 traceability review: isolation router and KSA residency not enforced; no CI; most SPI adapters mock or absent; compliance reporting and reconciliation services not built; customer UI is a narrow on-us demo.</p>
+        <p>Counts: <strong>31 Done</strong>, <strong>63 Partial</strong>, <strong>214 Not Started</strong> of 311 traced tasks.</p>
+
+        <div class="footer-nav">
+          <a href="/docs/money-model-correction/"><small>Previous</small><strong>Money Model Correction</strong></a>
+          <a href="/docs/one-payment-followed/"><small>Next</small><strong>One Payment, Followed</strong></a>
+        </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

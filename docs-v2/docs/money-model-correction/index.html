@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Money Model Correction</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="money-model-correction" data-section="money-model-correction">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Money Model Correction</p>
+        <h1>Money Model Correction</h1>
+        <p class="lede">A short correction for anyone drafting from the shared baseline — one error that is easy to fix now and expensive after money has moved. Share this one.</p>
+        
+        <h2 id="found">What we found</h2>
+        <p>Designs sometimes treat <strong>wallets, payments, or the channel app</strong> as if they hold customer balances. They do not. Under the architecture, only the <strong>Ledger</strong> is the system of record for value. Everything else composes a view or orchestrates a saga.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Surface</th><th>Owns</th><th>Does not own</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Ledger</strong></td><td>Append-only postings, holds, balance projections</td><td>Product UX, KYC decisions</td></tr>
+              <tr><td><strong>Wallets &amp; Accounts</strong></td><td>Product instances, statements, customer labels</td><td>Authoritative balances</td></tr>
+              <tr><td><strong>Payments</strong></td><td>Saga state: quote → screen → hold → payout → settle</td><td>Invented balances</td></tr>
+              <tr><td><strong>apps/web</strong></td><td>Forms and display</td><td>Any durable money truth</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="why">Why it matters more than it looks</h2>
+        <p>If two services both "know" a balance, you get two truths. Reconciliation becomes archaeology. An auditor asks which number is real — and both teams answer "ours."</p>
+        <p>Integer minor units only. No floating-point money. FX provenance is recorded (ADR-0002). PKR-only pilot may keep FX conversion built but inactive until corridors need it.</p>
+
+        <h2 id="correction">The correction</h2>
+        <p><strong>One ledger dimension for value.</strong> Wallets are a product façade. Payments place holds and post settlements through the Ledger. Idempotency keys on every mutation. Outbox events after durable writes.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>Balances in many services</th><th>Ledger only</th></tr></thead>
+            <tbody>
+              <tr><td>Where does the customer's money sit?</td><td>Wherever the last writer left it</td><td>In the Ledger, always</td></tr>
+              <tr><td>Can it be corrected after postings?</td><td>Painfully — history disagrees</td><td>Nothing to unpick</td></tr>
+              <tr><td>What does reconciliation do?</td><td>Guess which cache is wrong</td><td>Match Ledger ↔ payments ↔ rail statements</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warn">
+          <strong>Propagates if ignored</strong>
+          New feature specs written as if the BFF or wallet "updates balance" will reintroduce the error. Point authors here before they draft.
+        </div>
+
+        <h2 id="need">What we still need from you</h2>
+        <ul>
+          <li>Confirmed product catalogue for launch wallets (which products, which currencies).</li>
+          <li>Whether FX corridors activate at PK launch or later.</li>
+          <li>Sign-off that Cards / CBS remain deferred until a licensed need appears.</li>
+        </ul>
+
+        <div class="footer-nav">
+          <a href="/docs/where-we-stand/"><small>Previous</small><strong>Where We Stand</strong></a>
+          <a href="/docs/what-we-do-not-know/"><small>Next</small><strong>What We Do Not Know</strong></a>
+        </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

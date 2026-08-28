@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>05 - AML screen persisted</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-onboarding-screening-save" data-section="customer-journeys" data-wf="onboarding">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Onboarding · Stage 05</p>
+        <h1>05 - AML screen persisted</h1>
+        <p class="lede">screenEntity results and cases are written to PostgreSQL.</p>
+        
+          
+    <div class="stage-page stage-page--violet">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">05</span>
+          <span class="stage-badge stage-badge--wf">Onboarding</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Compliance gate: screening checks watchlists. Clear → continue. Hit → open a durable case. If screening fails technically, we HOLD — we never silently pass.</p>
+        <div class="stage-write-chip">
+        <span class="op">CREATE</span>
+        <span class="store">TigerBeetle</span>
+        <code>accounts</code>
+        <em>Value SoR — balances never live in identity DB</em>
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Clear continues onboarding. Hit waits on maker-checker and resolved.v1.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="onboarding" data-step="screening-save" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>identity</li><li>screening</li><li>PostgreSQL</li><li>Redpanda</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS · screening</li><li>Adapter 15</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>PostgreSQL · screening cases</li><li>Redpanda · resolved.v1</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>ScreeningPort.screenEntity</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/screening</code></td></tr><tr><td><strong>Trigger</strong></td><td>services/screening</td></tr><tr><td><strong>API</strong></td><td><code>wallets + jvm/ledger</code></td></tr><tr><td><strong>Design doc</strong></td><td><code>../Docs_Portal/documents/02_Design_Companions/02_identity.design.md</code></td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 05 · Screening workflow + case write</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Fail-safe closed: errors are HOLD, not PASS.</li><li>Purple case box only on a hit path.</li><li>HIGH severity needs maker + checker later.</li><li>resolved.v1 unblocks anyone waiting (e.g. transfers).</li></ul></div>
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>identity</strong></td>
+                      <td>Identity asks screening to check this customer against the market’s list scope.<br><em class="stage-why">Compliance before money movement.</em><br><small class="stage-tip">Point at START identity.</small></td>
+                      <td><code class="stage-save">Nothing yet</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>screening</strong></td>
+                      <td>Screening normalises names and IDs and prepares the list set from the rulebook.<br><em class="stage-why">Consistent matching inputs.</em><br><small class="stage-tip">Point at screening process.</small></td>
+                      <td><code class="stage-save">Request recorded as needed</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>Provider 15</strong></td>
+                      <td>External lists vendor returns matches and a score.<br><em class="stage-why">Lists of record live outside our DB.</em><br><small class="stage-tip">Point at Provider 15.</small></td>
+                      <td><code class="stage-save">Provider result payload</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>Hit?</strong></td>
+                      <td>Clear → move on. Hit → INSERT a screening case; when closed, PUBLISH resolved.v1.<br><em class="stage-why">Investigations must be durable and auditable.</em><br><small class="stage-tip">Point at DECISION then purple boxes.</small></td>
+                      <td><code class="stage-save">INSERT cases; later PUBLISH resolved.v1</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Fail-safe HOLD</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Case durable</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>HIGH maker-checker</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/onboarding/customer-register/"><small>Previous</small><strong>04 - Create customer record</strong></a>
+        <a href="/docs/workflows/onboarding/ekyc-persist/"><small>Next</small><strong>06 - eKYC evidence &amp; case</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

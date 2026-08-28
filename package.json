@@ -6,6 +6,7 @@
   "scripts": {
     "demo": "npx --yes serve -l 5173 workflow-demo",
     "docs": "npx --yes serve -l 5174 Docs_Portal",
+    "docs-v2": "npx --yes serve -l 5175 docs-v2",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

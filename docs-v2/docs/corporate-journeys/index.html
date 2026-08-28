@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Corporate Journeys</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="corporate-journeys" data-section="corporate-journeys" data-wf="corporate-kyb">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Corporate Journeys</p>
+        <h1>Corporate Journeys</h1>
+        <p class="lede">Business onboarding (KYB) — legal entity, beneficial owners, enhanced due diligence, screening, tier, and business wallet activation — with the same fail-closed compliance as retail.</p>
+        
+        
+      <div class="journey-hero journey-hero--corporate">
+        <div class="journey-hero-inner">
+          <p class="journey-hero-kicker">Journey</p>
+          <h2 class="journey-hero-title">Corporate &amp; KYB</h2>
+          <p class="journey-hero-sub">Businesses are not “big retail customers.” UBO graphs, registry lookups, and enhanced due diligence run before any business wallet or ledger account opens.</p>
+        </div>
+        <div class="journey-stats"><div class="journey-stat"><b>6</b><span>KYB stages — register to ACTIVE</span></div><div class="journey-stat"><b>02</b><span>identity service — business SoR</span></div><div class="journey-stat"><b>?</b><span>launch scope — open question for PK</span></div></div>
+      </div>
+
+        <div class="callout vocab-brief">
+          <strong>In brief — corporate journeys</strong>
+          <ul>
+            <li><strong>Channel:</strong> <code>apps/console</code> or corporate web — operator-assisted intake is common.</li>
+            <li><strong>UBO graph required.</strong> Each beneficial owner feeds screening; missing UBO blocks progression.</li>
+            <li><strong>Same money rules.</strong> Business wallet composes ledger balance; activation only after CLEAR screening.</li>
+          </ul>
+        </div>
+
+        <h2 id="who">Who this journey is for</h2>
+        <div class="table-wrap vocab-table">
+          <table>
+            <thead><tr><th>Actor</th><th>Role in KYB</th><th>In our system</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Operator</strong></td><td>Intake, document review, case disposition</td><td><code>apps/console</code> · maker-checker on HIGH</td></tr>
+              <tr><td><strong>Business user</strong></td><td>Submit registration and documents</td><td>Corporate web channel → BFF → identity</td></tr>
+              <tr><td><strong>Identity (02)</strong></td><td>Business aggregate, UBOs, verification cases</td><td><code>businesses</code>, <code>beneficial_owners</code>, <code>verification_cases</code></td></tr>
+              <tr><td><strong>Screening (03)</strong></td><td>Entity + each UBO screened</td><td><code>screenEntity</code> — timeout ⇒ HOLD</td></tr>
+              <tr><td><strong>Wallets + Ledger</strong></td><td>Business product shell + value SoR</td><td>TigerBeetle CREATE after tier assigned</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        
+      <section class="journey-panel journey-panel--rose" id="kyb">
+        <div class="journey-panel-head">
+          <h2>KYB onboarding workflow</h2>
+          <p>Six stages from business registration through business wallet and ledger activation. Walk each stage for actors, APIs, walkthrough tables, and acceptance checklists.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/corporate-kyb/ck-register/">Start at Register business →</a>
+        </div>
+        <div class="wf-embed" data-workflow="corporate-kyb" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/corporate-kyb/ck-register/">
+        <span class="n">01</span>
+        <span class="t"><strong>Register business</strong><em>Operator or business user opens KYB intake in staff console or corporate web.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/corporate-kyb/ck-ubo/">
+        <span class="n">02</span>
+        <span class="t"><strong>Capture UBOs</strong><em>Beneficial owners, ownership percentages, and control relationships.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/corporate-kyb/ck-edd/">
+        <span class="n">03</span>
+        <span class="t"><strong>Enhanced due diligence</strong><em>Articles, licenses, and address proof — verification case opened.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/corporate-kyb/ck-screen/">
+        <span class="n">04</span>
+        <span class="t"><strong>Screen business</strong><em>screenEntity on the business legal entity and every captured UBO — same fail-closed policy as retail onboarding.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-violet" href="/docs/workflows/corporate-kyb/ck-tier/">
+        <span class="n">05</span>
+        <span class="t"><strong>Business risk tier</strong><em>Assign tier from KYB + screening + market pack.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/corporate-kyb/ck-activate/">
+        <span class="n">06</span>
+        <span class="t"><strong>Activate business accounts</strong><em>Open business wallet product and TigerBeetle accounts.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        <h2 id="rules">Rules — identical discipline to retail</h2>
+        <div class="trap-box">
+          <div class="table-wrap vocab-table">
+            <table>
+              <thead><tr><th>Rule</th><th>Plain English</th><th>Violation cost</th></tr></thead>
+              <tbody>
+                <tr class="trap"><td>Screening timeout</td><td>Never auto-CLEAR</td><td>Sanctioned entity onboarded</td></tr>
+                <tr class="trap"><td>eKYC / document timeout</td><td>MANUAL_REVIEW — never auto-approve</td><td>Fake documents accepted silently</td></tr>
+                <tr><td>HIGH case disposition</td><td>Maker-checker required</td><td>Single analyst approves own hit</td></tr>
+                <tr class="trap"><td>Business “balance”</td><td>Ledger SoR only</td><td>Duplicate truths at audit</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="callout warn" id="launch">
+          <strong>Launch question</strong>
+          Whether corporate / KYB ships at Pakistan launch or later remains open — see <a href="/docs/what-we-do-not-know/">What We Do Not Know</a>. The workflow is specified; product sequencing is not closed.
+        </div>
+
+        <div class="footer-nav">
+          <a href="/docs/customer-journeys/"><small>Previous</small><strong>Customer Journeys</strong></a>
+          <a href="/docs/agent-journeys/"><small>Next</small><strong>Agent Journeys</strong></a>
+        </div>
+      
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

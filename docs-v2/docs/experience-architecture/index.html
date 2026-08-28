@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Experience Architecture</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="experience-architecture" data-section="experience-architecture">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Experience Architecture</p>
+        <h1>Experience Architecture</h1>
+        <p class="lede">Customer web and staff console as windows onto the machine.</p>
+        
+      <h2 id="apps">Channels</h2>
+      <ul>
+        <li><code>apps/web</code> — retail customer: onboarding, send, bills, statements</li>
+        <li><code>apps/console</code> — operators: AML cases, tenant config, assisted overrides with audit</li>
+      </ul>
+      <h2 id="rule">Rule</h2>
+      <p>Channels compose views from domain APIs. They never hold authoritative balances or screening decisions — only display and command intent.</p>
+      <p>Agent-assisted flows: <a href="/docs/workflows/agent-assisted/ag-login/">Agent Journeys</a>.</p>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

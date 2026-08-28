@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Requirements &amp; Constraints</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="requirements" data-section="requirements">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Requirements &amp; Constraints</p>
+        <h1>Requirements &amp; Constraints</h1>
+        <p class="lede">Non-negotiables that every service and adapter must honour. If a design violates one of these, the design is wrong — not pragmatic.</p>
+        
+        <h2 id="hard">Hard constraints</h2>
+        <ul>
+          <li><strong>Tenant isolation</strong> — <code>tenant_id</code> everywhere; isolation bugs are P1.</li>
+          <li><strong>Ledger SoR</strong> — no other component holds authoritative balances.</li>
+          <li><strong>Idempotent mutations</strong> — <code>Idempotency-Key</code> on every write path.</li>
+          <li><strong>Integer money</strong> — minor units only; no floats.</li>
+          <li><strong>Fail closed on screening</strong> — timeout / circuit ⇒ HOLD.</li>
+          <li><strong>Residency</strong> — KSA data stays in-Kingdom when required.</li>
+          <li><strong>Outbox</strong> — durable write then event; no dual-write fantasies.</li>
+        </ul>
+
+        <h2 id="nfr">Non-functional requirements</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Area</th><th>Target</th></tr></thead>
+          <tbody>
+            <tr><td>Read APIs (p99)</td><td>&lt; 800 ms excluding provider latency</td></tr>
+            <tr><td>Command APIs (p99)</td><td>&lt; 1.5 s excluding provider latency</td></tr>
+            <tr><td>Screening (p99)</td><td>&lt; 700 ms excluding provider latency</td></tr>
+            <tr><td>Outbox lag (p99)</td><td>&lt; 2 s</td></tr>
+            <tr><td>Enterprise RPO / RTO</td><td>≤ 5 min / ≤ 30 min per cell</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 id="deferred">Deferred by programme plan</h2>
+        <ul>
+          <li>Card issuing until a licensed need exists</li>
+          <li>Core banking host adapter until a tenant requires it</li>
+        </ul>
+
+        <h2 id="ordering">Legal / operational ordering</h2>
+        <p>E-Sign before Credit Bureau where consent is a prerequisite. Screening before money movement. Control plane before multi-tenant data planes.</p>
+
+        <h2 id="hexagonal">Hexagonal &amp; contracts</h2>
+        <p>Domain code imports only domain + ports. Adapters import frameworks. OpenAPI 3.1 on every boundary. Pact verification on TS↔JVM seams. Dependency-cruiser and ArchUnit are build-blocking.</p>
+
+        <div class="footer-nav">
+          <a href="/docs/markets-tenancy/"><small>Previous</small><strong>Markets &amp; Tenancy</strong></a>
+          <a href="/docs/customer-journeys/"><small>Next</small><strong>Customer Journeys</strong></a>
+        </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>
