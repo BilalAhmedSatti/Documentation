@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>01 - Initiate cash-out</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="wf-cash-out-co-initiate" data-section="customer-journeys" data-wf="cash-out">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Cash Out · Stage 01</p>
+        <h1>01 - Initiate cash-out</h1>
+        <p class="lede">Customer requests cash amount; available balance checked from ledger.</p>
+        
+          
+    <div class="stage-page stage-page--teal">
+      <div class="stage-hero">
+        <div class="stage-hero-badges">
+          <span class="stage-badge stage-badge--num">01</span>
+          <span class="stage-badge stage-badge--wf">Cash Out</span>
+          <span class="stage-badge stage-badge--req">Required</span>
+        </div>
+        <p class="stage-lead">Validate available balance before creating request.</p>
+        <div class="stage-write-chip">
+        <span class="op">INSERT</span>
+        <span class="store">PostgreSQL 16</span>
+        <code>cash_out_requests</code>
+        
+      </div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>REQUESTED.</p></div>
+      </div>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h2 id="diagram">Stage diagram</h2>
+          <p>Follow the swimlane left to right. <strong>Purple cards</strong> are durable writes — the evidence an auditor replays.</p>
+        </div>
+        <div class="wf-embed" data-workflow="cash-out" data-step="co-initiate" data-view="step"></div>
+      </div>
+
+      <div class="stage-spec-grid">
+        
+    <div class="stage-spec-card stage-spec-card--who">
+      <h3><span class="stage-spec-icon" aria-hidden="true">👤</span>Who is involved</h3>
+      <ul><li>Customer</li><li>Agent</li><li>BFF</li><li>payments</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--stack">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⚙</span>Technology</h3>
+      <ul><li>NestJS payments</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--data">
+      <h3><span class="stage-spec-icon" aria-hidden="true">🗄</span>Data touched</h3>
+      <ul><li>cash_out_requests</li></ul>
+    </div>
+        
+    <div class="stage-spec-card stage-spec-card--api">
+      <h3><span class="stage-spec-icon" aria-hidden="true">⇄</span>APIs &amp; ports</h3>
+      <ul><li>POST /v1/cash-out</li></ul>
+    </div>
+      </div>
+
+      <div class="stage-meta-panel"><div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+    <tbody><tr><td><strong>Primary repo</strong></td><td><code>services/payments</code></td></tr><tr><td><strong>Trigger</strong></td><td>POST /v1/cash-out</td></tr></tbody>
+  </table></div></div>
+
+      <div class="stage-story-panel">
+        <h2 id="story">Step 01 · Cash-out request</h2>
+        
+        
+          <h3 id="walkthrough">Step-by-step walkthrough</h3>
+          <div class="table-wrap stage-walk-table">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>What happens</th><th>Durable write</th></tr></thead>
+              <tbody>
+                <tr>
+                      <td class="stage-walk-n">01</td>
+                      <td><strong>Customer</strong></td>
+                      <td></td>
+                      <td><code class="stage-save">Human / channel entry</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">02</td>
+                      <td><strong>BFF</strong></td>
+                      <td>Auth + step-up</td>
+                      <td><code class="stage-save">In-flight processing</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>payments</strong></td>
+                      <td></td>
+                      <td><code class="stage-save">In-flight processing</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">04</td>
+                      <td><strong>cash_out_requests</strong></td>
+                      <td>INSERT on PostgreSQL 16 · cash_out_requests<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
+                      <td><code class="stage-save">INSERT → PostgreSQL 16 · cash_out_requests</code></td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+        
+    <h3 id="flow">Flow nodes</h3>
+    <div class="table-wrap stage-flow-table">
+      <table>
+        <thead><tr><th>Node</th><th>Type</th><th>Detail</th><th>Durable?</th></tr></thead>
+        <tbody>
+          <tr>
+                <td><strong>Customer</strong></td>
+                <td><code>start</code></td>
+                <td></td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>BFF</strong></td>
+                <td><code>process</code></td>
+                <td>Auth + step-up</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>payments</strong></td>
+                <td><code>process</code></td>
+                <td></td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>cash_out_requests</strong></td>
+                <td><code>db</code></td>
+                <td>INSERT PostgreSQL 16 cash_out_requests</td>
+                <td><span class="pill ok">INSERT</span></td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+
+      
+        <div class="stage-checklist-panel">
+          <h2 id="checklist">Acceptance checklist</h2>
+          <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Available balance check</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Idempotency-Key</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Step-up if required</span></div></div>
+        </div>
+    </div>
+          
+      <div class="footer-nav">
+        <a href="/docs/workflows/cash-out/"><small>Overview</small><strong>Cash Out</strong></a>
+        <a href="/docs/workflows/cash-out/co-screen/"><small>Next</small><strong>02 - Screen &amp; limits</strong></a>
+      </div>
+        
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

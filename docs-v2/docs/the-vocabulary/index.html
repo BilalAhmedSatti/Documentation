@@ -68,6 +68,50 @@
         </table>
       </div>
 
+      <h2 id="emi">EMI &amp; e-money</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr class="trap">
+              <td><strong>E-money</strong></td>
+              <td>Electronically stored monetary value</td>
+              <td>Customer liability accounts on Ledger <strong>04</strong> — created on <a href="/docs/emoney-issuance-redemption/">issuance</a>, destroyed on <a href="/docs/emoney-issuance-redemption/">redemption</a></td>
+            </tr>
+            <tr class="trap">
+              <td><strong>E-money account</strong></td>
+              <td>What the customer "owns" in the app</td>
+              <td>Wallets service product instance → maps to ledger account ids · lifecycle in <a href="/docs/emoney-lifecycle/">E-Money Account Lifecycle</a></td>
+            </tr>
+            <tr>
+              <td><strong>Issuance</strong></td>
+              <td>Creating e-money when funds received</td>
+              <td><a href="/docs/workflows/cash-in/ci-initiate/">Cash-in</a> or bank transfer → balanced journal · <code>wallets.emoney.issued.v1</code></td>
+            </tr>
+            <tr>
+              <td><strong>Redemption</strong></td>
+              <td>Destroying e-money when customer cashes out</td>
+              <td><a href="/docs/workflows/cash-out/co-initiate/">Cash-out</a> or bank payout → debit customer liability</td>
+            </tr>
+            <tr>
+              <td><strong>Safeguarding</strong></td>
+              <td>Customer money kept separate from operator funds</td>
+              <td>Segregated ledger pool — <a href="/docs/safeguarding/">Safeguarding Architecture</a></td>
+            </tr>
+            <tr>
+              <td><strong>Agent float</strong></td>
+              <td>Prefunded balance at an outlet</td>
+              <td>Outlet ledger account · <a href="/docs/agent-float-settlement/">Agent Float &amp; Settlement</a></td>
+            </tr>
+            <tr>
+              <td><strong>Audit log</strong></td>
+              <td>Who did what, when</td>
+              <td><code>audit_log</code> / <code>ops_audit</code> — <strong>not</strong> used for balance · see <a href="/docs/ledger-vs-audit/">Ledger vs Audit Log</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <h2 id="money">Money &amp; ledger</h2>
       <div class="table-wrap vocab-table">
         <table>

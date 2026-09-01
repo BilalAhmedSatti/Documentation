@@ -1,9 +1,9 @@
-/* Auto-generated nav — Digital Banking menus + workflow stage submenus */
+/* Auto-generated nav — EMI / e-money menus + workflow stage submenus */
 (function () {
   const SIDEBAR_HTML = `
     <a class="brand" href="/docs/where-we-stand/">
       <strong>Platform Docs</strong>
-      <small>Digital Banking &amp; Remittance</small>
+      <small>EMI / E-Money &amp; Remittance</small>
     </a>
     <input class="search" type="search" placeholder="Search" aria-label="Search" disabled title="Search coming later" />
 
@@ -21,10 +21,33 @@
     <div class="nav-group" data-group="The domain">
       <button type="button" class="nav-toggle" aria-expanded="true">The domain <span class="chev" aria-hidden="true"></span></button>
       <div class="nav-sub">
-        <a data-page="why-digital-banking" href="/docs/why-digital-banking/">Why Digital Banking Exists</a>
+        <a data-page="why-digital-banking" href="/docs/why-digital-banking/">Why EMI / E-Money Exists</a>
         <a data-page="how-the-money-works" href="/docs/how-the-money-works/">How the Money Works</a>
         <a data-page="the-vocabulary" href="/docs/the-vocabulary/">The Vocabulary</a>
         <a data-page="who-governs-it" href="/docs/who-governs-it/">Who Governs It</a>
+      </div>
+    </div>
+
+    <div class="nav-group" data-group="EMI & e-money">
+      <button type="button" class="nav-toggle" aria-expanded="true">EMI &amp; e-money <span class="chev" aria-hidden="true"></span></button>
+      <div class="nav-sub">
+        <a data-page="emoney-overview" href="/docs/emoney-overview/">EMI &amp; E-Money Overview</a>
+        <a data-page="emoney-lifecycle" href="/docs/emoney-lifecycle/">E-Money Account Lifecycle</a>
+        <a data-page="emoney-issuance-redemption" href="/docs/emoney-issuance-redemption/">Issuance &amp; Redemption</a>
+        <a data-page="safeguarding" href="/docs/safeguarding/">Safeguarding Architecture</a>
+        <a data-page="limits-velocity" href="/docs/limits-velocity/">Limits &amp; Velocity Controls</a>
+        <a data-page="fraud-controls" href="/docs/fraud-controls/">AML, KYC &amp; Fraud Controls</a>
+        <a data-page="transaction-states" href="/docs/transaction-states/">Transaction State Machine</a>
+        <a data-page="reversal-refund-chargeback" href="/docs/reversal-refund-chargeback/">Reversal, Refund &amp; Chargeback</a>
+        <a data-page="ledger-vs-audit" href="/docs/ledger-vs-audit/">Ledger vs Audit Log</a>
+        <a data-page="idempotency-controls" href="/docs/idempotency-controls/">Idempotency &amp; Duplicates</a>
+        <a data-page="consent-authorization" href="/docs/consent-authorization/">Consent &amp; Authorization</a>
+        <a data-page="settlement-reconciliation" href="/docs/settlement-reconciliation/">Settlement &amp; Reconciliation</a>
+        <a data-page="exception-management" href="/docs/exception-management/">Exception Management</a>
+        <a data-page="rails-pk" href="/docs/rails-pk/">1LINK &amp; Raast (PK)</a>
+        <a data-page="agent-float-settlement" href="/docs/agent-float-settlement/">Agent Float &amp; Settlement</a>
+        <a data-page="commission-settlement" href="/docs/commission-settlement/">Commission Settlement</a>
+        <a data-page="financial-reporting" href="/docs/financial-reporting/">Financial &amp; Regulatory Reporting</a>
       </div>
     </div>
 
@@ -44,7 +67,7 @@
         
         <div class="nav-section nav-section--customer-journeys" data-section="customer-journeys">
           <div class="nav-section-row">
-            <a data-page="customer-journeys" data-nav-section="customer-journeys" href="/docs/customer-journeys/">Customer Journeys<span class="nav-section-badge">21</span></a>
+            <a data-page="customer-journeys" data-nav-section="customer-journeys" href="/docs/customer-journeys/">Customer Journeys<span class="nav-section-badge">33</span></a>
             <button type="button" class="nav-section-toggle" aria-expanded="true" aria-label="Toggle Customer Journeys"><span class="chev" aria-hidden="true"></span></button>
           </div>
           <div class="nav-section-sub">
@@ -57,6 +80,16 @@
             <a class="depth-3" data-page="wf-onboarding-ekyc-persist" data-nav-section="customer-journeys" href="/docs/workflows/onboarding/ekyc-persist/">06 - eKYC evidence &amp; case</a>
             <a class="depth-3" data-page="wf-onboarding-tier-persist" data-nav-section="customer-journeys" href="/docs/workflows/onboarding/tier-persist/">07 - Risk tier written</a>
             <a class="depth-3" data-page="wf-onboarding-wallet-ledger" data-nav-section="customer-journeys" href="/docs/workflows/onboarding/wallet-ledger/">08 - Wallet + TigerBeetle accounts</a>
+            <div class="nav-stage-group">Cash In</div>
+            <a class="depth-3" data-page="wf-cash-in-ci-initiate" data-nav-section="customer-journeys" href="/docs/workflows/cash-in/ci-initiate/">01 - Initiate cash-in</a>
+            <a class="depth-3" data-page="wf-cash-in-ci-screen" data-nav-section="customer-journeys" href="/docs/workflows/cash-in/ci-screen/">02 - Screen &amp; limits</a>
+            <a class="depth-3" data-page="wf-cash-in-ci-credit" data-nav-section="customer-journeys" href="/docs/workflows/cash-in/ci-credit/">03 - Issue e-money</a>
+            <a class="depth-3" data-page="wf-cash-in-ci-receipt" data-nav-section="customer-journeys" href="/docs/workflows/cash-in/ci-receipt/">04 - Receipt &amp; event</a>
+            <div class="nav-stage-group">Cash Out</div>
+            <a class="depth-3" data-page="wf-cash-out-co-initiate" data-nav-section="customer-journeys" href="/docs/workflows/cash-out/co-initiate/">01 - Initiate cash-out</a>
+            <a class="depth-3" data-page="wf-cash-out-co-screen" data-nav-section="customer-journeys" href="/docs/workflows/cash-out/co-screen/">02 - Screen &amp; limits</a>
+            <a class="depth-3" data-page="wf-cash-out-co-debit" data-nav-section="customer-journeys" href="/docs/workflows/cash-out/co-debit/">03 - Redeem e-money</a>
+            <a class="depth-3" data-page="wf-cash-out-co-disburse" data-nav-section="customer-journeys" href="/docs/workflows/cash-out/co-disburse/">04 - Disburse cash</a>
             <div class="nav-stage-group">Fund Transfer</div>
             <a class="depth-3" data-page="wf-fund-transfer-ft-initiate" data-nav-section="customer-journeys" href="/docs/workflows/fund-transfer/ft-initiate/">01 - Initiate transfer</a>
             <a class="depth-3" data-page="wf-fund-transfer-ft-quote" data-nav-section="customer-journeys" href="/docs/workflows/fund-transfer/ft-quote/">02 - Price quote</a>
@@ -73,6 +106,11 @@
             <a class="depth-3" data-page="wf-debit-cards-dc-issue" data-nav-section="customer-journeys" href="/docs/workflows/debit-cards/dc-issue/">02 - Issue tokenised card</a>
             <a class="depth-3" data-page="wf-debit-cards-dc-activate" data-nav-section="customer-journeys" href="/docs/workflows/debit-cards/dc-activate/">03 - Activate card</a>
             <a class="depth-3" data-page="wf-debit-cards-dc-auth" data-nav-section="customer-journeys" href="/docs/workflows/debit-cards/dc-auth/">04 - Authorize (webhook)</a>
+            <div class="nav-stage-group">Reversal &amp; Refund</div>
+            <a class="depth-3" data-page="wf-reversal-refund-rr-request" data-nav-section="customer-journeys" href="/docs/workflows/reversal-refund/rr-request/">01 - Reversal request</a>
+            <a class="depth-3" data-page="wf-reversal-refund-rr-approve" data-nav-section="customer-journeys" href="/docs/workflows/reversal-refund/rr-approve/">02 - Approve (if required)</a>
+            <a class="depth-3" data-page="wf-reversal-refund-rr-ledger" data-nav-section="customer-journeys" href="/docs/workflows/reversal-refund/rr-ledger/">03 - Post reversal journal</a>
+            <a class="depth-3" data-page="wf-reversal-refund-rr-complete" data-nav-section="customer-journeys" href="/docs/workflows/reversal-refund/rr-complete/">04 - Complete &amp; notify</a>
           </div>
         </div>
         
@@ -93,14 +131,20 @@
         
         <div class="nav-section nav-section--agent-journeys" data-section="agent-journeys">
           <div class="nav-section-row">
-            <a data-page="agent-journeys" data-nav-section="agent-journeys" href="/docs/agent-journeys/">Agent Journeys<span class="nav-section-badge">4</span></a>
+            <a data-page="agent-journeys" data-nav-section="agent-journeys" href="/docs/agent-journeys/">Agent Journeys<span class="nav-section-badge">8</span></a>
             <button type="button" class="nav-section-toggle" aria-expanded="true" aria-label="Toggle Agent Journeys"><span class="chev" aria-hidden="true"></span></button>
           </div>
           <div class="nav-section-sub">
+            <div class="nav-stage-group">Agent Assisted</div>
             <a class="depth-3" data-page="wf-agent-assisted-ag-login" data-nav-section="agent-journeys" href="/docs/workflows/agent-assisted/ag-login/">01 - Agent login</a>
             <a class="depth-3" data-page="wf-agent-assisted-ag-select" data-nav-section="agent-journeys" href="/docs/workflows/agent-assisted/ag-select/">02 - Select customer</a>
             <a class="depth-3" data-page="wf-agent-assisted-ag-action" data-nav-section="agent-journeys" href="/docs/workflows/agent-assisted/ag-action/">03 - Perform action</a>
             <a class="depth-3" data-page="wf-agent-assisted-ag-audit" data-nav-section="agent-journeys" href="/docs/workflows/agent-assisted/ag-audit/">04 - Audit &amp; commission</a>
+            <div class="nav-stage-group">Agent Float</div>
+            <a class="depth-3" data-page="wf-agent-float-af-prefund" data-nav-section="agent-journeys" href="/docs/workflows/agent-float/af-prefund/">01 - Prefund outlet</a>
+            <a class="depth-3" data-page="wf-agent-float-af-transact" data-nav-section="agent-journeys" href="/docs/workflows/agent-float/af-transact/">02 - Float movements</a>
+            <a class="depth-3" data-page="wf-agent-float-af-reconcile" data-nav-section="agent-journeys" href="/docs/workflows/agent-float/af-reconcile/">03 - EOD reconciliation</a>
+            <a class="depth-3" data-page="wf-agent-float-af-settle" data-nav-section="agent-journeys" href="/docs/workflows/agent-float/af-settle/">04 - Settle with operator</a>
           </div>
         </div>
         

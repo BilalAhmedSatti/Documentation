@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transaction Limits &amp; Velocity Controls</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="limits-velocity" data-section="limits-velocity">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Transaction Limits &amp; Velocity Controls</p>
+        <h1>Transaction Limits &amp; Velocity Controls</h1>
+        <p class="lede">Per-tier, per-product, and per-channel limits — plus velocity rules that detect structuring and abnormal patterns.</p>
+        
+      <h2 id="layers">Control layers</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Layer</th><th>Source</th><th>Examples</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Risk tier</strong></td><td>Identity after KYC + screening</td><td>LOW / MEDIUM / HIGH daily caps</td></tr>
+            <tr><td><strong>Product pack</strong></td><td>Control plane market pack</td><td>Max single cash-in, max wallet balance</td></tr>
+            <tr><td><strong>Agent hierarchy</strong></td><td>Outlet + supervisor chain</td><td>Agent transaction cap, float ceiling</td></tr>
+            <tr><td><strong>Velocity rules</strong></td><td>Transaction monitoring (pack-versioned)</td><td>N transactions in T minutes; cumulative amount windows</td></tr>
+            <tr><td><strong>Channel</strong></td><td>BFF + domain services</td><td>Step-up auth above threshold (ADR IdP)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="enforcement">Enforcement points</h2>
+      <ul>
+        <li><strong>Before issuance</strong> — cash-in checks tier + velocity + agent float availability.</li>
+        <li><strong>Before payment saga</strong> — quote and initiate validate available balance and limits.</li>
+        <li><strong>Before redemption</strong> — cash-out and bank payout validate daily/monthly redemption caps.</li>
+        <li><strong>On breach</strong> — hard decline with reason code; optional auto-case to fraud/AML queue.</li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>Status</strong> Velocity / transaction monitoring rule engine is specified in blueprint; implementation <span class="pill settled">not complete</span> in pilot backlog. Limits by tier are partially enforced.
+      </div>
+
+      <div class="footer-nav">
+        <a href="/docs/safeguarding/"><small>Previous</small><strong>Safeguarding</strong></a>
+        <a href="/docs/fraud-controls/"><small>Next</small><strong>Fraud Controls</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

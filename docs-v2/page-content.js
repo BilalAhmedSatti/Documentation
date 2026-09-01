@@ -3,6 +3,7 @@
  * Merged into generate-docs.js CONTENT at build time.
  */
 const domainPages = require("./domain-page-content");
+const emiPages = require("./emi-page-content");
 
 module.exports = {
   "where-we-stand": {
@@ -14,10 +15,10 @@ module.exports = {
           <a class="btn" href="/docs/start-here/">Open index</a>
         </div>
 
-        <p>We are building <strong>the machine a digital bank and remittance operator runs on</strong> — not the shop window. Scope is <strong>Digital Banking &amp; Remittance only</strong> across Pakistan, UAE and Saudi Arabia (Blueprint v3.1 banking track). Three corrections still matter. Two questions are still yours to answer. A local banking pilot can move money; Pakistan go-live still cannot.</p>
+        <p>We are building <strong>the machine an EMI / e-money institution and remittance operator runs on</strong> — not the shop window. Scope is <strong>electronic money issuance, safeguarding, agent cash-in/out, and remittance corridors</strong> across Pakistan, UAE and Saudi Arabia (Blueprint v3.1 banking track). Three corrections still matter. Two questions are still yours to answer. A local pilot can move money; Pakistan go-live still cannot.</p>
 
         <div class="stats">
-          <div class="stat"><b>1</b><span>product in this documentation set: Digital Banking &amp; Remittance — ledger, wallets, corridors, and the send-money saga.</span></div>
+          <div class="stat"><b>1</b><span>regulated product frame: EMI / e-money — issuance, redemption, safeguarding, ledger, corridors, and agent network.</span></div>
           <div class="stat"><b>12</b><span>banking services in the blueprint set (identity through notification), plus market adapters behind stable ports.</span></div>
           <div class="stat"><b>3</b><span>launch markets and 9 milestones (M0–M8). Pakistan first, then UAE, then in-Kingdom Saudi Arabia.</span></div>
           <div class="stat"><b>311</b><span>tasks traced to the banking monorepo — 31 done, 63 partial, 214 not started (17 Aug 2026).</span></div>
@@ -25,12 +26,12 @@ module.exports = {
 
         <div class="callout">
           <strong>Scope of this site</strong>
-          These pages describe <strong>Digital Banking &amp; Remittance only</strong>. Broader multi-product framing in other portals is out of scope here. Optional engineering library: <a href="https://document.digitalbank.zekiexperts.com/index.html" target="_blank" rel="noopener">document.digitalbank.zekiexperts.com</a> — use banking services and adapters only.
+          These pages describe <strong>EMI / e-money and remittance</strong> — see <a href="/docs/emoney-overview/">EMI Overview</a>. Broader multi-product framing in other portals is out of scope here.
         </div>
 
         <h2 id="building">What we are building</h2>
-        <p>The shop window sells. <strong>The machine has to survive an audit.</strong> We are building the machine for digital banking and remittance.</p>
-        <p>Identity and KYC, sanctions screening, the double-entry ledger, the send-money saga, wallets, pricing, FX provenance, reconciliation, regulatory reporting, and the customer app and staff console that sit on top. Market providers (NADRA, Raast, and later UAE/KSA equivalents) plug in through adapters — the banking domain does not reimplement rails inside every service.</p>
+        <p>The shop window sells. <strong>The machine has to survive an audit.</strong> We are building the machine for e-money issuance, safeguarding, agent outlets, and remittance.</p>
+        <p>Identity and KYC, sanctions screening, the double-entry ledger, e-money issuance and redemption, cash-in/cash-out, agent float, the send-money saga, wallets, pricing, FX provenance, reconciliation, regulatory reporting, and the customer app and agent channel that sit on top. Market providers (NADRA, Raast, 1LINK, and later UAE/KSA equivalents) plug in through adapters — the domain does not reimplement rails inside every service.</p>
         <p>That distinction explains most of the engineering priorities: <strong>a platform that sells well and cannot survive an audit has no second year.</strong></p>
 
         <div class="table-wrap">
@@ -676,16 +677,18 @@ module.exports = {
         </tbody>
       </table></div>
 
-      <h2 id="rails">Launch rail bindings</h2>
+      <h2 id="rails">Launch rail bindings (Pakistan)</h2>
       <div class="table-wrap"><table>
         <thead><tr><th>Binding</th><th>Market</th><th>Wire</th></tr></thead>
         <tbody>
           <tr><td><code>raast</code></td><td>PK→PK</td><td>ISO 20022 pacs.008/pacs.002 + Raast alias</td></tr>
+          <tr><td><code>1link</code></td><td>PK</td><td>Interbank / bill pay aggregation where pack enables</td></tr>
           <tr><td><code>aani</code></td><td>AE→AE</td><td>ISO 20022 via Al Etihad Payments</td></tr>
           <tr><td><code>sarie</code></td><td>SA→SA</td><td>SAMA sarie IPS</td></tr>
           <tr><td><code>xborder-partner</code></td><td>AE→PK, SA→PK</td><td>Partner API until direct scheme certified</td></tr>
         </tbody>
       </table></div>
+      <p>Full PK flows: <a href="/docs/rails-pk/">1LINK &amp; Raast</a></p>
 
       <h2 id="bills">Bill payments</h2>
       <p>Separate saga: select biller → create payment → confirm → debit. <a href="/docs/workflows/bill-payments/bp-select/">Bill Payments stages →</a></p>
@@ -695,16 +698,18 @@ module.exports = {
 
   "ledger": {
     title: "Ledger",
-    lede: "Service 04 — double-entry system of record for value.",
+    lede: "Service 04 — double-entry system of record for e-money value.",
     body: `
-      <h2 id="rules">Rules</h2>
+      <h2 id="rules">Double-entry rules</h2>
       <ul>
         <li><strong>Nothing else may hold an authoritative balance.</strong></li>
         <li>Append-only journals; balances are projections from postings.</li>
+        <li>Every journal balances debits and credits per currency.</li>
         <li>Holds: PLACED → CAPTURED | RELEASED (exactly one terminal outcome).</li>
         <li>Integer minor units; Java <code>Money(long amountMinor, Currency)</code> on the JVM island.</li>
-        <li>FX rate is an <em>input</em> to a posting — never looked up mid-posting (ADR-0002).</li>
+        <li>Corrections via linked reversal journals — never UPDATE postings.</li>
       </ul>
+      <p><a href="/docs/ledger-vs-audit/">Ledger vs Audit Log</a> · <a href="/docs/safeguarding/">Safeguarding accounts</a></p>
 
       <h2 id="holds">Holds in the payment saga</h2>
       <p>Payments calls <code>placeHold</code> before payout, <code>captureHold</code> on settle, or <code>releaseHold</code> on compensation. See <a href="/docs/workflows/fund-transfer/ft-hold/">Hold stage</a> and <a href="/docs/workflows/fund-transfer/ft-settle/">Settle stage</a>.</p>
@@ -911,11 +916,12 @@ module.exports = {
   },
 
   "wallets-accounts": {
-    title: "Wallets & Accounts",
-    lede: "Product shells that compose balances from the Ledger.",
+    title: "Wallets & E-Money Accounts",
+    lede: "Product shells for e-money accounts — lifecycle states compose balances from the Ledger.",
     body: `
-      <h2 id="model">Product vs SoR</h2>
-      <p>Wallets are <strong>product instances</strong> — labels, statements, limits, and UX. Authoritative balance always comes from Ledger projections. Opening a wallet triggers ledger account creation in onboarding.</p>
+      <h2 id="model">E-money account vs ledger</h2>
+      <p>Wallets are <strong>e-money product instances</strong> — labels, statements, limits, and UX. Authoritative balance always comes from Ledger projections. Opening an account triggers ledger account creation in onboarding.</p>
+      <p>Full lifecycle: <a href="/docs/emoney-lifecycle/">E-Money Account Lifecycle</a> · Issuance/redemption: <a href="/docs/emoney-issuance-redemption/">Issuance &amp; Redemption</a></p>
       <p><a href="/docs/workflows/onboarding/wallet-ledger/">Onboarding · Wallet + TigerBeetle →</a></p>
       <div class="wf-embed" data-workflow="onboarding" data-view="pipeline"></div>
     `,
@@ -939,16 +945,23 @@ module.exports = {
 
   "reconciliation": {
     title: "Reconciliation",
-    lede: "Three-way match: ledger ↔ payments ↔ rail statements.",
+    lede: "Three-way match: ledger ↔ payments ↔ rail statements — plus agent float and safeguarding daily proof.",
     body: `
       <h2 id="goal">Goal</h2>
-      <p>Breaks surface as <strong>cases</strong>, not silent drift. Ops works exceptions; engineering fixes root cause.</p>
-      <h2 id="sources">Three sources of truth</h2>
+      <p>Breaks surface as <strong>cases</strong>, not silent drift. Ops works exceptions; engineering fixes root cause. See <a href="/docs/exception-management/">Exception Management</a>.</p>
+      <h2 id="sources">Three sources of truth (payments)</h2>
       <ol>
-        <li><strong>Ledger</strong> — journals and holds (SoR for value)</li>
+        <li><strong>Ledger</strong> — journals, holds, safeguarding pool (SoR for value)</li>
         <li><strong>Payments</strong> — saga state and payout references</li>
-        <li><strong>Rail statements</strong> — Raast/Aani/sarie/partner files</li>
+        <li><strong>Rail statements</strong> — Raast, 1LINK, Aani/sarie/partner files</li>
       </ol>
+      <h2 id="emi">EMI-specific reconciliation</h2>
+      <ul>
+        <li><strong>Safeguarding</strong> — daily pool vs sum of customer e-money + agent float liabilities</li>
+        <li><strong>Agent float</strong> — physical cash vs outlet float ledger · <a href="/docs/workflows/agent-float/af-reconcile/">EOD reconcile</a></li>
+        <li><strong>Commission</strong> — <code>agent.action.v1</code> events vs settled transactions</li>
+      </ul>
+      <p>Full detail: <a href="/docs/settlement-reconciliation/">Settlement &amp; Reconciliation</a></p>
       <p>Service 09 specified in blueprint; not complete in pilot backlog snapshot.</p>
     `,
   },
@@ -970,10 +983,11 @@ module.exports = {
 
   "compliance-reporting": {
     title: "Compliance Reporting",
-    lede: "Service 08 — goAML-aligned STR/SAR and market returns.",
+    lede: "Service 08 — goAML-aligned STR/SAR, regulatory returns, and EMI safeguarding reports.",
     body: `
       <h2 id="scope">Scope</h2>
-      <p>Suspicious transaction reports, regulatory returns, and audit exports — sourced from immutable ledger and case data, not channel caches.</p>
+      <p>Suspicious transaction reports, regulatory returns, safeguarding reconciliation exports, and audit trails — sourced from immutable ledger and case data, not channel caches.</p>
+      <p>Financial reporting detail: <a href="/docs/financial-reporting/">Financial &amp; Regulatory Reporting</a></p>
       <h2 id="status">Status</h2>
       <p>Specified in blueprint pack; <span class="pill settled">not built</span> in pilot backlog snapshot. Depends on screening case SoR and ledger posting completeness.</p>
     `,
@@ -1093,4 +1107,4 @@ module.exports = {
   },
 };
 
-Object.assign(module.exports, domainPages);
+Object.assign(module.exports, domainPages, emiPages);

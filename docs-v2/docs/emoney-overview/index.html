@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EMI &amp; E-Money Overview</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="emoney-overview" data-section="emoney-overview">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">EMI &amp; E-Money Overview</p>
+        <h1>EMI &amp; E-Money Overview</h1>
+        <p class="lede">How this platform is documented as an electronic money institution (EMI) — issuing e-money, safeguarding customer funds, and moving value through agents and rails.</p>
+        
+      <div class="callout vocab-brief">
+        <strong>In brief — EMI framing</strong>
+        <ul>
+          <li><strong>EMI / e-money issuer</strong> — licensed operator that creates electronic money when funds are received and destroys it on redemption.</li>
+          <li><strong>E-money account</strong> — customer wallet product backed by ledger accounts; not a bank deposit account unless separately licensed.</li>
+          <li><strong>Safeguarded funds</strong> — customer money segregated from operator working capital; reconciled daily to ledger.</li>
+          <li><strong>Agent network</strong> — outlets with float, hierarchy, and settlement — cash-in/cash-out at the edge.</li>
+        </ul>
+      </div>
+
+      <h2 id="terminology">Terminology shift</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Generic (avoid in regulated docs)</th><th>EMI / e-money term</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr><td>Digital banking</td><td><strong>EMI / e-money operator</strong></td><td>Tenant licensed or partnered for e-money issuance</td></tr>
+            <tr><td>Wallet balance</td><td><strong>E-money balance</strong></td><td>Ledger projection on customer e-money accounts</td></tr>
+            <tr><td>Top-up</td><td><strong>E-money issuance</strong></td><td>Credit customer e-money account when safeguarded funds received</td></tr>
+            <tr><td>Withdraw</td><td><strong>E-money redemption</strong></td><td>Debit customer account; pay out cash or bank transfer</td></tr>
+            <tr><td>Branch</td><td><strong>Agent outlet</strong></td><td>Hierarchy node with float account and limits</td></tr>
+            <tr><td>Transfer</td><td><strong>Payment / remittance</strong></td><td>Saga on payments service — same ledger rules</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="scope">What the EMI machine covers</h2>
+      <ul>
+        <li><a href="/docs/emoney-lifecycle/">E-money account lifecycle</a> — open, active, blocked, dormant, closed</li>
+        <li><a href="/docs/emoney-issuance-redemption/">Issuance &amp; redemption</a> — creating and destroying e-money</li>
+        <li><a href="/docs/safeguarding/">Safeguarding architecture</a> — segregated accounts and daily reconciliation</li>
+        <li><a href="/docs/workflows/cash-in/ci-initiate/">Cash-in</a> / <a href="/docs/workflows/cash-out/co-initiate/">Cash-out</a> journeys</li>
+        <li><a href="/docs/limits-velocity/">Limits &amp; velocity controls</a></li>
+        <li><a href="/docs/fraud-controls/">AML, KYC, sanctions &amp; fraud</a></li>
+        <li><a href="/docs/rails-pk/">1LINK &amp; Raast</a> integration flows</li>
+        <li><a href="/docs/agent-float-settlement/">Agent float &amp; outlet settlement</a></li>
+      </ul>
+
+      <div class="footer-nav">
+        <a href="/docs/the-vocabulary/"><small>Previous</small><strong>The Vocabulary</strong></a>
+        <a href="/docs/emoney-lifecycle/"><small>Next</small><strong>E-Money Account Lifecycle</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

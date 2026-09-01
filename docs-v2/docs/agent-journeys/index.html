@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/assets/css/docs.css" />
   <link rel="stylesheet" href="/assets/css/workflows.css" />
 </head>
-<body data-page="agent-journeys" data-section="agent-journeys" data-wf="agent-assisted">
+<body data-page="agent-journeys" data-section="agent-journeys">
   <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
   <div class="backdrop" id="backdrop"></div>
   <div class="app">
@@ -22,18 +22,19 @@
       <div class="journey-hero journey-hero--agent">
         <div class="journey-hero-inner">
           <p class="journey-hero-kicker">Journey</p>
-          <h2 class="journey-hero-title">Agent-assisted service</h2>
-          <p class="journey-hero-sub">The agent channel runs the same domain sagas as self-serve — plus agent_id, acting-on-behalf grants, and audit rows on every mutation.</p>
+          <h2 class="journey-hero-title">Agent network & assisted service</h2>
+          <p class="journey-hero-sub">Outlets with prefunded float serve cash-in/out and assisted onboarding. Same domain sagas as self-serve — plus hierarchy, float limits, and audit before commission.</p>
         </div>
-        <div class="journey-stats"><div class="journey-stat"><b>4</b><span>stages — login → AOB → action → audit</span></div><div class="journey-stat"><b>0</b><span>compliance shortcuts — screening still gates</span></div><div class="journey-stat"><b>∞</b><span>audit — attribution is not optional</span></div></div>
+        <div class="journey-stats"><div class="journey-stat"><b>2</b><span>workflow families — assisted + float</span></div><div class="journey-stat"><b>8</b><span>stages across login, float, cash</span></div><div class="journey-stat"><b>0</b><span>compliance shortcuts — screening still gates</span></div></div>
       </div>
 
         <div class="callout vocab-brief">
           <strong>In brief — agent journeys</strong>
           <ul>
-            <li><strong>AOB grant</strong> records which customer and products an agent may touch, with expiry.</li>
-            <li><strong>Headers on every call:</strong> <code>X-Agent-Id</code>, tenant, idempotency key — same as retail plus attribution.</li>
-            <li><strong>Commission is optional config;</strong> audit trail and permission boundaries are not.</li>
+            <li><strong>Float first.</strong> Outlet must be prefunded before cash-in — <a href="/docs/agent-float-settlement/">Agent Float &amp; Settlement</a>.</li>
+            <li><strong>AOB grant</strong> records which customer and products an agent may touch, with expiry and consent.</li>
+            <li><strong>Cash-in = issuance;</strong> cash-out = redemption — same ledger rules as digital channel.</li>
+            <li><strong>Commission</strong> calculated after audit — <a href="/docs/commission-settlement/">Commission Settlement</a>.</li>
           </ul>
         </div>
 
@@ -79,11 +80,49 @@
       </a></div>
       </section>
 
-        <h2 id="hierarchy">Agent hierarchy &amp; permissions</h2>
+        
+      <section class="journey-panel journey-panel--amber" id="float">
+        <div class="journey-panel-head">
+          <h2>Agent float</h2>
+          <p>Four stages: prefund outlet → cash-in/out movements → EOD physical reconcile → settle with operator net of commission.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/agent-float/af-prefund/">Start at Prefund outlet →</a>
+        </div>
+        <div class="wf-embed" data-workflow="agent-float" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/agent-float/af-prefund/">
+        <span class="n">01</span>
+        <span class="t"><strong>Prefund outlet</strong><em>Credit outlet float ledger account from operator safeguarding transfer.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/agent-float/af-transact/">
+        <span class="n">02</span>
+        <span class="t"><strong>Float movements</strong><em>Each cash-in debits float; each cash-out credits float.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/agent-float/af-reconcile/">
+        <span class="n">03</span>
+        <span class="t"><strong>EOD reconciliation</strong><em>Physical cash count vs float ledger vs transaction log.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/agent-float/af-settle/">
+        <span class="n">04</span>
+        <span class="t"><strong>Settle with operator</strong><em>Net float position + commission settlement journal.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        <h2 id="hierarchy">Agent hierarchy, limits, float &amp; settlement</h2>
+        <div class="table-wrap vocab-table">
+          <table>
+            <thead><tr><th>Concept</th><th>Role</th><th>Documentation</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Supervisor / distributor</strong></td><td>Prefunds outlets, resolves float breaks</td><td><a href="/docs/agent-float-settlement/">Agent Float &amp; Settlement</a></td></tr>
+              <tr><td><strong>Outlet</strong></td><td>Physical location, cash drawer, float account</td><td><a href="/docs/workflows/agent-float/af-reconcile/">EOD reconcile</a></td></tr>
+              <tr><td><strong>Agent user</strong></td><td>Teller session, per-txn limits</td><td><a href="/docs/limits-velocity/">Limits &amp; Velocity</a></td></tr>
+              <tr><td><strong>Settlement</strong></td><td>Net position with operator + commission</td><td><a href="/docs/commission-settlement/">Commission Settlement</a></td></tr>
+              <tr><td><strong>Consent</strong></td><td>Customer authorisation for assisted actions</td><td><a href="/docs/consent-authorization/">Consent &amp; Authorization</a></td></tr>
+            </tbody>
+          </table>
+        </div>
         <ul>
-          <li><strong>Hierarchy</strong> — parent outlet / supervisor chain encoded in agent session; used for limits and escalation.</li>
           <li><strong>Product entitlements</strong> — agent may only assist on products the tenant has enabled and the grant allows.</li>
-          <li><strong>Customer consent</strong> — where regulation requires explicit consent for assisted actions, grant creation checks consent flag.</li>
           <li><strong>Rate limits</strong> — auth and AOB endpoints throttled like retail auth (Redis optional at BFF).</li>
         </ul>
 

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1LINK &amp; Raast Integration</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="rails-pk" data-section="rails-pk">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">1LINK &amp; Raast Integration</p>
+        <h1>1LINK &amp; Raast Integration</h1>
+        <p class="lede">Pakistan rail bindings — instant payments via Raast and interbank/bill connectivity via 1LINK where applicable.</p>
+        
+      <h2 id="raast">Raast (instant payments)</h2>
+      <ul>
+        <li>Binding: <code>raast</code> · Adapter 19 · ISO 20022 pacs.008 / pacs.002.</li>
+        <li>Use: PK→PK domestic payout, alias/IBAN validation, status inquiry on IN_FLIGHT.</li>
+        <li>Settlement: rail statement → reconciliation Service 09.</li>
+      </ul>
+      <p>Stage: <a href="/docs/workflows/fund-transfer/ft-settle/">Fund Transfer · Settle</a></p>
+
+      <h2 id="1link">1LINK</h2>
+      <ul>
+        <li>Use: interbank account verification, bill payment aggregation, legacy switch connectivity where pack enables.</li>
+        <li>Bill pay saga may route biller confirm via 1LINK adapter (parallel to Raast for account-to-account).</li>
+        <li>Idempotency: scheme reference echoed end-to-end; duplicate response deduped.</li>
+      </ul>
+      <p>Bill pay: <a href="/docs/workflows/bill-payments/bp-confirm/">Bill Payments · Confirm</a></p>
+
+      <h2 id="flow">Combined flow (domestic send)</h2>
+      <ol>
+        <li>Customer initiates transfer in apps/web → BFF → payments saga.</li>
+        <li>Screen + hold on ledger (TigerBeetle).</li>
+        <li>Payout adapter selects Raast for PK→PK or 1LINK/partner per corridor config.</li>
+        <li>Webhook/poll updates IN_FLIGHT → SETTLED or triggers compensation.</li>
+      </ol>
+
+      <div class="wf-embed" data-workflow="fund-transfer" data-view="overview"></div>
+
+      <div class="footer-nav">
+        <a href="/docs/exception-management/"><small>Previous</small><strong>Exceptions</strong></a>
+        <a href="/docs/agent-float-settlement/"><small>Next</small><strong>Agent Float</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

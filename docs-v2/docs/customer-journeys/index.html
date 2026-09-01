@@ -16,23 +16,24 @@
       <article class="article">
         <p class="eyebrow">Customer Journeys</p>
         <h1>Customer Journeys</h1>
-        <p class="lede">Every path a retail customer runs in apps/web — onboarding, send money, bills, and cards — with the same money and compliance rules as every other channel.</p>
+        <p class="lede">Every path a retail customer runs — onboarding, cash-in/out, send money, bills, and cards — with the same e-money, safeguarding, and compliance rules as every other channel.</p>
         
         
       <div class="journey-hero journey-hero--customer">
         <div class="journey-hero-inner">
           <p class="journey-hero-kicker">Journey</p>
           <h2 class="journey-hero-title">Retail customer paths</h2>
-          <p class="journey-hero-sub">Self-serve in apps/web → BFF → domain sagas. Channels display and command intent; they never hold authoritative balances or screening decisions.</p>
+          <p class="journey-hero-sub">Self-serve in apps/web or agent-assisted — BFF → domain sagas. E-money is issued, moved, and redeemed through the ledger only.</p>
         </div>
-        <div class="journey-stats"><div class="journey-stat"><b>4</b><span>workflows — onboard, send, bills, cards</span></div><div class="journey-stat"><b>21</b><span>stages with diagrams + checklists</span></div><div class="journey-stat"><b>1</b><span>channel — apps/web (BFF gateway)</span></div></div>
+        <div class="journey-stats"><div class="journey-stat"><b>7</b><span>workflows — onboard, cash, send, bills, cards, reversal</span></div><div class="journey-stat"><b>37+</b><span>stages with diagrams + checklists</span></div><div class="journey-stat"><b>1</b><span>SoR for value — Ledger 04 only</span></div></div>
       </div>
 
         <div class="callout vocab-brief">
           <strong>In brief — customer journeys</strong>
           <ul>
-            <li><strong>Onboarding first.</strong> No ledger accounts until identity, screening, and eKYC complete — tier UNRATED until verified.</li>
-            <li><strong>Send money is a saga.</strong> Quote → screen → hold → payout → settle — see <a href="/docs/one-payment-followed/">One Payment, Followed</a>.</li>
+            <li><strong>Onboarding first.</strong> E-money account opens after KYC + screening CLEAR — see <a href="/docs/emoney-lifecycle/">account lifecycle</a>.</li>
+            <li><strong>Cash-in = issuance.</strong> Physical cash at agent → e-money credit. <strong>Cash-out = redemption.</strong></li>
+            <li><strong>Send money is a saga.</strong> Quote → screen → hold → payout → settle — state machine in <a href="/docs/transaction-states/">Transaction States</a>.</li>
             <li><strong>Same invariants everywhere.</strong> <code>tenant_id</code>, idempotency keys, integer money, fail-closed screening.</li>
           </ul>
         </div>
@@ -82,10 +83,66 @@
       </section>
 
         
+      <section class="journey-panel journey-panel--teal" id="cash-in">
+        <div class="journey-panel-head">
+          <h2>Cash-in (e-money issuance)</h2>
+          <p>Four stages: initiate → screen → credit customer e-money / debit agent float → receipt. Physical cash becomes ledger-backed e-money.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/cash-in/ci-initiate/">Start at Initiate cash-in →</a>
+        </div>
+        <div class="wf-embed" data-workflow="cash-in" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/cash-in/ci-initiate/">
+        <span class="n">01</span>
+        <span class="t"><strong>Initiate cash-in</strong><em>Agent or customer submits amount; cash-in request row created.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/cash-in/ci-screen/">
+        <span class="n">02</span>
+        <span class="t"><strong>Screen &amp; limits</strong><em>AML screen + tier limits + velocity rules on funding event.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/cash-in/ci-credit/">
+        <span class="n">03</span>
+        <span class="t"><strong>Issue e-money</strong><em>Double-entry: credit customer e-money; debit agent float account.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/cash-in/ci-receipt/">
+        <span class="n">04</span>
+        <span class="t"><strong>Receipt &amp; event</strong><em>Mark RECEIPTED; publish wallets.emoney.issued.v1; print/SMS receipt.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        
+      <section class="journey-panel journey-panel--blue" id="cash-out">
+        <div class="journey-panel-head">
+          <h2>Cash-out (e-money redemption)</h2>
+          <p>Four stages: initiate → screen → debit customer e-money → agent disburses cash. Ledger debit before cash leaves the drawer.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/cash-out/co-initiate/">Start at Initiate cash-out →</a>
+        </div>
+        <div class="wf-embed" data-workflow="cash-out" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/cash-out/co-initiate/">
+        <span class="n">01</span>
+        <span class="t"><strong>Initiate cash-out</strong><em>Customer requests cash amount; available balance checked from ledger.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/cash-out/co-screen/">
+        <span class="n">02</span>
+        <span class="t"><strong>Screen &amp; limits</strong><em>AML + daily redemption limits + velocity.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/cash-out/co-debit/">
+        <span class="n">03</span>
+        <span class="t"><strong>Redeem e-money</strong><em>Debit customer e-money; credit agent float / safeguarding.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/cash-out/co-disburse/">
+        <span class="n">04</span>
+        <span class="t"><strong>Disburse cash</strong><em>Agent hands cash; request marked DISBURSED; event published.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        
       <section class="journey-panel journey-panel--blue" id="send">
         <div class="journey-panel-head">
           <h2>Send money</h2>
-          <p>Five-stage remittance saga. Pricing returns firm quote; screening gates; ledger holds before rail; settle captures hold and posts journal.</p>
+          <p>Five-stage remittance saga. Pricing returns firm quote; screening gates; ledger holds before Raast/1LINK payout; settle captures hold.</p>
           <a class="journey-panel-cta" href="/docs/workflows/fund-transfer/ft-initiate/">Start at Initiate transfer →</a>
         </div>
         <div class="wf-embed" data-workflow="fund-transfer" data-view="overview"></div>
@@ -145,7 +202,7 @@
       <section class="journey-panel journey-panel--violet" id="debit-cards">
         <div class="journey-panel-head">
           <h2>Debit cards</h2>
-          <p>Workflow specified; product <span class='pill settled'>deferred</span> until licensed need. Authorisation uses hold pattern like payment holds.</p>
+          <p>Workflow specified; product <span class="pill settled">deferred</span> until licensed need. Chargeback path documented in <a href="/docs/reversal-refund-chargeback/">Reversal &amp; Refund</a>.</p>
           <a class="journey-panel-cta" href="/docs/workflows/debit-cards/dc-request/">Start at Card request →</a>
         </div>
         <div class="wf-embed" data-workflow="debit-cards" data-view="overview"></div>
@@ -165,6 +222,34 @@
       </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/debit-cards/dc-auth/">
         <span class="n">04</span>
         <span class="t"><strong>Authorize (webhook)</strong><em>Processor auth webhook: cache lookup + placeHold; timeout ⇒ DECLINE.</em></span>
+        <span class="c">Open →</span>
+      </a></div>
+      </section>
+
+        
+      <section class="journey-panel journey-panel--rose" id="reversal">
+        <div class="journey-panel-head">
+          <h2>Reversal &amp; refund</h2>
+          <p>Post-settlement correction via linked reversal journals — never edit original postings. Maker-checker on material amounts.</p>
+          <a class="journey-panel-cta" href="/docs/workflows/reversal-refund/rr-request/">Start at Reversal request →</a>
+        </div>
+        <div class="wf-embed" data-workflow="reversal-refund" data-view="overview"></div>
+        <h3 class="journey-stages-label">Stages — open any for full detail</h3>
+        <div class="doc-wf-stage-links"><a class="doc-wf-stage-link accent-teal" href="/docs/workflows/reversal-refund/rr-request/">
+        <span class="n">01</span>
+        <span class="t"><strong>Reversal request</strong><em>Reference originalTransferId; reason code; Idempotency-Key.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-blue" href="/docs/workflows/reversal-refund/rr-approve/">
+        <span class="n">02</span>
+        <span class="t"><strong>Approve (if required)</strong><em>HIGH amount or policy flag requires second operator.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-amber" href="/docs/workflows/reversal-refund/rr-ledger/">
+        <span class="n">03</span>
+        <span class="t"><strong>Post reversal journal</strong><em>Equal-and-opposite postings linked to original journal id.</em></span>
+        <span class="c">Open →</span>
+      </a><a class="doc-wf-stage-link accent-rose" href="/docs/workflows/reversal-refund/rr-complete/">
+        <span class="n">04</span>
+        <span class="t"><strong>Complete &amp; notify</strong><em>Mark complete; notify customer; feed reconciliation.</em></span>
         <span class="c">Open →</span>
       </a></div>
       </section>

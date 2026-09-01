@@ -26,7 +26,7 @@
           <span class="stage-badge stage-badge--wf">Fund Transfer</span>
           <span class="stage-badge stage-badge--req">Required</span>
         </div>
-        <p class="stage-lead">Channel submits; first durable write is transfers INSERT.</p>
+        <p class="stage-lead">Customer → web → BFF → payments; first durable write is transfers INSERT.</p>
         <div class="stage-write-chip">
         <span class="op">INSERT</span>
         <span class="store">PostgreSQL 16</span>
@@ -84,20 +84,30 @@
                 <tr>
                       <td class="stage-walk-n">01</td>
                       <td><strong>Customer</strong></td>
-                      <td>Send money form</td>
+                      <td>Send money form<br><em class="stage-why">Human starts transfer</em></td>
                       <td><code class="stage-save">Human / channel entry</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">02</td>
-                      <td><strong>payments</strong></td>
-                      <td>InitiateTransfer</td>
+                      <td><strong>apps/web</strong></td>
+                      <td>Submit transfer UI<br><em class="stage-why">Browser never hits DB</em></td>
                       <td><code class="stage-save">In-flight processing</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">03</td>
-                      <td><strong>transfers</strong></td>
-                      <td>INSERT on PostgreSQL 16 · transfers<br><em class="stage-why">Purple node on the diagram — this is what auditors can replay.</em></td>
-                      <td><code class="stage-save">INSERT → PostgreSQL 16 · transfers</code></td>
+                      <td><strong>services/bff</strong></td>
+                      <td>Tenant + Idempotency-Key<br><em class="stage-why">Gateway for all channel calls</em></td>
+                      <td><code class="stage-save">In-flight processing</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">04</td>
+                      <td><strong>payments</strong></td>
+                      <td>InitiateTransfer<br><em class="stage-why">Validate corridor + saga step 0</em></td>
+                      <td><code class="stage-save">In-flight processing</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">05</td>
+                      <td><strong>transfers</strong></td>
+                      <td>INSERT on PostgreSQL 16 · transfers<br><em class="stage-why">Durable transfer row</em></td>
+                      <td><code class="stage-save">INSERT → PostgreSQL 16 · transfers</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">06</td>
                       <td><strong>TransferId</strong></td>
                       <td>201</td>
                       <td><code class="stage-save">Terminal state</code></td>
@@ -117,6 +127,16 @@
                 <td>Send money form</td>
                 <td><span class="pill settled">—</span></td>
               </tr><tr>
+                <td><strong>apps/web</strong></td>
+                <td><code>app</code></td>
+                <td>Submit transfer UI</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
+                <td><strong>services/bff</strong></td>
+                <td><code>process</code></td>
+                <td>Tenant + Idempotency-Key</td>
+                <td><span class="pill settled">—</span></td>
+              </tr><tr>
                 <td><strong>payments</strong></td>
                 <td><code>process</code></td>
                 <td>InitiateTransfer</td>
@@ -124,7 +144,7 @@
               </tr><tr>
                 <td><strong>transfers</strong></td>
                 <td><code>db</code></td>
-                <td>INSERT PostgreSQL 16 transfers</td>
+                <td>Durable transfer row</td>
                 <td><span class="pill ok">INSERT</span></td>
               </tr><tr>
                 <td><strong>TransferId</strong></td>

@@ -12,9 +12,9 @@ npm run demo
 
 **Vercel:** Root Directory = `workflow-demo` (or repo root with the existing root `vercel.json` rewrite).
 
-## 2) Platform Docs v2 (Digital Banking only)
+## 2) Platform Docs v2 (EMI / e-money & remittance)
 
-Executive documentation for **Digital Banking & Remittance only** — not sibling products. Sidebar menus, status, corrections, journeys. Does **not** modify `workflow-demo`.
+Executive documentation for **EMI / e-money issuance, safeguarding, agent cash-in/out, and remittance** — not sibling products. Includes a full **EMI & e-money** sidebar section plus journey workflows (cash-in, cash-out, agent float, reversal/refund).
 
 ```bash
 npm run docs-v2

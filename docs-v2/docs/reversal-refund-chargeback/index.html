@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reversal, Refund &amp; Chargeback</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="reversal-refund-chargeback" data-section="reversal-refund-chargeback">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Reversal, Refund &amp; Chargeback</p>
+        <h1>Reversal, Refund &amp; Chargeback</h1>
+        <p class="lede">Correcting completed or in-flight money movement without editing ledger history — equal-and-opposite postings and saga compensation.</p>
+        
+      <div class="callout vocab-brief">
+        <strong>Principle</strong> The ledger is append-only. Corrections are <strong>reversal journals</strong> linked to the original transaction id — never UPDATE or DELETE on postings.
+      </div>
+
+      <h2 id="types">Flow types</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Type</th><th>When</th><th>Mechanism</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Saga compensation</strong></td><td>Before SETTLED — screen fail, rail reject</td><td><code>releaseHold</code> · no customer debit</td></tr>
+            <tr><td><strong>Reversal</strong></td><td>After SETTLED — operator error, duplicate</td><td>Linked reversal journal · refund saga</td></tr>
+            <tr><td><strong>Refund</strong></td><td>Customer request, failed service</td><td>Credit customer e-money or external payout</td></tr>
+            <tr><td><strong>Chargeback</strong></td><td>Card dispute (deferred product)</td><td>Processor dispute webhook → hold or debit adjustment</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Workflow: <a href="/docs/workflows/reversal-refund/rr-request/">Reversal &amp; refund →</a></p>
+      <div class="wf-embed" data-workflow="reversal-refund" data-view="overview"></div>
+
+      <h2 id="idempotency">Duplicate prevention</h2>
+      <p>Reversal requests carry their own <code>Idempotency-Key</code> and reference <code>originalTransferId</code>. Replay returns the same reversal id — prevents double refund.</p>
+
+      <div class="footer-nav">
+        <a href="/docs/transaction-states/"><small>Previous</small><strong>Transaction States</strong></a>
+        <a href="/docs/ledger-vs-audit/"><small>Next</small><strong>Ledger vs Audit Log</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

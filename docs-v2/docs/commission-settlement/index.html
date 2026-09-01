@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Commission Calculation &amp; Settlement</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="commission-settlement" data-section="commission-settlement">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Commission Calculation &amp; Settlement</p>
+        <h1>Commission Calculation &amp; Settlement</h1>
+        <p class="lede">How agent and outlet commissions are calculated from audited actions, accrued, and settled without bypassing the ledger.</p>
+        
+      <h2 id="calc">Calculation</h2>
+      <ul>
+        <li>Commission schemes are <strong>pack configuration</strong> — version-pinned, never hard-coded.</li>
+        <li>Trigger: successful assisted transaction after <code>audit_log</code> write.</li>
+        <li>Event: <code>agent.action.v1</code> with product, amount, agent_id, outlet_id — PII minimised.</li>
+        <li>Billing service computes fee/commission; posts accrual to operator commission payable account.</li>
+      </ul>
+
+      <h2 id="settlement">Settlement</h2>
+      <ol>
+        <li>Accrual period closes (daily/weekly per pack).</li>
+        <li>Reconciliation matches events to completed transactions.</li>
+        <li>Net commission journal: operator payable → agent/outlet settlement account or external payout.</li>
+        <li>Disputes handled via exception case — never silent adjustment.</li>
+      </ol>
+
+      <p>Workflow stages: <a href="/docs/workflows/agent-assisted/ag-audit/">Audit &amp; commission</a> · <a href="/docs/workflows/agent-float/af-settle/">Agent float · Settle</a></p>
+
+      <div class="callout">
+        <strong>Rule</strong> Audit before commission. Commission metering never fires without immutable audit_log row for the underlying action.
+      </div>
+
+      <div class="footer-nav">
+        <a href="/docs/agent-float-settlement/"><small>Previous</small><strong>Agent Float</strong></a>
+        <a href="/docs/financial-reporting/"><small>Next</small><strong>Financial Reporting</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

@@ -3,21 +3,22 @@
  */
 module.exports = {
   "why-digital-banking": {
-    title: "Why Digital Banking Exists",
+    title: "Why EMI / E-Money Exists",
     lede:
-      "Why this machine is being built — what problem it solves, what it deliberately refuses to do, and why the shop window is not the product.",
+      "Why this machine is being built — e-money issuance, safeguarding, agent networks, and remittance — and what it deliberately refuses to do.",
     body: `
       <div class="callout vocab-brief">
         <strong>In brief — how to read this page</strong>
         <ul>
           <li><strong>Two businesses, one confusion.</strong> Selling accounts and moving money looks like marketing — but regulated money movement needs a machine that survives audit.</li>
+          <li><strong>EMI / e-money operator.</strong> Licensed or partnered issuance of electronic money — not a marketing site with a balance field.</li>
           <li><strong>Three markets, one platform.</strong> Pakistan first, then UAE, then in-Kingdom Saudi Arabia — same services, different adapters.</li>
-          <li><strong>Adapters, not reimplementation.</strong> NADRA, Raast, and later UAE/KSA rails plug in behind ports; the domain does not embed every wire protocol in every service.</li>
+          <li><strong>Adapters, not reimplementation.</strong> NADRA, Raast, 1LINK, and later UAE/KSA rails plug in behind ports.</li>
         </ul>
       </div>
 
-      <p>Retail banks and remittance operators in Pakistan, the UAE and Saudi Arabia face the same structural problem: <strong>open a customer, move money across a corridor, and prove to a regulator that every rupee, dirham and riyal is accounted for</strong>. Marketing sites and mobile apps are the shop window. The machine behind them — identity, screening, ledger, saga, reconciliation, reporting — is what auditors inspect.</p>
-      <p>We are building that machine for <strong>Digital Banking &amp; Remittance only</strong> (Blueprint v3.1 banking track). Takaful and other products live in sibling documentation sets.</p>
+      <p>Retail EMI operators and remittance providers in Pakistan, the UAE and Saudi Arabia face the same structural problem: <strong>issue e-money, move it safely, redeem it on demand, and prove to a regulator that every rupee, dirham and riyal is safeguarded</strong>. Marketing sites and mobile apps are the shop window. The machine behind them — identity, screening, ledger, issuance/redemption, agent float, saga, reconciliation, reporting — is what auditors inspect.</p>
+      <p>We are building that machine for <strong>EMI / e-money and remittance</strong> (Blueprint v3.1 banking track). Full terminology: <a href="/docs/emoney-overview/">EMI Overview</a>. Takaful and other products live in sibling documentation sets.</p>
 
       <h2 id="problem">The problem we are solving</h2>
       <div class="table-wrap vocab-table">
@@ -275,6 +276,50 @@ module.exports = {
               <td><strong>BFF</strong></td>
               <td>Gateway the apps talk to</td>
               <td>Service <strong>11</strong> · tenant resolution, auth, rate limits · never raw domain exposure</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="emi">EMI &amp; e-money</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr class="trap">
+              <td><strong>E-money</strong></td>
+              <td>Electronically stored monetary value</td>
+              <td>Customer liability accounts on Ledger <strong>04</strong> — created on <a href="/docs/emoney-issuance-redemption/">issuance</a>, destroyed on <a href="/docs/emoney-issuance-redemption/">redemption</a></td>
+            </tr>
+            <tr class="trap">
+              <td><strong>E-money account</strong></td>
+              <td>What the customer "owns" in the app</td>
+              <td>Wallets service product instance → maps to ledger account ids · lifecycle in <a href="/docs/emoney-lifecycle/">E-Money Account Lifecycle</a></td>
+            </tr>
+            <tr>
+              <td><strong>Issuance</strong></td>
+              <td>Creating e-money when funds received</td>
+              <td><a href="/docs/workflows/cash-in/ci-initiate/">Cash-in</a> or bank transfer → balanced journal · <code>wallets.emoney.issued.v1</code></td>
+            </tr>
+            <tr>
+              <td><strong>Redemption</strong></td>
+              <td>Destroying e-money when customer cashes out</td>
+              <td><a href="/docs/workflows/cash-out/co-initiate/">Cash-out</a> or bank payout → debit customer liability</td>
+            </tr>
+            <tr>
+              <td><strong>Safeguarding</strong></td>
+              <td>Customer money kept separate from operator funds</td>
+              <td>Segregated ledger pool — <a href="/docs/safeguarding/">Safeguarding Architecture</a></td>
+            </tr>
+            <tr>
+              <td><strong>Agent float</strong></td>
+              <td>Prefunded balance at an outlet</td>
+              <td>Outlet ledger account · <a href="/docs/agent-float-settlement/">Agent Float &amp; Settlement</a></td>
+            </tr>
+            <tr>
+              <td><strong>Audit log</strong></td>
+              <td>Who did what, when</td>
+              <td><code>audit_log</code> / <code>ops_audit</code> — <strong>not</strong> used for balance · see <a href="/docs/ledger-vs-audit/">Ledger vs Audit Log</a></td>
             </tr>
           </tbody>
         </table>

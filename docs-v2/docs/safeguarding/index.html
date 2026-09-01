@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Safeguarding Architecture</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="safeguarding" data-section="safeguarding">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Safeguarding Architecture</p>
+        <h1>Safeguarding Architecture</h1>
+        <p class="lede">How customer funds are segregated from operator money — safeguarded accounts, daily reconciliation, and audit evidence.</p>
+        
+      <div class="callout vocab-brief">
+        <strong>In brief</strong>
+        <ul>
+          <li><strong>Safeguarded pool</strong> — ledger accounts holding customer funds only; separate from operator revenue and float working accounts.</li>
+          <li><strong>Issuance</strong> increases customer e-money and safeguarded liabilities in balance.</li>
+          <li><strong>Redemption</strong> decreases both when funds leave to bank or agent.</li>
+          <li><strong>Daily recon</strong> — safeguarded ledger balance = sum of customer e-money + agent float liabilities ± in-transit items.</li>
+        </ul>
+      </div>
+
+      <h2 id="accounts">Ledger account classes</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Class</th><th>Purpose</th><th>Who owns the balance</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Customer e-money</strong></td><td>Per-customer liability accounts</td><td>Customer</td></tr>
+            <tr><td><strong>Agent float</strong></td><td>Prefunded outlet working balance</td><td>Agent / outlet (operator liability)</td></tr>
+            <tr><td><strong>Safeguarded pool</strong></td><td>Segregated trust/settlement mirror</td><td>Customers collectively</td></tr>
+            <tr><td><strong>Operator</strong></td><td>Fees, commission, working capital</td><td>EMI operator</td></tr>
+            <tr><td><strong>In-transit / suspense</strong></td><td>Rail or agent settlement in flight</td><td>Temporary — must clear daily</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="flow">Safeguarding flow</h2>
+      <ol>
+        <li>External funds hit <strong>partner bank / agent prefunding</strong> → credited to safeguarded pool (ledger).</li>
+        <li>Issuance journals move value from pool to customer e-money liability.</li>
+        <li>Payments and remittance move value between customer accounts via double-entry — total safeguarded liability unchanged until redemption.</li>
+        <li>Redemption journals reduce customer liability and pool; bank payout confirms exit.</li>
+      </ol>
+
+      <p>Reconciliation detail: <a href="/docs/settlement-reconciliation/">Settlement &amp; Reconciliation</a> · Exception handling: <a href="/docs/exception-management/">Exception Management</a></p>
+
+      <div class="footer-nav">
+        <a href="/docs/emoney-issuance-redemption/"><small>Previous</small><strong>Issuance &amp; Redemption</strong></a>
+        <a href="/docs/limits-velocity/"><small>Next</small><strong>Limits &amp; Velocity</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>

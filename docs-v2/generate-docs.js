@@ -33,10 +33,32 @@ const NAV = [
   {
     label: "The domain",
     items: [
-      { id: "why-digital-banking", label: "Why Digital Banking Exists", file: "why-digital-banking" },
+      { id: "why-digital-banking", label: "Why EMI / E-Money Exists", file: "why-digital-banking" },
       { id: "how-the-money-works", label: "How the Money Works", file: "how-the-money-works" },
       { id: "the-vocabulary", label: "The Vocabulary", file: "the-vocabulary" },
       { id: "who-governs-it", label: "Who Governs It", file: "who-governs-it" },
+    ],
+  },
+  {
+    label: "EMI & e-money",
+    items: [
+      { id: "emoney-overview", label: "EMI & E-Money Overview", file: "emoney-overview" },
+      { id: "emoney-lifecycle", label: "E-Money Account Lifecycle", file: "emoney-lifecycle" },
+      { id: "emoney-issuance-redemption", label: "Issuance & Redemption", file: "emoney-issuance-redemption" },
+      { id: "safeguarding", label: "Safeguarding Architecture", file: "safeguarding" },
+      { id: "limits-velocity", label: "Limits & Velocity Controls", file: "limits-velocity" },
+      { id: "fraud-controls", label: "AML, KYC & Fraud Controls", file: "fraud-controls" },
+      { id: "transaction-states", label: "Transaction State Machine", file: "transaction-states" },
+      { id: "reversal-refund-chargeback", label: "Reversal, Refund & Chargeback", file: "reversal-refund-chargeback" },
+      { id: "ledger-vs-audit", label: "Ledger vs Audit Log", file: "ledger-vs-audit" },
+      { id: "idempotency-controls", label: "Idempotency & Duplicates", file: "idempotency-controls" },
+      { id: "consent-authorization", label: "Consent & Authorization", file: "consent-authorization" },
+      { id: "settlement-reconciliation", label: "Settlement & Reconciliation", file: "settlement-reconciliation" },
+      { id: "exception-management", label: "Exception Management", file: "exception-management" },
+      { id: "rails-pk", label: "1LINK & Raast (PK)", file: "rails-pk" },
+      { id: "agent-float-settlement", label: "Agent Float & Settlement", file: "agent-float-settlement" },
+      { id: "commission-settlement", label: "Commission Settlement", file: "commission-settlement" },
+      { id: "financial-reporting", label: "Financial & Regulatory Reporting", file: "financial-reporting" },
     ],
   },
   {
@@ -55,10 +77,10 @@ const NAV = [
         id: "customer-journeys",
         label: "Customer Journeys",
         file: "customer-journeys",
-        workflows: ["onboarding", "fund-transfer", "bill-payments", "debit-cards"],
+        workflows: ["onboarding", "cash-in", "cash-out", "fund-transfer", "bill-payments", "debit-cards", "reversal-refund"],
       },
       { id: "corporate-journeys", label: "Corporate Journeys", file: "corporate-journeys", workflows: ["corporate-kyb"] },
-      { id: "agent-journeys", label: "Agent Journeys", file: "agent-journeys", workflows: ["agent-assisted"] },
+      { id: "agent-journeys", label: "Agent Journeys", file: "agent-journeys", workflows: ["agent-assisted", "agent-float"] },
       { id: "operator-journeys", label: "Operator Journeys", file: "operator-journeys", workflows: ["screening-aml", "tenant-ops"] },
       { id: "platform-external", label: "Platform & External", file: "platform-external", workflows: ["market-adapters"] },
     ],
@@ -117,7 +139,7 @@ const NAV = [
 const CONTENT = {
   "start-here": {
     title: "Start Here",
-    lede: "One documentation set for Digital Banking & Remittance — Blueprint v3.1 banking track. Pick a path, or read straight down.",
+    lede: "One documentation set for EMI / e-money and remittance — Blueprint v3.1 banking track. Pick a path, or read straight down.",
     body: `
       <h2 id="paths">Reading paths</h2>
       <div class="card-grid">
@@ -127,7 +149,7 @@ const CONTENT = {
       </div>
       <h2 id="order">The order</h2>
       <p>Domain → product → journeys (with stage submenus) → capabilities → architecture → technology → cross-cutting.</p>
-      <div class="callout"><strong>Scope</strong> Digital Banking &amp; Remittance only. Workflow stages are in the sidebar under <strong>Journeys</strong> and <strong>Capability guides</strong> — expand a workflow to see each stage.</div>
+      <div class="callout"><strong>Scope</strong> EMI / e-money operator and remittance — Pakistan, UAE, KSA. Start with <a href="/docs/emoney-overview/">EMI Overview</a>. Workflow stages are under <strong>Journeys</strong> and <strong>EMI &amp; e-money</strong>.</div>
       <h2 id="workflows">Workflows in this pack</h2>
       <div class="wf-embed" data-view="gallery"></div>
     `,
@@ -862,12 +884,12 @@ function writePage(relDir, html) {
 }
 
 // ---- docs.js ----
-const docsJs = `/* Auto-generated nav — Digital Banking menus + workflow stage submenus */
+const docsJs = `/* Auto-generated nav — EMI / e-money menus + workflow stage submenus */
 (function () {
   const SIDEBAR_HTML = \`
     <a class="brand" href="/docs/where-we-stand/">
       <strong>Platform Docs</strong>
-      <small>Digital Banking &amp; Remittance</small>
+      <small>EMI / E-Money &amp; Remittance</small>
     </a>
     <input class="search" type="search" placeholder="Search" aria-label="Search" disabled title="Search coming later" />
 ${sidebarHtml()}

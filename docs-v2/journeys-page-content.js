@@ -37,24 +37,25 @@ module.exports = function journeyPages(stageLinks) {
     "customer-journeys": {
       title: "Customer Journeys",
       lede:
-        "Every path a retail customer runs in apps/web — onboarding, send money, bills, and cards — with the same money and compliance rules as every other channel.",
+        "Every path a retail customer runs — onboarding, cash-in/out, send money, bills, and cards — with the same e-money, safeguarding, and compliance rules as every other channel.",
       body: `
         ${hero(
           "customer",
           "Retail customer paths",
-          "Self-serve in apps/web → BFF → domain sagas. Channels display and command intent; they never hold authoritative balances or screening decisions.",
+          "Self-serve in apps/web or agent-assisted — BFF → domain sagas. E-money is issued, moved, and redeemed through the ledger only.",
           [
-            ["4", "workflows — onboard, send, bills, cards"],
-            ["21", "stages with diagrams + checklists"],
-            ["1", "channel — apps/web (BFF gateway)"],
+            ["7", "workflows — onboard, cash, send, bills, cards, reversal"],
+            ["37+", "stages with diagrams + checklists"],
+            ["1", "SoR for value — Ledger 04 only"],
           ]
         )}
 
         <div class="callout vocab-brief">
           <strong>In brief — customer journeys</strong>
           <ul>
-            <li><strong>Onboarding first.</strong> No ledger accounts until identity, screening, and eKYC complete — tier UNRATED until verified.</li>
-            <li><strong>Send money is a saga.</strong> Quote → screen → hold → payout → settle — see <a href="/docs/one-payment-followed/">One Payment, Followed</a>.</li>
+            <li><strong>Onboarding first.</strong> E-money account opens after KYC + screening CLEAR — see <a href="/docs/emoney-lifecycle/">account lifecycle</a>.</li>
+            <li><strong>Cash-in = issuance.</strong> Physical cash at agent → e-money credit. <strong>Cash-out = redemption.</strong></li>
+            <li><strong>Send money is a saga.</strong> Quote → screen → hold → payout → settle — state machine in <a href="/docs/transaction-states/">Transaction States</a>.</li>
             <li><strong>Same invariants everywhere.</strong> <code>tenant_id</code>, idempotency keys, integer money, fail-closed screening.</li>
           </ul>
         </div>
@@ -70,10 +71,30 @@ module.exports = function journeyPages(stageLinks) {
         )}
 
         ${workflowPanel(
+          "cash-in",
+          "teal",
+          "Cash-in (e-money issuance)",
+          "Four stages: initiate → screen → credit customer e-money / debit agent float → receipt. Physical cash becomes ledger-backed e-money.",
+          "/docs/workflows/cash-in/ci-initiate/",
+          "Start at Initiate cash-in",
+          "cash-in"
+        )}
+
+        ${workflowPanel(
+          "cash-out",
+          "blue",
+          "Cash-out (e-money redemption)",
+          "Four stages: initiate → screen → debit customer e-money → agent disburses cash. Ledger debit before cash leaves the drawer.",
+          "/docs/workflows/cash-out/co-initiate/",
+          "Start at Initiate cash-out",
+          "cash-out"
+        )}
+
+        ${workflowPanel(
           "send",
           "blue",
           "Send money",
-          "Five-stage remittance saga. Pricing returns firm quote; screening gates; ledger holds before rail; settle captures hold and posts journal.",
+          "Five-stage remittance saga. Pricing returns firm quote; screening gates; ledger holds before Raast/1LINK payout; settle captures hold.",
           "/docs/workflows/fund-transfer/ft-initiate/",
           "Start at Initiate transfer",
           "fund-transfer"
@@ -93,10 +114,20 @@ module.exports = function journeyPages(stageLinks) {
           "debit-cards",
           "violet",
           "Debit cards",
-          "Workflow specified; product <span class='pill settled'>deferred</span> until licensed need. Authorisation uses hold pattern like payment holds.",
+          'Workflow specified; product <span class="pill settled">deferred</span> until licensed need. Chargeback path documented in <a href="/docs/reversal-refund-chargeback/">Reversal &amp; Refund</a>.',
           "/docs/workflows/debit-cards/dc-request/",
           "Start at Card request",
           "debit-cards"
+        )}
+
+        ${workflowPanel(
+          "reversal",
+          "rose",
+          "Reversal &amp; refund",
+          "Post-settlement correction via linked reversal journals — never edit original postings. Maker-checker on material amounts.",
+          "/docs/workflows/reversal-refund/rr-request/",
+          "Start at Reversal request",
+          "reversal-refund"
         )}
 
         <section class="journey-panel journey-panel--slate" id="serve">
@@ -204,21 +235,22 @@ module.exports = function journeyPages(stageLinks) {
       body: `
         ${hero(
           "agent",
-          "Agent-assisted service",
-          "The agent channel runs the same domain sagas as self-serve — plus agent_id, acting-on-behalf grants, and audit rows on every mutation.",
+          "Agent network & assisted service",
+          "Outlets with prefunded float serve cash-in/out and assisted onboarding. Same domain sagas as self-serve — plus hierarchy, float limits, and audit before commission.",
           [
-            ["4", "stages — login → AOB → action → audit"],
+            ["2", "workflow families — assisted + float"],
+            ["8", "stages across login, float, cash"],
             ["0", "compliance shortcuts — screening still gates"],
-            ["∞", "audit — attribution is not optional"],
           ]
         )}
 
         <div class="callout vocab-brief">
           <strong>In brief — agent journeys</strong>
           <ul>
-            <li><strong>AOB grant</strong> records which customer and products an agent may touch, with expiry.</li>
-            <li><strong>Headers on every call:</strong> <code>X-Agent-Id</code>, tenant, idempotency key — same as retail plus attribution.</li>
-            <li><strong>Commission is optional config;</strong> audit trail and permission boundaries are not.</li>
+            <li><strong>Float first.</strong> Outlet must be prefunded before cash-in — <a href="/docs/agent-float-settlement/">Agent Float &amp; Settlement</a>.</li>
+            <li><strong>AOB grant</strong> records which customer and products an agent may touch, with expiry and consent.</li>
+            <li><strong>Cash-in = issuance;</strong> cash-out = redemption — same ledger rules as digital channel.</li>
+            <li><strong>Commission</strong> calculated after audit — <a href="/docs/commission-settlement/">Commission Settlement</a>.</li>
           </ul>
         </div>
 
@@ -246,11 +278,31 @@ module.exports = function journeyPages(stageLinks) {
           "agent-assisted"
         )}
 
-        <h2 id="hierarchy">Agent hierarchy &amp; permissions</h2>
+        ${workflowPanel(
+          "float",
+          "amber",
+          "Agent float",
+          "Four stages: prefund outlet → cash-in/out movements → EOD physical reconcile → settle with operator net of commission.",
+          "/docs/workflows/agent-float/af-prefund/",
+          "Start at Prefund outlet",
+          "agent-float"
+        )}
+
+        <h2 id="hierarchy">Agent hierarchy, limits, float &amp; settlement</h2>
+        <div class="table-wrap vocab-table">
+          <table>
+            <thead><tr><th>Concept</th><th>Role</th><th>Documentation</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Supervisor / distributor</strong></td><td>Prefunds outlets, resolves float breaks</td><td><a href="/docs/agent-float-settlement/">Agent Float &amp; Settlement</a></td></tr>
+              <tr><td><strong>Outlet</strong></td><td>Physical location, cash drawer, float account</td><td><a href="/docs/workflows/agent-float/af-reconcile/">EOD reconcile</a></td></tr>
+              <tr><td><strong>Agent user</strong></td><td>Teller session, per-txn limits</td><td><a href="/docs/limits-velocity/">Limits &amp; Velocity</a></td></tr>
+              <tr><td><strong>Settlement</strong></td><td>Net position with operator + commission</td><td><a href="/docs/commission-settlement/">Commission Settlement</a></td></tr>
+              <tr><td><strong>Consent</strong></td><td>Customer authorisation for assisted actions</td><td><a href="/docs/consent-authorization/">Consent &amp; Authorization</a></td></tr>
+            </tbody>
+          </table>
+        </div>
         <ul>
-          <li><strong>Hierarchy</strong> — parent outlet / supervisor chain encoded in agent session; used for limits and escalation.</li>
           <li><strong>Product entitlements</strong> — agent may only assist on products the tenant has enabled and the grant allows.</li>
-          <li><strong>Customer consent</strong> — where regulation requires explicit consent for assisted actions, grant creation checks consent flag.</li>
           <li><strong>Rate limits</strong> — auth and AOB endpoints throttled like retail auth (Redis optional at BFF).</li>
         </ul>
 

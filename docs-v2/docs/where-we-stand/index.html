@@ -23,10 +23,10 @@
           <a class="btn" href="/docs/start-here/">Open index</a>
         </div>
 
-        <p>We are building <strong>the machine a digital bank and remittance operator runs on</strong> — not the shop window. Scope is <strong>Digital Banking &amp; Remittance only</strong> across Pakistan, UAE and Saudi Arabia (Blueprint v3.1 banking track). Three corrections still matter. Two questions are still yours to answer. A local banking pilot can move money; Pakistan go-live still cannot.</p>
+        <p>We are building <strong>the machine an EMI / e-money institution and remittance operator runs on</strong> — not the shop window. Scope is <strong>electronic money issuance, safeguarding, agent cash-in/out, and remittance corridors</strong> across Pakistan, UAE and Saudi Arabia (Blueprint v3.1 banking track). Three corrections still matter. Two questions are still yours to answer. A local pilot can move money; Pakistan go-live still cannot.</p>
 
         <div class="stats">
-          <div class="stat"><b>1</b><span>product in this documentation set: Digital Banking &amp; Remittance — ledger, wallets, corridors, and the send-money saga.</span></div>
+          <div class="stat"><b>1</b><span>regulated product frame: EMI / e-money — issuance, redemption, safeguarding, ledger, corridors, and agent network.</span></div>
           <div class="stat"><b>12</b><span>banking services in the blueprint set (identity through notification), plus market adapters behind stable ports.</span></div>
           <div class="stat"><b>3</b><span>launch markets and 9 milestones (M0–M8). Pakistan first, then UAE, then in-Kingdom Saudi Arabia.</span></div>
           <div class="stat"><b>311</b><span>tasks traced to the banking monorepo — 31 done, 63 partial, 214 not started (17 Aug 2026).</span></div>
@@ -34,12 +34,12 @@
 
         <div class="callout">
           <strong>Scope of this site</strong>
-          These pages describe <strong>Digital Banking &amp; Remittance only</strong>. Broader multi-product framing in other portals is out of scope here. Optional engineering library: <a href="https://document.digitalbank.zekiexperts.com/index.html" target="_blank" rel="noopener">document.digitalbank.zekiexperts.com</a> — use banking services and adapters only.
+          These pages describe <strong>EMI / e-money and remittance</strong> — see <a href="/docs/emoney-overview/">EMI Overview</a>. Broader multi-product framing in other portals is out of scope here.
         </div>
 
         <h2 id="building">What we are building</h2>
-        <p>The shop window sells. <strong>The machine has to survive an audit.</strong> We are building the machine for digital banking and remittance.</p>
-        <p>Identity and KYC, sanctions screening, the double-entry ledger, the send-money saga, wallets, pricing, FX provenance, reconciliation, regulatory reporting, and the customer app and staff console that sit on top. Market providers (NADRA, Raast, and later UAE/KSA equivalents) plug in through adapters — the banking domain does not reimplement rails inside every service.</p>
+        <p>The shop window sells. <strong>The machine has to survive an audit.</strong> We are building the machine for e-money issuance, safeguarding, agent outlets, and remittance.</p>
+        <p>Identity and KYC, sanctions screening, the double-entry ledger, e-money issuance and redemption, cash-in/cash-out, agent float, the send-money saga, wallets, pricing, FX provenance, reconciliation, regulatory reporting, and the customer app and agent channel that sit on top. Market providers (NADRA, Raast, 1LINK, and later UAE/KSA equivalents) plug in through adapters — the domain does not reimplement rails inside every service.</p>
         <p>That distinction explains most of the engineering priorities: <strong>a platform that sells well and cannot survive an audit has no second year.</strong></p>
 
         <div class="table-wrap">

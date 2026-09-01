@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Consent &amp; Authorization Controls</title>
+  <link rel="stylesheet" href="/assets/css/docs.css" />
+  <link rel="stylesheet" href="/assets/css/workflows.css" />
+</head>
+<body data-page="consent-authorization" data-section="consent-authorization">
+  <div class="mobile-bar"><strong>Platform Docs</strong><button type="button" id="menuBtn">Menu</button></div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main">
+      <article class="article">
+        <p class="eyebrow">Consent &amp; Authorization Controls</p>
+        <h1>Consent &amp; Authorization Controls</h1>
+        <p class="lede">Customer consent, agent acting-on-behalf grants, and step-up authorization for high-risk operations.</p>
+        
+      <h2 id="customer">Customer consent</h2>
+      <ul>
+        <li>E-Sign before credit bureau pull where pack requires it.</li>
+        <li>Terms acceptance stored with version id and timestamp on customer record.</li>
+        <li>Marketing / data processing consent flags — separate from payment authorization.</li>
+      </ul>
+
+      <h2 id="agent">Agent acting-on-behalf (AOB)</h2>
+      <ul>
+        <li>Grant records: agent_id, customer_id, product scope, expiry, consent flag where regulated.</li>
+        <li>Every assisted mutation carries <code>X-Agent-Id</code> + AOB grant id in audit_log.</li>
+        <li>Grant expiry enforced at BFF — expired grant ⇒ 403.</li>
+      </ul>
+      <p>Workflow: <a href="/docs/workflows/agent-assisted/ag-select/">Agent · Select customer</a></p>
+
+      <h2 id="stepup">Step-up authorization</h2>
+      <ul>
+        <li>IdP adapter supports elevated <code>acr</code> for high-risk ops: beneficiary add, large transfer, cash-out above threshold.</li>
+        <li>Pack-configured thresholds per market.</li>
+      </ul>
+
+      <div class="wf-embed" data-workflow="agent-assisted" data-view="overview"></div>
+
+      <div class="footer-nav">
+        <a href="/docs/idempotency-controls/"><small>Previous</small><strong>Idempotency</strong></a>
+        <a href="/docs/settlement-reconciliation/"><small>Next</small><strong>Settlement &amp; Reconciliation</strong></a>
+      </div>
+    
+      </article>
+      <aside class="toc" id="toc"></aside>
+    </div>
+  </div>
+  <script src="/assets/js/docs.js"></script>
+  <script src="/assets/js/workflows.js"></script>
+  <script src="/assets/js/workflows-embed.js"></script>
+</body>
+</html>
