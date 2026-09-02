@@ -40,18 +40,16 @@
         </tbody>
       </table></div>
 
-      <h2 id="rails">Launch rail bindings (Pakistan)</h2>
+      <h2 id="rails">Launch rail bindings</h2>
       <div class="table-wrap"><table>
         <thead><tr><th>Binding</th><th>Market</th><th>Wire</th></tr></thead>
         <tbody>
           <tr><td><code>raast</code></td><td>PK→PK</td><td>ISO 20022 pacs.008/pacs.002 + Raast alias</td></tr>
-          <tr><td><code>1link</code></td><td>PK</td><td>Interbank / bill pay aggregation where pack enables</td></tr>
           <tr><td><code>aani</code></td><td>AE→AE</td><td>ISO 20022 via Al Etihad Payments</td></tr>
           <tr><td><code>sarie</code></td><td>SA→SA</td><td>SAMA sarie IPS</td></tr>
           <tr><td><code>xborder-partner</code></td><td>AE→PK, SA→PK</td><td>Partner API until direct scheme certified</td></tr>
         </tbody>
       </table></div>
-      <p>Full PK flows: <a href="/docs/rails-pk/">1LINK &amp; Raast</a></p>
 
       <h2 id="bills">Bill payments</h2>
       <p>Separate saga: select biller → create payment → confirm → debit. <a href="/docs/workflows/bill-payments/bp-select/">Bill Payments stages →</a></p>

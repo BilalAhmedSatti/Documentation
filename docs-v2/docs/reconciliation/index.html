@@ -16,23 +16,16 @@
       <article class="article">
         <p class="eyebrow">Reconciliation</p>
         <h1>Reconciliation</h1>
-        <p class="lede">Three-way match: ledger ↔ payments ↔ rail statements — plus agent float and safeguarding daily proof.</p>
+        <p class="lede">Three-way match: ledger ↔ payments ↔ rail statements.</p>
         
       <h2 id="goal">Goal</h2>
-      <p>Breaks surface as <strong>cases</strong>, not silent drift. Ops works exceptions; engineering fixes root cause. See <a href="/docs/exception-management/">Exception Management</a>.</p>
-      <h2 id="sources">Three sources of truth (payments)</h2>
+      <p>Breaks surface as <strong>cases</strong>, not silent drift. Ops works exceptions; engineering fixes root cause.</p>
+      <h2 id="sources">Three sources of truth</h2>
       <ol>
-        <li><strong>Ledger</strong> — journals, holds, safeguarding pool (SoR for value)</li>
+        <li><strong>Ledger</strong> — journals and holds (SoR for value)</li>
         <li><strong>Payments</strong> — saga state and payout references</li>
-        <li><strong>Rail statements</strong> — Raast, 1LINK, Aani/sarie/partner files</li>
+        <li><strong>Rail statements</strong> — Raast/Aani/sarie/partner files</li>
       </ol>
-      <h2 id="emi">EMI-specific reconciliation</h2>
-      <ul>
-        <li><strong>Safeguarding</strong> — daily pool vs sum of customer e-money + agent float liabilities</li>
-        <li><strong>Agent float</strong> — physical cash vs outlet float ledger · <a href="/docs/workflows/agent-float/af-reconcile/">EOD reconcile</a></li>
-        <li><strong>Commission</strong> — <code>agent.action.v1</code> events vs settled transactions</li>
-      </ul>
-      <p>Full detail: <a href="/docs/settlement-reconciliation/">Settlement &amp; Reconciliation</a></p>
       <p>Service 09 specified in blueprint; not complete in pilot backlog snapshot.</p>
     
       </article>
