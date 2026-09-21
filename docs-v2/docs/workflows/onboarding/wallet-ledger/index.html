@@ -16,7 +16,7 @@
       <article class="article">
         <p class="eyebrow">Onboarding · Stage 08</p>
         <h1>08 - Wallet + TigerBeetle accounts</h1>
-        <p class="lede">Activate onboarding: wallet metadata in Postgres, accounts in TigerBeetle.</p>
+        <p class="lede">Activation Gate clears: convert session Tracking ID to active Wallet Number, write Postgres metadata, and create TigerBeetle accounts.</p>
         
           
     <div class="stage-page stage-page--amber">
@@ -26,9 +26,9 @@
           <span class="stage-badge stage-badge--wf">Onboarding</span>
           <span class="stage-badge stage-badge--req">Required</span>
         </div>
-        <p class="stage-lead">Final step: mark onboarding ACTIVATED, open wallet metadata in Postgres, then create real ledger accounts in TigerBeetle. Identity never holds balances.</p>
+        <p class="stage-lead">Final step: check Activation Gate, convert session Tracking ID into a canonical Wallet/Account Number, mark onboarding ACTIVATED, open wallet metadata in Postgres, create real ledger accounts in TigerBeetle, and start the BPRD 04 2-hour cooling-off timer.</p>
         
-        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Customer ACTIVATED and ready for transfers.</p></div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Customer ACTIVATED with Wallet Number; 2-hour cooling-off timer active before initial spend.</p></div>
       </div>
 
       <div class="stage-diagram-panel">
@@ -68,8 +68,8 @@
   </table></div></div>
 
       <div class="stage-story-panel">
-        <h2 id="story">Step 08 · Activation + TigerBeetle</h2>
-        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Money lives in TigerBeetle — not in identity Postgres.</li><li>Wallet metadata is a product shell; balances are ledger accounts.</li><li>Point at CREATE TigerBeetle as the value system-of-record write.</li><li>After this, Fund Transfer / Bill Pay workflows can move money.</li></ul></div>
+        <h2 id="story">Step 08 · Activation Gate + Wallet Assignment + TigerBeetle</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Activation Gate: Verification Strength + Pre-screen CLEAR + CDD + EDD (if HIGH).</li><li>Tracking ID (session) converts to canonical Wallet Number only after gate passes.</li><li>Money lives in TigerBeetle — not in identity Postgres.</li><li>BPRD Circular 04 A.viii: 2-hour cooling-off delay on outward transfers immediately after activation.</li></ul></div>
         
           <h3 id="walkthrough">Step-by-step walkthrough</h3>
           <div class="table-wrap stage-walk-table">
@@ -79,23 +79,23 @@
                 <tr>
                       <td class="stage-walk-n">01</td>
                       <td><strong>identity</strong></td>
-                      <td>Identity marks onboarding ACTIVATED once KYC and tier are done.<br><em class="stage-why">Journey closed in the customer domain.</em><br><small class="stage-tip">Point at purple UPDATE under identity.</small></td>
-                      <td><code class="stage-save">UPDATE onboarding status</code></td>
+                      <td>Identity verifies the Activation Gate (strength, pre-screen, CDD, EDD if HIGH) and converts tracking ID to active Wallet Number.<br><em class="stage-why">Journey closed in the customer domain with full compliance proof.</em><br><small class="stage-tip">Point at purple UPDATE under identity.</small></td>
+                      <td><code class="stage-save">UPDATE onboarding status to ACTIVATED</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">02</td>
                       <td><strong>wallets</strong></td>
-                      <td>Wallets opens the product wallet and stores metadata (still no balances here).<br><em class="stage-why">Product shell linked to ledger account ids.</em><br><small class="stage-tip">Point at wallets + purple metadata INSERT.</small></td>
-                      <td><code class="stage-save">INSERT wallet metadata</code></td>
+                      <td>Wallets assigns canonical Wallet Number and stores product metadata.<br><em class="stage-why">Product shell linked to ledger account refs.</em><br><small class="stage-tip">Point at purple INSERT under wallets.</small></td>
+                      <td><code class="stage-save">INSERT PostgreSQL wallets</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">03</td>
                       <td><strong>jvm/ledger</strong></td>
-                      <td>Java ledger creates TigerBeetle accounts — this is where money will live.<br><em class="stage-why">Value SoR is TigerBeetle, not NestJS services.</em><br><small class="stage-tip">Point at purple CREATE — climax of onboarding.</small></td>
-                      <td><code class="stage-save">CREATE TigerBeetle ledger accounts</code></td>
+                      <td>Ledger creates real accounts in TigerBeetle.<br><em class="stage-why">Value SoR — postings and holds live here.</em><br><small class="stage-tip">Point at purple CREATE TigerBeetle.</small></td>
+                      <td><code class="stage-save">CREATE TigerBeetle accounts</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">04</td>
-                      <td><strong>Ready</strong></td>
-                      <td>Customer can now appear in money workflows: send, pay bills, card auth.<br><em class="stage-why">Onboarding finished; money plane is live.</em><br><small class="stage-tip">Point at END Ready.</small></td>
-                      <td><code class="stage-save">Terminal state</code></td>
+                      <td><strong>Cooling-Off</strong></td>
+                      <td>Starts mandatory BPRD 04 2-hour cooling-off timer before outward transfers are unlocked.<br><em class="stage-why">Regulatory anti-fraud safeguard.</em><br><small class="stage-tip">Point at 2-hr Cooling-Off state.</small></td>
+                      <td><code class="stage-save">Cooling-off state active</code></td>
                     </tr>
               </tbody>
             </table>
@@ -107,7 +107,7 @@
         <div class="stage-checklist-panel">
           <h2 id="checklist">Acceptance checklist</h2>
           <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
-          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>No balance in identity DB</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>TigerBeetle accounts exist</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Ready for transfers</span></div></div>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Activation Gate verified</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Tracking ID converted to Wallet #</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>TigerBeetle accounts created</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>BPRD 04 2-hr cooling-off started</span></div></div>
         </div>
     </div>
           
