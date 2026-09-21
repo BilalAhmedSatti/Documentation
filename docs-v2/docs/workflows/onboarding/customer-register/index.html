@@ -16,7 +16,7 @@
       <article class="article">
         <p class="eyebrow">Onboarding · Stage 04</p>
         <h1>04 - Create customer record</h1>
-        <p class="lede">POST /v1/customers inserts the customer SoR row and emits an event.</p>
+        <p class="lede">POST /v1/customers inserts customer SoR row, generates session Tracking ID, and emits registered.v1 event.</p>
         
           
     <div class="stage-page stage-page--rose">
@@ -26,14 +26,14 @@
           <span class="stage-badge stage-badge--wf">Onboarding</span>
           <span class="stage-badge stage-badge--req">Required</span>
         </div>
-        <p class="stage-lead">Now the person becomes a Customer in our system of record: insert customers + history, then publish registered.v1 so other services learn a new customer exists.</p>
+        <p class="stage-lead">Customer aggregate created in system of record: CCOF Table-A data captured, session Tracking ID assigned (APPLICATION_STARTED, 30-day resumable session under J7). Dup check enforces max 1 active wallet per CNIC (J12). Outbox emits registered.v1.</p>
         <div class="stage-write-chip">
         <span class="op">UPDATE</span>
         <span class="store">PostgreSQL + Redpanda</span>
         <code>risk_tier</code>
         <em>Persist tier and notify consumers</em>
       </div>
-        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>CustomerId exists, tier = UNRATED, event on Redpanda.</p></div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>CustomerId &amp; session Tracking ID exist; tier = UNRATED; event on Redpanda.</p></div>
       </div>
 
       <div class="stage-diagram-panel">
@@ -73,8 +73,8 @@
   </table></div></div>
 
       <div class="stage-story-panel">
-        <h2 id="story">Step 04 · Customer + event writes</h2>
-        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>CustomerId is the key forever — quote it when explaining later steps.</li><li>UNRATED means not risk-scored yet — money limits come after tier.</li><li>Outbox pattern: write DB first, then publish — no lost events.</li><li>Two Postgres writes + one bus publish in this step.</li></ul></div>
+        <h2 id="story">Step 04 · Customer + Tracking ID + Event writes</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Session Tracking ID is issued here — NOT a wallet number.</li><li>Captures CCOF Table-A and EMI 12.I data fields.</li><li>Max 1 active wallet per CNIC checked (EMI 12.VII / J12).</li><li>Outbox pattern: PostgreSQL commit first, then Redpanda publish.</li></ul></div>
         
           <h3 id="walkthrough">Step-by-step walkthrough</h3>
           <div class="table-wrap stage-walk-table">
@@ -84,17 +84,17 @@
                 <tr>
                       <td class="stage-walk-n">01</td>
                       <td><strong>apps/web</strong></td>
-                      <td>Signed-in customer submits personal profile details.<br><em class="stage-why">Profile data is separate from login credentials.</em><br><small class="stage-tip">Point at START web.</small></td>
-                      <td><code class="stage-save">Nothing in the channel</code></td>
+                      <td>Signed-in customer submits personal profile and CNIC details.<br><em class="stage-why">Form data captures mandatory regulatory fields.</em><br><small class="stage-tip">Point at START web.</small></td>
+                      <td><code class="stage-save">Nothing in channel</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">02</td>
                       <td><strong>identity</strong></td>
-                      <td>RegisterCustomer creates the customer row at tier UNRATED and appends history.<br><em class="stage-why">Canonical CustomerId for KYC, screening, and wallets.</em><br><small class="stage-tip">Point at both purple INSERTs under identity.</small></td>
+                      <td>RegisterCustomer checks CNIC duplicate (J12), generates session Tracking ID, inserts customer profile at UNRATED tier, and appends audit history.<br><em class="stage-why">Canonical CustomerId and session Tracking ID for KYC workflow.</em><br><small class="stage-tip">Point at purple INSERTs under identity.</small></td>
                       <td><code class="stage-save">INSERT customers + INSERT customer_history</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">03</td>
                       <td><strong>Outbox → Redpanda</strong></td>
-                      <td>We enqueue registered.v1 and publish to Redpanda so downstream services can react.<br><em class="stage-why">Other services should not poll the customers table.</em><br><small class="stage-tip">Point at purple PUBLISH — event bus.</small></td>
+                      <td>We enqueue registered.v1 and publish to Redpanda so downstream screening and eKYC services wake up.<br><em class="stage-why">Decoupled async workflow execution.</em><br><small class="stage-tip">Point at purple PUBLISH — event bus.</small></td>
                       <td><code class="stage-save">PUBLISH → Redpanda (identity.customer.registered.v1)</code></td>
                     </tr>
               </tbody>
@@ -107,7 +107,7 @@
         <div class="stage-checklist-panel">
           <h2 id="checklist">Acceptance checklist</h2>
           <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
-          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>CustomerId returned</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>tier = UNRATED</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Outbox event</span></div></div>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>CustomerId &amp; Tracking ID returned</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>1-wallet-per-CNIC check (J12)</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>tier = UNRATED</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Outbox event</span></div></div>
         </div>
     </div>
           

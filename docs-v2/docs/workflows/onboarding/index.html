@@ -44,22 +44,22 @@
       </a>
       <a class="doc-wf-stage-link accent-rose" href="/docs/workflows/onboarding/customer-register/">
         <span class="n">04</span>
-        <span class="t"><strong>Create customer record</strong><em>POST /v1/customers inserts the customer SoR row and emits an event.</em></span>
+        <span class="t"><strong>Create customer record</strong><em>POST /v1/customers inserts customer SoR row, generates session Tracking ID, and emits registered.v1 event.</em></span>
         <span class="c">Open →</span>
       </a>
       <a class="doc-wf-stage-link accent-violet" href="/docs/workflows/onboarding/screening-save/">
         <span class="n">05</span>
-        <span class="t"><strong>AML screen persisted</strong><em>screenEntity results and cases are written to PostgreSQL.</em></span>
+        <span class="t"><strong>AML screen persisted</strong><em>Pre-screening against UNSC &amp; ATA 1997 designated lists. Clear → continue; Hit → hard stop / case.</em></span>
         <span class="c">Open →</span>
       </a>
       <a class="doc-wf-stage-link accent-teal" href="/docs/workflows/onboarding/ekyc-persist/">
         <span class="n">06</span>
-        <span class="t"><strong>eKYC evidence &amp; case</strong><em>Verification case in PostgreSQL; files only in object storage.</em></span>
+        <span class="t"><strong>eKYC evidence &amp; case</strong><em>Remote Verification Ladder (Rungs A-D): photo files in object storage, case &amp; evidence_ref in PostgreSQL.</em></span>
         <span class="c">Open →</span>
       </a>
       <a class="doc-wf-stage-link accent-blue" href="/docs/workflows/onboarding/tier-persist/">
         <span class="n">07</span>
-        <span class="t"><strong>Risk tier written</strong><em>UPDATE risk_tier, append history, publish Redpanda event.</em></span>
+        <span class="t"><strong>Risk tier written</strong><em>Customer Risk Profile (CRP) scoring (LOW / MEDIUM / HIGH). HIGH triggers EDD (J6).</em></span>
         <span class="c">Open →</span>
       </a>
       <a class="doc-wf-stage-link accent-amber" href="/docs/workflows/onboarding/wallet-ledger/">

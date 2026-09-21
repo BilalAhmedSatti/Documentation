@@ -66,12 +66,7 @@ const NAV = [
   {
     label: "Capability guides",
     items: [
-      {
-        id: "identity-kyc-aml",
-        label: "Identity, KYC & AML",
-        file: "identity-kyc-aml",
-        workflows: ["screening-aml"],
-      },
+      { id: "identity-kyc-aml", label: "Identity, KYC & AML", file: "identity-kyc-aml" },
       { id: "pricing-quotes", label: "Pricing & Quotes", file: "pricing-quotes" },
       { id: "wallets-accounts", label: "Wallets & Accounts", file: "wallets-accounts" },
       { id: "payments-rails", label: "Payments & Rails", file: "payments-rails" },

@@ -142,19 +142,7 @@
     <div class="nav-group" data-group="Capability guides">
       <button type="button" class="nav-toggle" aria-expanded="true">Capability guides <span class="chev" aria-hidden="true"></span></button>
       <div class="nav-sub">
-        
-        <div class="nav-section nav-section--identity-kyc-aml" data-section="identity-kyc-aml">
-          <div class="nav-section-row">
-            <a data-page="identity-kyc-aml" data-nav-section="identity-kyc-aml" href="/docs/identity-kyc-aml/">Identity, KYC &amp; AML<span class="nav-section-badge">4</span></a>
-            <button type="button" class="nav-section-toggle" aria-expanded="true" aria-label="Toggle Identity, KYC &amp; AML"><span class="chev" aria-hidden="true"></span></button>
-          </div>
-          <div class="nav-section-sub">
-            <a class="depth-3" data-page="wf-screening-aml-sa-request" data-nav-section="identity-kyc-aml" href="/docs/workflows/screening-aml/sa-request/">01 - Screening request</a>
-            <a class="depth-3" data-page="wf-screening-aml-sa-provider" data-nav-section="identity-kyc-aml" href="/docs/workflows/screening-aml/sa-provider/">02 - Provider screen</a>
-            <a class="depth-3" data-page="wf-screening-aml-sa-case" data-nav-section="identity-kyc-aml" href="/docs/workflows/screening-aml/sa-case/">03 - Open case</a>
-            <a class="depth-3" data-page="wf-screening-aml-sa-dispose" data-nav-section="identity-kyc-aml" href="/docs/workflows/screening-aml/sa-dispose/">04 - Disposition</a>
-          </div>
-        </div>
+        <a data-page="identity-kyc-aml" href="/docs/identity-kyc-aml/">Identity, KYC &amp; AML</a>
         <a data-page="pricing-quotes" href="/docs/pricing-quotes/">Pricing &amp; Quotes</a>
         <a data-page="wallets-accounts" href="/docs/wallets-accounts/">Wallets &amp; Accounts</a>
         <a data-page="payments-rails" href="/docs/payments-rails/">Payments &amp; Rails</a>

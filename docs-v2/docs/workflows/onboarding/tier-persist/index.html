@@ -16,7 +16,7 @@
       <article class="article">
         <p class="eyebrow">Onboarding · Stage 07</p>
         <h1>07 - Risk tier written</h1>
-        <p class="lede">UPDATE risk_tier, append history, publish Redpanda event.</p>
+        <p class="lede">Customer Risk Profile (CRP) scoring (LOW / MEDIUM / HIGH). HIGH triggers EDD (J6).</p>
         
           
     <div class="stage-page stage-page--blue">
@@ -26,9 +26,9 @@
           <span class="stage-badge stage-badge--wf">Onboarding</span>
           <span class="stage-badge stage-badge--req">Required</span>
         </div>
-        <p class="stage-lead">Risk engine turns KYC + screening + market rules into LOW / MEDIUM / HIGH. We UPDATE the customer, write history, and publish so limit engines wake up.</p>
+        <p class="stage-lead">CRP engine evaluates all compliance signals and assigns LOW, MEDIUM, or HIGH risk rating. HIGH risk rating triggers EDD case (J6) and blocks activation until senior management sign-off.</p>
         
-        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Active risk_tier stored; downstream can enforce limits.</p></div>
+        <div class="stage-outcome"><strong>Outcome when this step completes</strong><p>Active risk_tier stored; HIGH risk routed to EDD workflow before activation.</p></div>
       </div>
 
       <div class="stage-diagram-panel">
@@ -68,8 +68,8 @@
   </table></div></div>
 
       <div class="stage-story-panel">
-        <h2 id="story">Step 07 · Tier workflow + DB/event writes</h2>
-        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>Tier is deterministic — same inputs ⇒ same result.</li><li>One active tier on the customer row + history append.</li><li>Publish changed.v1 so wallets/payments can react.</li><li>Without this step, product limits have no risk signal.</li></ul></div>
+        <h2 id="story">Step 07 · Risk Tier Engine &amp; EDD Gate</h2>
+        <div class="stage-cheat"><strong>Presenter cheat sheet</strong><ul><li>CRP engine is deterministic: signals → LOW / MEDIUM / HIGH.</li><li>HIGH risk rating = J6 EDD case required before activation.</li><li>One active tier on customer record + history append.</li><li>Publish tier.changed.v1 so wallets and payments limit engines wake up.</li></ul></div>
         
           <h3 id="walkthrough">Step-by-step walkthrough</h3>
           <div class="table-wrap stage-walk-table">
@@ -79,12 +79,17 @@
                 <tr>
                       <td class="stage-walk-n">01</td>
                       <td><strong>Inputs</strong></td>
-                      <td>We gather verification outcome, screening result, and pack geography/product.<br><em class="stage-why">All compliance signals must be present.</em><br><small class="stage-tip">Point at START Inputs.</small></td>
+                      <td>Gather verification strength (Rung A/B/C), screening result, occupation, PEP status, and geography.<br><em class="stage-why">Comprehensive Customer Risk Profile (CRP).</em><br><small class="stage-tip">Point at START Inputs.</small></td>
                       <td><code class="stage-save">Read prior case data</code></td>
                     </tr><tr>
                       <td class="stage-walk-n">02</td>
-                      <td><strong>RiskTier engine</strong></td>
-                      <td>Engine computes LOW / MEDIUM / HIGH, updates the customer, appends history, and publishes the change event.<br><em class="stage-why">Limits and eligibility depend on this value.</em><br><small class="stage-tip">Point at the stack of purple boxes under the engine.</small></td>
+                      <td><strong>CRP Engine</strong></td>
+                      <td>Engine scores inputs into LOW, MEDIUM, or HIGH risk tier.<br><em class="stage-why">Regulatory risk-based approach.</em><br><small class="stage-tip">Point at CRP Engine.</small></td>
+                      <td><code class="stage-save">Computed tier score</code></td>
+                    </tr><tr>
+                      <td class="stage-walk-n">03</td>
+                      <td><strong>EDD Gate</strong></td>
+                      <td>LOW / MEDIUM → proceed to activation. HIGH → open J6 EDD case for senior management sign-off.<br><em class="stage-why">High-risk accounts require enhanced oversight.</em><br><small class="stage-tip">Point at purple writes under engine.</small></td>
                       <td><code class="stage-save">UPDATE risk_tier + INSERT history + PUBLISH changed.v1</code></td>
                     </tr>
               </tbody>
@@ -97,7 +102,7 @@
         <div class="stage-checklist-panel">
           <h2 id="checklist">Acceptance checklist</h2>
           <p class="stage-checklist-note">Ship this stage only when every item below is true in code and CI.</p>
-          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>One active tier</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>History append</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Event via outbox</span></div></div>
+          <div class="stage-checklist"><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>CRP score calculated</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>HIGH risk triggers J6 EDD</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>One active tier</span></div><div class="stage-check-item"><span class="stage-check-mark" aria-hidden="true">✓</span><span>Event via outbox</span></div></div>
         </div>
     </div>
           
