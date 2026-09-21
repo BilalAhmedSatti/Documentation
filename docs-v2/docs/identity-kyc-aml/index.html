@@ -16,37 +16,376 @@
       <article class="article">
         <p class="eyebrow">Identity, KYC &amp; AML</p>
         <h1>Identity, KYC &amp; AML</h1>
-        <p class="lede">Services 02 and 03 — who the customer is, and whether they may proceed.</p>
+        <p class="lede">Services 02 and 03 — complete digital KYC onboarding spine, remote verification ladder, named journeys J1–J19, limits engine, and sanctions screening.</p>
         
-      <h2 id="identity">Identity &amp; onboarding (service 02)</h2>
-      <p>System of record for customers and businesses and their verification state. Orchestrates eKYC adapters; emits risk tier consumed by Screening, Wallets, and Payments.</p>
-      <ul>
-        <li><strong>Risk tiers:</strong> UNRATED → LOW | MEDIUM | HIGH after verification + screening signals.</li>
-        <li><strong>Launch providers:</strong> NADRA CNIC (PK), Emirates ID/UAE Pass (AE), Absher/Yakeen (SA).</li>
-        <li><strong>Fail-safe:</strong> provider timeout ⇒ <code>MANUAL_REVIEW</code> — never auto-approve.</li>
-        <li><strong>Events:</strong> <code>identity.customer.registered.v1</code>, <code>identity.verification.completed.v1</code>, <code>identity.risk_tier.changed.v1</code>.</li>
-      </ul>
-      <p>Walk the stages: <a href="/docs/workflows/onboarding/register-login/">Onboarding · Register / Login</a> through <a href="/docs/workflows/onboarding/wallet-ledger/">Wallet + Ledger</a>.</p>
-      <div class="wf-embed" data-workflow="onboarding" data-view="overview"></div>
+      <div class="callout vocab-brief">
+        <strong>In brief — identity &amp; compliance architecture</strong>
+        <ul>
+          <li><strong>Identity SoR &amp; Screening Gate.</strong> Service <strong>02 Identity</strong> owns customer onboarding, digital ID verification, and risk tiering. Service <strong>03 Screening</strong> gates onboarding and every payment.</li>
+          <li><strong>Regulatory Foundations.</strong> SBP Customer Onboarding Framework (CCOF 2025), EMI Regulations 2023 (§12, §14, §15, §17), BPRD Circular 04 of 2023 (device binding &amp; cooling-off), and AML/CFT regulations.</li>
+          <li><strong>Late Account Assignment.</strong> A tracking ID is an unverified session. An e-money wallet number is issued only after complete verification, pre-screening, complete CDD, and 2-hour cooling-off.</li>
+          <li><strong>Not a Bank Deposit.</strong> Funds sit in a trustee bank; an e-money wallet number is a claim on safeguarded e-money.</li>
+        </ul>
+      </div>
 
-      <h2 id="aml">Screening &amp; AML (service 03)</h2>
-      <p>Compliance gate for <strong>onboarding and every money movement</strong>. Real-time screen target p99 &lt; 700 ms excluding provider latency.</p>
-      <ul>
-        <li><strong>Lists:</strong> UN Consolidated, OFAC SDN, plus domestic (NACTA, UAE Local Terrorist List, KSA designated persons).</li>
-        <li><strong>Dispositions:</strong> CLEAR continues; HOLD queues for review; REJECT stops the journey.</li>
-        <li><strong>Fail closed:</strong> provider failure, timeout, or circuit-open ⇒ HOLD — never pass silently.</li>
-        <li><strong>HIGH cases:</strong> maker-checker required before disposition.</li>
-      </ul>
-      <p>Stages in the sidebar below, or start at <a href="/docs/workflows/screening-aml/sa-request/">Screening · Request</a>.</p>
-      <div class="wf-embed" data-workflow="screening-aml" data-view="overview"></div>
+      <h2 id="spine">Master Onboarding Spine (Steps 1–10)</h2>
+      <p>Every digital applicant enters through a single master capture spine. The frontend never talks to NADRA or screening lists directly — all provider calls execute through backend market adapters.</p>
 
-      <h2 id="sequence">Onboarding sequence (happy path)</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Step</th><th>Phase</th><th>What happens in the system</th><th>Regulatory &amp; System Invariant</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>01</strong></td>
+              <td>App Launch</td>
+              <td>Customer opens the app; shown English/Urdu terms.</td>
+              <td>Must not reveal whether a wallet already exists (BPRD 04 A.ix).</td>
+            </tr>
+            <tr>
+              <td><strong>02</strong></td>
+              <td>Mobile &amp; Device</td>
+              <td>Mobile number captured; OTP sent from short code; device bound.</td>
+              <td>Device fingerprinting (UUID/IMEI/IMSI); auto-fetch short code OTP.</td>
+            </tr>
+            <tr>
+              <td><strong>03</strong></td>
+              <td>Consent</td>
+              <td>Customer accepts terms, fee schedules, privacy policy, and KYC notice.</td>
+              <td>EMI 12.VI consent recorded; told application can be saved 30 days (J7).</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>04</strong></td>
+              <td>Tracking ID</td>
+              <td><code>APPLICATION_STARTED</code> record created with tracking ID.</td>
+              <td><strong>Tracking ID is NOT a wallet number.</strong> Session resumable for 30 days.</td>
+            </tr>
+            <tr>
+              <td><strong>05</strong></td>
+              <td>Data Capture</td>
+              <td>Union of CCOF Table-A and EMI 12.I captured (including 2 non-face CNIC fields).</td>
+              <td>Live original CNIC image + live photo captured. Zero data stored on device.</td>
+            </tr>
+            <tr>
+              <td><strong>06</strong></td>
+              <td>Geo &amp; IP</td>
+              <td>Gadget geolocation, IP address, and network headers recorded.</td>
+              <td>CCOF F.3 requirement for digital onboarding evidence.</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>07</strong></td>
+              <td>Duplicate Check</td>
+              <td>Server checks whether an active wallet exists for this CNIC/ID.</td>
+              <td>EMI 12.VII: Max 1 active e-money wallet per CNIC per EMI. Unauthenticated check returns generic message (J12).</td>
+            </tr>
+            <tr>
+              <td><strong>08</strong></td>
+              <td>Pre-screening</td>
+              <td>Applicant &amp; associated persons screened against UNSC &amp; ATA 1997 lists.</td>
+              <td>Screening moment 1. Hit = J5 (hard stop). Provider timeout = J11 (fail closed).</td>
+            </tr>
+            <tr>
+              <td><strong>09</strong></td>
+              <td>Risk Rating</td>
+              <td>Customer Risk Profile (CRP) built: LOW, MEDIUM, or HIGH risk.</td>
+              <td>HIGH risk triggers Enhanced Due Diligence (J6) and blocks activation.</td>
+            </tr>
+            <tr>
+              <td><strong>10</strong></td>
+              <td>Verification</td>
+              <td>Primary NADRA Biometric Verification (BV) attempted.</td>
+              <td>Success = J1; listed impossibility = J2 ladder; timeout = J11.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="ladder">Remote Verification Ladder (Rungs A–D)</h2>
+      <p>CCOF §F.1 defines a strict remote verification hierarchy. Each rung is used <strong>only when the rung above it cannot be completed for an SBP-listed genuine reason</strong> — never as a convenience skip.</p>
+
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Rung</th><th>Method</th><th>Requirements &amp; Controls</th><th>Limit Band &amp; Outcome</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Rung A</strong></td>
+              <td>Primary — NADRA Biometric</td>
+              <td>In-app finger/thumb, iris, or facial match through NADRA. Live photo captured. Re-used on J13 upgrade, J14 SIM change, and J19 cash-in.</td>
+              <td>Biometric band (Commercial monthly load PKR 400,000; pilot PKR 200,000). Full wallet features.</td>
+            </tr>
+            <tr>
+              <td><strong>Rung B</strong></td>
+              <td>Verisys Bundle</td>
+              <td>Used only for SBP-listed reasons (age &gt; 60, permanent disability, unclear prints, NRP/POC abroad). Requires NADRA Verisys + CNIC–MSISDN pairing + OTP/call-back + live photo.</td>
+              <td>Verisys band (Monthly load PKR 50,000; cash withdrawal PKR 10,000/day). Cash-in still requires BV (J19).</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Rung C</strong></td>
+              <td>Verisys with Debit Block</td>
+              <td>Verisys succeeded but CNIC–MSISDN pairing or OTP/call-back failed. Instrument opened in restricted state.</td>
+              <td><code>DEBIT_BLOCKED</code> state. Zero spending, P2P, merchant pay, or cash-out until BV or full Rung B completed (J3).</td>
+            </tr>
+            <tr>
+              <td><strong>Rung D</strong></td>
+              <td>Remote Methods Fail</td>
+              <td>All remote rungs A–C exhausted. Recorded video KYC interview + Verisys with reasons, or third-party bank reliance — or decline (J8).</td>
+              <td>Video KYC decision or partner bank verification. <strong>Agents must not issue instruments (EMI 17.VII).</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="journeys-summary">Named KYC Journeys Registry (J1–J19)</h2>
+      <p>J1 is the shared onboarding spine. All other journeys are named operational branches of the single EMI wallet lifecycle.</p>
+
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>ID</th><th>Journey Title</th><th>Group</th><th>Trigger / Prerequisite</th><th>Outcome &amp; Verification State</th></tr></thead>
+          <tbody>
+            <tr><td><strong>J1</strong></td><td>Clean Biometric Onboarding</td><td>Onboarding Spine</td><td>Spine 1–10 pass; NADRA BV succeeds</td><td><code>WALLET_ACTIVE</code> at biometric limit band (PKR 400,000).</td></tr>
+            <tr><td><strong>J2</strong></td><td>Biometric Not Possible (Verisys)</td><td>Onboarding Spine</td><td>BV impossible for SBP-listed reason</td><td><code>WALLET_ACTIVE</code> at Verisys band (PKR 50,000). Reason logged.</td></tr>
+            <tr class="trap"><td><strong>J3</strong></td><td>Verisys with Debit Block</td><td>Onboarding Spine</td><td>Verisys passed, pairing/OTP failed</td><td><code>DEBIT_BLOCKED</code> instrument. No spending until verified.</td></tr>
+            <tr><td><strong>J4</strong></td><td>Remote Methods Fail</td><td>Onboarding Spine</td><td>Rungs A–C exhausted</td><td><code>VIDEO_KYC_REQUIRED</code> interview or partner bank / J8 decline.</td></tr>
+            <tr class="trap"><td><strong>J5</strong></td><td>Sanctions / Proscribed Hit</td><td>Gates &amp; Exceptions</td><td>UNSC / ATA 1997 match in pre-screen</td><td>Hard stop; no wallet; zero tipping-off; STR considered.</td></tr>
+            <tr><td><strong>J6</strong></td><td>High-Risk Customer (EDD)</td><td>Gates &amp; Exceptions</td><td>CRP rates applicant HIGH risk</td><td><code>RISK_HIGH_EDD</code>; extra evidence &amp; senior approval before open.</td></tr>
+            <tr><td><strong>J7</strong></td><td>Save &amp; Resume (30 Days)</td><td>Gates &amp; Exceptions</td><td>User pauses onboarding session</td><td>Resumes with same tracking ID up to 30 days; re-checks lists.</td></tr>
+            <tr><td><strong>J8</strong></td><td>Decline with Written Reason</td><td>Gates &amp; Exceptions</td><td>Terminal negative outcome</td><td>Written notice sent; tracking ID kept; compliance reason logged.</td></tr>
+            <tr><td><strong>J9</strong></td><td>New Device After Onboarding</td><td>After Wallet Exists</td><td>Active customer logs in on new phone</td><td>NADRA BV on new phone + notification + 2-hour cooling-off.</td></tr>
+            <tr class="trap"><td><strong>J10</strong></td><td>Continuous Screening &amp; Monitoring</td><td>After Wallet Exists</td><td>List update, periodic review, TMS rule fire</td><td><code>MONITORING_HOLD</code>; restrict &amp; investigate; STR if confirmed.</td></tr>
+            <tr><td><strong>J11</strong></td><td>Provider Timeout (Fail Closed)</td><td>Gates &amp; Exceptions</td><td>NADRA, screening or OTP timeout</td><td><code>VERIFICATION_PENDING</code>; queue for retry; never auto-approve.</td></tr>
+            <tr><td><strong>J12</strong></td><td>Duplicate CNIC</td><td>Gates &amp; Exceptions</td><td>CNIC already holds an active wallet</td><td>Prevents 2nd wallet; authenticated user routed to login/J9.</td></tr>
+            <tr><td><strong>J13</strong></td><td>Limit / Category Upgrade</td><td>After Wallet Exists</td><td>Customer requests higher limit band</td><td>Re-verify category; Annexure-J doc for 1m band; 2-hr cooling.</td></tr>
+            <tr><td><strong>J14</strong></td><td>Mobile, Email or Password Change</td><td>After Wallet Exists</td><td>Contact/credential change request</td><td>NADRA BV + pairing check + notification to old channels + 2-hr timer.</td></tr>
+            <tr><td><strong>J15</strong></td><td>Parent-Linked Minor Wallet</td><td>Other EMI Customers</td><td>Guardian opens wallet for child in-app</td><td><code>MINOR_WALLET_ACTIVE</code>; linked to parent; basic 50k / freelancer 400k.</td></tr>
+            <tr><td><strong>J16</strong></td><td>Close, Redeem, Release CNIC</td><td>After Wallet Exists</td><td>Customer close request or TFS/exit</td><td><code>WALLET_CLOSED</code>; e-money redeemed at par; records kept 10 yrs.</td></tr>
+            <tr><td><strong>J17</strong></td><td>Periodic CDD / Expired CNIC</td><td>After Wallet Exists</td><td>CNIC expiry, address change, review due</td><td>Identity refresh case; 3-month token rule; re-screen on new data.</td></tr>
+            <tr><td><strong>J18</strong></td><td>Non-Resident / Foreign IDs</td><td>Other EMI Customers</td><td>ID is NICOP, POC, ARC, POR or NRP</td><td>Same spine with foreign ID rules; Verisys for NRP abroad.</td></tr>
+            <tr><td><strong>J19</strong></td><td>Cash-In / Cash-Out at Till/ATM</td><td>After Wallet Exists</td><td>Cash deposit/withdrawal at agent/ATM</td><td>NADRA BV at till for cash-in; 2FA at ATM; BV/2FA at agent.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="gates-cooling">Activation Gate &amp; 2-Hour Cooling-Off Rule</h2>
+      <div class="trap-box">
+        <p><strong>Activation Invariant:</strong> A wallet number is generated and assigned ONLY when all four conditions are met simultaneously:</p>
+        <ol>
+          <li><code>VERIFICATION_STRENGTH</code> satisfies target band (Biometric or Verisys).</li>
+          <li><code>PRE_SCREEN_CLEAR</code> confirmed with list version recorded.</li>
+          <li>Complete <code>CDD</code> captured (identity, address, occupation, two non-card fields).</li>
+          <li><code>EDD</code> approved by senior management if CRP is HIGH.</li>
+        </ol>
+        <p><strong>Two-Hour Cooling-Off (BPRD 04 A.viii via CCOF K):</strong> After the activation gate clears, a mandatory 2-hour timer must run before the mobile app can execute financial transactions. This cooling-off timer also applies to new device registration (J9), mobile/email change (J14), password reset, and limit upgrades (J13).</p>
+      </div>
+
+      <h2 id="limits-engine">Wallet Limits Matrix &amp; EMI 14.VI Exclusions</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Verification Strength</th><th>Monthly Load Cap</th><th>Cash-Out / Withdrawal Cap</th><th>Special Conditions &amp; Rules</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Verisys Band (J2)</strong></td>
+              <td>PKR 50,000</td>
+              <td>PKR 10,000 per day</td>
+              <td>Requires Verisys + SIM pairing + OTP. Cash-in requires BV (J19).</td>
+            </tr>
+            <tr>
+              <td><strong>Biometric Band (J1)</strong></td>
+              <td>PKR 400,000 (Commercial)<br><small>PKR 200,000 (Pilot stage)</small></td>
+              <td>By risk profile (EMI 14.II.c)</td>
+              <td>Primary adult band. Requires NADRA biometric verification.</td>
+            </tr>
+            <tr>
+              <td><strong>Enhanced Band (J13)</strong></td>
+              <td>Up to PKR 1,000,000</td>
+              <td>By risk profile</td>
+              <td>Requires SBP PSP&amp;OD permission, 1 Annexure-J document, SIM pairing, and in-house TMS.</td>
+            </tr>
+            <tr>
+              <td><strong>Basic Minor (J15)</strong></td>
+              <td>PKR 50,000</td>
+              <td>PKR 10,000 per day</td>
+              <td>Opened in parent's app. Funded ONLY from parent wallet. No street cash-in.</td>
+            </tr>
+            <tr>
+              <td><strong>Freelancer Minor (J15)</strong></td>
+              <td>PKR 400,000</td>
+              <td>By risk profile</td>
+              <td>Requires NADRA BV + verified income source. Adult 1m band does not apply.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="exclusions14vi">EMI 14.VI — Load Cap Exclusions</h3>
+      <p>Under SBP EMI Regulations §14.VI, fully licensed EMIs with PSP&amp;OD permission may exclude specific transaction types from the monthly load cap for <strong>biometrically verified adult wallets</strong> (never minors):</p>
+      <ul>
+        <li><strong>Salary Credits:</strong> Employer credits disbursed via the employer's bank account (EMI verifies employer).</li>
+        <li><strong>Inward Remittances:</strong> Inward home remittances via authorised dealers / PRI up to <strong>PKR 1,500,000</strong> per transaction outside the load cap.</li>
+        <li><strong>Utility Payments:</strong> Direct payments for utility bills do not consume load capacity.</li>
+        <li><strong>Separate Counters:</strong> Payments and receipts are counted separately (EMI 14.II.a) — monthly load is not a combined payments+receipts bucket.</li>
+      </ul>
+
+      <h2 id="annexure-j">Annexure-J — Source of Income Evidence Catalogue</h2>
+      <p>For upgrading to the PKR 1,000,000 Enhanced Band (J13), any <strong>one</strong> document from the matching column in EMI Regulations Annexure-J must be verified in-house (must not be outsourced):</p>
+
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Salaried Individuals</th><th>Non-Salaried / Self-Employed</th><th>Alternate Income Sources</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>
+                • Latest salary slip<br>
+                • Salary certificate from employer<br>
+                • Official payment slip / payroll record<br>
+                • Bank account statement showing salary<br>
+                • Tax statement / return / certificate<br>
+                • Pension book / terminal benefits record
+              </td>
+              <td>
+                • Receipt of payment against services/work<br>
+                • Bank account statement<br>
+                • Particulars of fund providers (family/stipend)<br>
+                • Tax statement / return / certificate<br>
+                • Written declaration with proof of work
+              </td>
+              <td>
+                • Inheritance documentation<br>
+                • Agricultural income proof<br>
+                • Securities, bonds, or shares dividend proof<br>
+                • Property sale / investment agreement<br>
+                • Rent agreement &amp; bank receipt<br>
+                • Profit / interest income certificate
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="kyc-flow-diagram">Interactive KYC Master Flow Diagram</h2>
+      <p>Below is the complete flow topology of the master capture spine, decision gates, remote verification ladder, and lifecycle branch paths (J1–J19).</p>
+
+      <div class="stage-diagram-panel">
+        <div class="stage-diagram-head">
+          <h3>Master KYC Spine &amp; Journeys Topology</h3>
+          <p>Navy cards = shared capture spine. Blue cards = verification ladder. Green = activation. Gold = risk/hold. Red = decline/sanctions.</p>
+        </div>
+        <div class="table-wrap">
+          <svg viewBox="0 0 1000 680" style="width: 100%; height: auto; background: #0f172a; border-radius: 8px; font-family: system-ui, sans-serif; padding: 10px;">
+            <!-- Swimlane Bands -->
+            <rect x="20" y="20" width="960" height="90" fill="#1e293b" rx="6" />
+            <text x="35" y="45" fill="#94a3b8" font-size="12" font-weight="bold">STAGE 1 · CAPTURE SPINE</text>
+            
+            <rect x="20" y="125" width="960" height="110" fill="#1e293b" rx="6" />
+            <text x="35" y="150" fill="#94a3b8" font-size="12" font-weight="bold">STAGE 2 · ELIGIBILITY GATES &amp; SCREENING</text>
+            
+            <rect x="20" y="250" width="960" height="150" fill="#1e293b" rx="6" />
+            <text x="35" y="275" fill="#94a3b8" font-size="12" font-weight="bold">STAGE 3 · REMOTE VERIFICATION LADDER (Rungs A-D)</text>
+            
+            <rect x="20" y="415" width="960" height="110" fill="#1e293b" rx="6" />
+            <text x="35" y="440" fill="#94a3b8" font-size="12" font-weight="bold">STAGE 4 · ACTIVATION GATE &amp; COOLING-OFF</text>
+            
+            <rect x="20" y="540" width="960" height="120" fill="#1e293b" rx="6" />
+            <text x="35" y="565" fill="#94a3b8" font-size="12" font-weight="bold">STAGE 5 · LIFECYCLE JOURNEYS (J9 - J19)</text>
+
+            <!-- Spine Nodes -->
+            <rect x="40" y="55" width="130" height="40" rx="5" fill="#3b82f6" />
+            <text x="105" y="80" fill="#ffffff" font-size="11" text-anchor="middle">Step 1-4: Mobile &amp; Track</text>
+
+            <rect x="200" y="55" width="140" height="40" rx="5" fill="#3b82f6" />
+            <text x="270" y="80" fill="#ffffff" font-size="11" text-anchor="middle">Step 5-6: Data &amp; Live ID</text>
+
+            <rect x="370" y="55" width="130" height="40" rx="5" fill="#0ea5e9" />
+            <text x="435" y="80" fill="#ffffff" font-size="11" text-anchor="middle">J7: Save &amp; Resume (30d)</text>
+
+            <rect x="530" y="55" width="140" height="40" rx="5" fill="#1d4ed8" />
+            <text x="600" y="80" fill="#ffffff" font-size="11" text-anchor="middle">J18: NICOP/POC/POR</text>
+
+            <!-- Stage 2 Gates -->
+            <rect x="40" y="165" width="140" height="45" rx="5" fill="#4338ca" />
+            <text x="110" y="185" fill="#ffffff" font-size="11" text-anchor="middle">J12: Dup Check</text>
+            <text x="110" y="200" fill="#cbd5e1" font-size="9" text-anchor="middle">1 wallet / CNIC</text>
+
+            <rect x="220" y="165" width="150" height="45" rx="5" fill="#b91c1c" />
+            <text x="295" y="185" fill="#ffffff" font-size="11" text-anchor="middle">J5: Pre-Screen Gate</text>
+            <text x="295" y="200" fill="#fca5a5" font-size="9" text-anchor="middle">UNSC/ATA Hit = Stop</text>
+
+            <rect x="400" y="165" width="140" height="45" rx="5" fill="#b0892e" />
+            <text x="470" y="185" fill="#ffffff" font-size="11" text-anchor="middle">J6: CRP Risk Score</text>
+            <text x="470" y="200" fill="#fde68a" font-size="9" text-anchor="middle">HIGH = EDD Case</text>
+
+            <rect x="570" y="165" width="140" height="45" rx="5" fill="#ea580c" />
+            <text x="640" y="185" fill="#ffffff" font-size="11" text-anchor="middle">J11: Provider Timeout</text>
+            <text x="640" y="200" fill="#fed7aa" font-size="9" text-anchor="middle">Fail Closed = PENDING</text>
+
+            <rect x="740" y="165" width="220" height="45" rx="5" fill="#64748b" />
+            <text x="850" y="185" fill="#ffffff" font-size="11" text-anchor="middle">J8: Decline with Reason</text>
+            <text x="850" y="200" fill="#e2e8f0" font-size="9" text-anchor="middle">Written Notice + Tracking ID</text>
+
+            <!-- Stage 3 Ladder -->
+            <rect x="40" y="295" width="200" height="50" rx="5" fill="#059669" />
+            <text x="140" y="315" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">J1: Rung A - NADRA BV</text>
+            <text x="140" y="333" fill="#a7f3d0" font-size="10" text-anchor="middle">Biometric Band (PKR 400,000)</text>
+
+            <rect x="270" y="295" width="200" height="50" rx="5" fill="#1b6b93" />
+            <text x="370" y="315" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">J2: Rung B - Verisys</text>
+            <text x="370" y="333" fill="#bae6fd" font-size="10" text-anchor="middle">Verisys Band (PKR 50,000)</text>
+
+            <rect x="500" y="295" width="200" height="50" rx="5" fill="#d97706" />
+            <text x="600" y="315" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">J3: Rung C - Debit Block</text>
+            <text x="600" y="333" fill="#fef3c7" font-size="10" text-anchor="middle">DEBIT_BLOCKED State</text>
+
+            <rect x="730" y="295" width="210" height="50" rx="5" fill="#7c3aed" />
+            <text x="835" y="315" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">J4: Rung D - Video KYC</text>
+            <text x="835" y="333" fill="#ddd6fe" font-size="10" text-anchor="middle">Video Interview / Partner</text>
+
+            <!-- Stage 4 Activation -->
+            <rect x="40" y="455" width="300" height="50" rx="5" fill="#047857" />
+            <text x="190" y="475" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">ACTIVATION GATE</text>
+            <text x="190" y="492" fill="#a7f3d0" font-size="10" text-anchor="middle">Strength + Pre-Screen + CDD + EDD</text>
+
+            <rect x="370" y="455" width="240" height="50" rx="5" fill="#0891b2" />
+            <text x="490" y="475" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">2-HOUR COOLING-OFF</text>
+            <text x="490" y="492" fill="#cff4fc" font-size="10" text-anchor="middle">BPRD 04 A.viii Timer</text>
+
+            <rect x="640" y="455" width="300" height="50" rx="5" fill="#10b981" />
+            <text x="790" y="475" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">WALLET_ACTIVE</text>
+            <text x="790" y="492" fill="#ecfdf5" font-size="10" text-anchor="middle">Wallet Number Assigned &amp; Live</text>
+
+            <!-- Stage 5 Lifecycle -->
+            <rect x="40" y="590" width="130" height="45" rx="5" fill="#0891b2" />
+            <text x="105" y="610" fill="#ffffff" font-size="11" text-anchor="middle">J9: New Device</text>
+            <text x="105" y="623" fill="#cff4fc" font-size="9" text-anchor="middle">BV + 2h Timer</text>
+
+            <rect x="185" y="590" width="140" height="45" rx="5" fill="#be185d" />
+            <text x="255" y="610" fill="#ffffff" font-size="11" text-anchor="middle">J10: Continuous TMS</text>
+            <text x="255" y="623" fill="#fbcfe8" font-size="9" text-anchor="middle">HOLD / Investigation</text>
+
+            <rect x="340" y="590" width="140" height="45" rx="5" fill="#0f766e" />
+            <text x="410" y="610" fill="#ffffff" font-size="11" text-anchor="middle">J13: Limit Upgrade</text>
+            <text x="410" y="623" fill="#ccfbf1" font-size="9" text-anchor="middle">Annexure-J / BV</text>
+
+            <rect x="495" y="590" width="140" height="45" rx="5" fill="#0369a1" />
+            <text x="565" y="610" fill="#ffffff" font-size="11" text-anchor="middle">J14: Contact Change</text>
+            <text x="565" y="623" fill="#e0f2fe" font-size="9" text-anchor="middle">BV + SIM Pairing</text>
+
+            <rect x="650" y="590" width="140" height="45" rx="5" fill="#a21caf" />
+            <text x="720" y="610" fill="#ffffff" font-size="11" text-anchor="middle">J15: Minor Wallet</text>
+            <text x="720" y="623" fill="#fae8ff" font-size="9" text-anchor="middle">Guardian App</text>
+
+            <rect x="805" y="590" width="145" height="45" rx="5" fill="#9a3412" />
+            <text x="877" y="610" fill="#ffffff" font-size="11" text-anchor="middle">J19: Till Cash-In/Out</text>
+            <text x="877" y="623" fill="#ffedd5" font-size="9" text-anchor="middle">BV @ Till / 2FA @ ATM</text>
+          </svg>
+        </div>
+      </div>
+
+      <h2 id="sequence">Onboarding Sequence &amp; Audit Trail</h2>
       <ol>
-        <li>Client registers → Identity persists customer (tier = UNRATED)</li>
-        <li>Screening runs onboarding-scope check</li>
-        <li>Client starts verification → eKYC adapter (NADRA / UAE Pass / Yakeen)</li>
-        <li>Identity recomputes risk tier from verification + screening + geography</li>
-        <li>Wallets + Ledger accounts opened for approved tier</li>
+        <li><strong>Capture &amp; Tracking ID:</strong> Client registers → Identity (Service 02) creates application with tracking ID.</li>
+        <li><strong>Pre-Screening Gate:</strong> Service 03 screens applicant against UNSC/ATA lists. Clear status recorded with list version.</li>
+        <li><strong>Remote Verification:</strong> eKYC Adapter (16) calls NADRA BV (or Verisys fallback with genuine reason). Verification state stored.</li>
+        <li><strong>Risk Tiering &amp; EDD:</strong> Identity computes CRP (LOW, MEDIUM, HIGH). HIGH risk triggers EDD workflow and senior approval.</li>
+        <li><strong>Activation Gate &amp; Ledger:</strong> Upon complete CDD, clear pre-screening, and verified identity, Wallets (06) and Ledger (04) create accounts.</li>
+        <li><strong>Cooling-off &amp; Go-Live:</strong> 2-hour cooling-off timer elapses → <code>WALLET_ACTIVE</code> state → customer starts transacting.</li>
       </ol>
     
       </article>

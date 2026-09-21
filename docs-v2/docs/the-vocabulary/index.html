@@ -68,6 +68,168 @@
         </table>
       </div>
 
+      <h2 id="kyc-regulatory">KYC, Identity &amp; Regulatory Framework</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>SBP</strong></td>
+              <td>State Bank of Pakistan (the central bank &amp; regulator)</td>
+              <td>Primary regulator for Pakistan market packs, EMI regulations, and CCOF compliance</td>
+            </tr>
+            <tr>
+              <td><strong>EMI</strong></td>
+              <td>Electronic Money Institution (Regulations 2023)</td>
+              <td>SBP-licensed e-money issuer. Product is a wallet (e-money claim on trustee bank), not a bank deposit account</td>
+            </tr>
+            <tr>
+              <td><strong>CCOF</strong></td>
+              <td>Customer Onboarding Framework (SBP 2025)</td>
+              <td>Circular governing remote digital onboarding, identity verification ladders, Tat clocks, and Table-A data fields</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>BPRD Circular 04</strong></td>
+              <td>SBP circular on digital onboarding &amp; device binding (2023)</td>
+              <td>Device binding, short-code auto-fetch OTP, 2-hour cooling-off, and NADRA BV requirement for mobile/email changes. Pulled into EMI digital onboarding via CCOF K</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>NADRA BV</strong></td>
+              <td>Biometric Verification via NADRA</td>
+              <td>Finger, iris, or facial match through NADRA. Primary remote verification rung (Rung A). Required for J1, J13 upgrade, J14 contact change, and J19 cash-in</td>
+            </tr>
+            <tr>
+              <td><strong>Verisys</strong></td>
+              <td>NADRA demographic particulars verification</td>
+              <td>Demographic check against NADRA records without biometric match. Falls under Rung B (Verisys band PKR 50,000 load cap). Used only for SBP-listed genuine reasons</td>
+            </tr>
+            <tr>
+              <td><strong>CNIC–MSISDN Pairing</strong></td>
+              <td>SIM ownership check matching CNIC with mobile number</td>
+              <td>PTA / operator check ensuring the MSISDN is legally registered to the applicant's CNIC. Required on Verisys onboarding and SIM changes</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>Tracking ID</strong></td>
+              <td>Session identifier for an unverified onboarding application</td>
+              <td>Issued at step 4 (<code>APPLICATION_STARTED</code>). <strong>Not a wallet number.</strong> Resumable for up to 30 days (J7). Retained on decline (J8)</td>
+            </tr>
+            <tr>
+              <td><strong>Cooling-Off Period</strong></td>
+              <td>Mandatory 2-hour waiting window before full activation</td>
+              <td>BPRD 04 A.viii constraint. Applies after onboarding, device bind (J9), credential change (J14), and limit upgrade (J13) before spending operates</td>
+            </tr>
+            <tr>
+              <td><strong>Annexure-J</strong></td>
+              <td>Source of income document catalogue (EMI Regulations)</td>
+              <td>Indicative list of income proof for PKR 1,000,000 enhanced band (salary slip, tax return, bank statement, rental/agri proof). Must stay in-house</td>
+            </tr>
+            <tr>
+              <td><strong>EMI 14.VI Exclusions</strong></td>
+              <td>Load cap exclusions for salary, remittance, and utility payments</td>
+              <td>SBP-permissioned exclusions sitting outside monthly load caps for BV adult wallets. Remittance cap up to PKR 1,500,000. Never applies to minors</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="aml-screening">AML, CFT &amp; Risk Governance</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr class="trap">
+              <td><strong>eKYC vs Screening</strong></td>
+              <td>Identity proof vs Sanctions list matching</td>
+              <td>eKYC (Service 02/16) proves identity. Screening (Service 03/15) checks UNSC/ATA lists. Screening failure is a hard stop; eKYC timeout is <code>MANUAL_REVIEW</code></td>
+            </tr>
+            <tr>
+              <td><strong>CDD</strong></td>
+              <td>Customer Due Diligence</td>
+              <td>Mandatory collection of identity, address, purpose, and risk profile. Must complete before wallet activation</td>
+            </tr>
+            <tr>
+              <td><strong>EDD</strong></td>
+              <td>Enhanced Due Diligence</td>
+              <td>Additional verification, video interview, and senior management approval required for HIGH risk customers (J6)</td>
+            </tr>
+            <tr>
+              <td><strong>CRP</strong></td>
+              <td>Customer Risk Profile</td>
+              <td>Automated risk scoring model (LOW, MEDIUM, HIGH) based on occupation, geography, PEP status, product, and channel</td>
+            </tr>
+            <tr>
+              <td><strong>TFS</strong></td>
+              <td>Targeted Financial Sanctions</td>
+              <td>UNSC / ATA 1997 designated person legal mandate: immediate freeze, service denial (J5), zero tipping-off</td>
+            </tr>
+            <tr class="trap">
+              <td><strong>STR vs CTR</strong></td>
+              <td>Suspicious Transaction Report vs Currency Transaction Report</td>
+              <td>STR is suspicion-driven (any amount, filed to FMU, zero tipping-off). CTR is threshold-driven cash report. Neither is outsourced</td>
+            </tr>
+            <tr>
+              <td><strong>TMS</strong></td>
+              <td>Transaction Monitoring System</td>
+              <td>Post-issuance automated rules engine detecting fraud, burst IBFT, mule devices, and suspicious patterns (J10)</td>
+            </tr>
+            <tr>
+              <td><strong>MLRO</strong></td>
+              <td>Money Laundering Reporting Officer</td>
+              <td>Named compliance executive who owns STR/TFS dispositions and FMU reporting</td>
+            </tr>
+            <tr>
+              <td><strong>FTDH</strong></td>
+              <td>Fraud, Theft, Dacoity and Hijacking</td>
+              <td>SBP operational incident reporting framework. Clocks are separate from AML STR filings</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="digital-ids">Digital ID Classes &amp; Customer Types</h2>
+      <div class="table-wrap vocab-table">
+        <table>
+          <thead><tr><th>ID / Type</th><th>Full Title</th><th>In our system</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>CNIC</strong></td>
+              <td>Computerized National Identity Card</td>
+              <td>Standard resident Pakistani ID. Basis for 1-wallet-per-CNIC rule (EMI 12.VII)</td>
+            </tr>
+            <tr>
+              <td><strong>NICOP</strong></td>
+              <td>National Identity Card for Overseas Pakistanis</td>
+              <td>Eligible for digital onboarding under CCOF C.5. Same spine as CNIC with overseas residency attributes (J18)</td>
+            </tr>
+            <tr>
+              <td><strong>POC</strong></td>
+              <td>Pakistan Origin Card</td>
+              <td>Foreign national of Pakistani origin. Digital onboarding enabled; Verisys path available abroad until BV is operational</td>
+            </tr>
+            <tr>
+              <td><strong>ARC / POR</strong></td>
+              <td>Afghan Citizen Card / Proof of Registration</td>
+              <td>Eligible ID classes under CCOF C.5. Dedicated field validation rules separate from CNIC</td>
+            </tr>
+            <tr>
+              <td><strong>NRP</strong></td>
+              <td>Non-Resident Pakistani</td>
+              <td>Pakistani residing abroad. Remote onboarding uses Verisys exception until NADRA BV abroad is operational. <strong>Not an RDA account</strong></td>
+            </tr>
+            <tr class="trap">
+              <td><strong>RDA</strong></td>
+              <td>Roshan Digital Account</td>
+              <td>Commercial bank deposit product for non-residents. <strong>An EMI e-money wallet is not RDA and not a foreign-currency account</strong></td>
+            </tr>
+            <tr>
+              <td><strong>B-Form</strong></td>
+              <td>NADRA Child Registration Certificate</td>
+              <td>Identity document for minor wallet onboarding linked to guardian (J15)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <h2 id="money">Money &amp; ledger</h2>
       <div class="table-wrap vocab-table">
         <table>
@@ -171,55 +333,6 @@
         </table>
       </div>
 
-      <h2 id="compliance">Compliance &amp; identity</h2>
-      <div class="table-wrap vocab-table">
-        <table>
-          <thead><tr><th>Term</th><th>In plain English</th><th>In our system</th></tr></thead>
-          <tbody>
-            <tr class="trap">
-              <td><strong>eKYC</strong></td>
-              <td>Prove this person is who they claim</td>
-              <td>Identity <strong>02</strong> + adapter <strong>16</strong> · verification case · timeout ⇒ MANUAL_REVIEW</td>
-            </tr>
-            <tr class="trap">
-              <td><strong>Screening (AML)</strong></td>
-              <td>Check against sanctions / PEP lists</td>
-              <td>Screening <strong>03</strong> + adapter <strong>15</strong> · CLEAR / HOLD / REJECT · <strong>not</strong> identity verification</td>
-            </tr>
-            <tr>
-              <td><strong>CLEAR</strong></td>
-              <td>Proceed</td>
-              <td>Saga continues · never returned on provider timeout</td>
-            </tr>
-            <tr>
-              <td><strong>HOLD</strong></td>
-              <td>Wait for human decision</td>
-              <td>Case opened · maker-checker on HIGH · saga waits on event</td>
-            </tr>
-            <tr>
-              <td><strong>REJECT</strong></td>
-              <td>Stop — do not proceed</td>
-              <td>Journey ends · customer informed · case retained</td>
-            </tr>
-            <tr>
-              <td><strong>Risk tier</strong></td>
-              <td>How risky we think this customer is</td>
-              <td>UNRATED → LOW | MEDIUM | HIGH · drives limits · history append-only</td>
-            </tr>
-            <tr>
-              <td><strong>Maker-checker</strong></td>
-              <td>Two people for dangerous decisions</td>
-              <td>HIGH case disposition · ops override above threshold</td>
-            </tr>
-            <tr>
-              <td><strong>KYB</strong></td>
-              <td>Know your business</td>
-              <td>Corporate journey · UBO graph · same fail-closed screening as retail</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
       <h2 id="products">Products &amp; channels</h2>
       <div class="table-wrap vocab-table">
         <table>
@@ -264,16 +377,19 @@
             <tr><td><code>sarie</code></td><td>SA→SA</td><td>SAMA IPS · in-Kingdom only</td></tr>
             <tr><td><code>xborder-partner</code></td><td>AE→PK, SA→PK</td><td>Partner API until direct scheme certified</td></tr>
             <tr><td>NADRA</td><td>PK identity</td><td>eKYC adapter <strong>16</strong> · CNIC verification</td></tr>
+            <tr><td>BVS</td><td>Agent / ATM Biometric</td><td>Biometric Verification System terminal hardware at till/ATM</td></tr>
           </tbody>
         </table>
       </div>
 
       <h2 id="traps">The traps, gathered</h2>
       <div class="trap-box">
+        <p><strong>Tracking ID vs Wallet Number</strong> — tracking ID is an unverified session pointer; wallet number is issued only after complete CDD, pre-screen &amp; cooling-off.</p>
+        <p><strong>EMI Wallet vs Bank Deposit Account</strong> — e-money claim on trustee bank versus commercial bank deposit.</p>
+        <p><strong>eKYC vs AML screening</strong> — identity verification versus sanctions list matching.</p>
         <p><strong>Wallet balance vs ledger balance</strong> — product view versus vault truth.</p>
         <p><strong>Hold vs settle</strong> — reservation versus final posting.</p>
         <p><strong>Available vs total balance</strong> — what you can spend versus what you own.</p>
-        <p><strong>eKYC vs AML screening</strong> — identity proof versus sanctions lists.</p>
         <p><strong>Quote vs transfer</strong> — firm price versus saga aggregate.</p>
         <p><strong>Control plane vs data plane</strong> — configuration versus regulated data.</p>
         <p><strong>Timeout vs CLEAR</strong> — fail closed means HOLD — never silent pass.</p>
