@@ -69,6 +69,243 @@ module.exports = function journeyPages(stageLinks) {
           "onboarding"
         )}
 
+        <section class="journey-panel journey-panel--slate" id="kyc-j1-j19">
+          <h2>Master KYC &amp; Onboarding Journeys Registry (J1–J19)</h2>
+          <p>J1 is the shared onboarding spine. All other journeys are named operational branches of the single EMI wallet lifecycle. Each card specifies the customer flow, operational controls, system invariants, and regulatory rules.</p>
+
+          <div class="kyc-journey-grid" style="display: grid; gap: 20px; margin-top: 20px;">
+            <!-- J1 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #059669; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #34d399;">J1 · Clean Biometric Onboarding</h3>
+                <span class="pill" style="background: #059669; color: #fff;">Onboarding Spine</span>
+              </div>
+              <p><strong>Summary:</strong> Resident CNIC holder completes digital onboarding on a first device. NADRA Biometric succeeds, pre-screening is clear, risk is not high, 2-hour cooling-off completes, and an e-money wallet is issued at the biometric limit band (PKR 400,000 monthly load cap).</p>
+              <p><strong>Outcome:</strong> <code>WALLET_ACTIVE</code> at biometric limits. Wallet number assigned only after BV + Pre-Screen + CDD + 2-hr cooling-off.</p>
+              <p><strong>Regulations:</strong> CCOF B, D, F, I, J, K · EMI 12 &amp; 14.II · AML CDD · BPRD 04 A via CCOF K.</p>
+              <div style="background: #0f172a; padding: 12px; border-radius: 4px; margin-top: 10px;">
+                <strong style="color: #cbd5e1;">Customer Step-by-Step:</strong>
+                <ol style="margin: 6px 0 0 18px; padding: 0; color: #94a3b8; font-size: 13px;">
+                  <li>Opens app; product explained in English/Urdu; app does not reveal if wallet exists (BPRD 04 A.ix).</li>
+                  <li>Enters mobile, completes short-code OTP/2FA, device bound.</li>
+                  <li>Accepts terms &amp; fee schedule; notified session can be saved 30 days (J7).</li>
+                  <li>Receives session tracking ID by SMS/email (<code>APPLICATION_STARTED</code>).</li>
+                  <li>Enters national data (CCOF Table-A ∪ EMI 12.I, including 2 non-face CNIC fields). Uploads live CNIC + selfie/liveness.</li>
+                  <li>Completes in-app NADRA biometric verification. Shown verified.</li>
+                  <li>Notified of 2-hour cooling-off delay; wallet activates after 2 hours at PKR 400,000 limit band.</li>
+                </ol>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 13px; color: #cbd5e1;">
+                <div><strong>Ops Controls:</strong> Confirm CNIC class may onboard digitally; verify BV came from NADRA (not local selfie match); verify pre-screen used current UNSC &amp; ATA lists; no human override on J1.</div>
+                <div><strong>System Invariants:</strong> <code>APPLICATION_STARTED</code> tracking ID exists before NADRA call; customer claims stored separately from NADRA payload; <code>WALLET_ACTIVE</code> issued only after 4 gates pass.</div>
+              </div>
+            </div>
+
+            <!-- J2 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #1b6b93; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #38bdf8;">J2 · Biometric Not Possible (Verisys Fallback)</h3>
+                <span class="pill" style="background: #1b6b93; color: #fff;">Onboarding Spine</span>
+              </div>
+              <p><strong>Summary:</strong> NADRA BV is not possible for an SBP-listed genuine reason (age &gt; 60, permanent disability, unclear prints, or NRP/POC abroad until BV exists). The remote ladder requires Verisys + CNIC–MSISDN pairing + OTP or call-back, with live photo. Not a convenience skip.</p>
+              <p><strong>Outcome:</strong> <code>WALLET_ACTIVE</code> at Verisys limits (monthly load PKR 50,000; cash withdrawal PKR 10,000/day). Written reason logged.</p>
+              <p><strong>Regulations:</strong> CCOF F.1.iv–v.a–b · EMI 12 &amp; 14.II.a–b · BPRD 04 alternate controls.</p>
+              <div style="background: #0f172a; padding: 12px; border-radius: 4px; margin-top: 10px;">
+                <strong style="color: #cbd5e1;">Customer Step-by-Step:</strong>
+                <ol style="margin: 6px 0 0 18px; padding: 0; color: #94a3b8; font-size: 13px;">
+                  <li>Reaches biometric; capture fails or declared eligible SBP reason applies.</li>
+                  <li>Told alternate verification used and limits capped at PKR 50,000 until BV completed.</li>
+                  <li>NADRA Verisys demographic check executes against CNIC.</li>
+                  <li>CNIC–MSISDN SIM pairing checked with telco; completes OTP or randomised call-back.</li>
+                  <li>2-hour cooling-off, then activation at Verisys band with upgrade path via J13.</li>
+                </ol>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 13px; color: #cbd5e1;">
+                <div><strong>Ops Controls:</strong> Record genuine reason code ("customer skipped" is invalid); call-back uses negative step-wise confirmations; failure routes to human agent.</div>
+                <div><strong>System Invariants:</strong> <code>VERISYS_PASSED</code> requires Verisys + pairing + OTP/call-back all true; store BV-not-possible reason code; limit engine reads verification strength.</div>
+              </div>
+            </div>
+
+            <!-- J3 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #d97706; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #fbbf24;">J3 · Verisys with Debit Block</h3>
+                <span class="pill" style="background: #d97706; color: #fff;">Restricted State</span>
+              </div>
+              <p><strong>Summary:</strong> BV and Verisys+pairing+OTP have not both succeeded, but Verisys itself passed. CCOF allows opening instrument in restricted <code>DEBIT_BLOCKED</code> state until BV or full J2 completes.</p>
+              <p><strong>Outcome:</strong> Instrument opened with <code>DEBIT_BLOCKED</code>. Zero debits, cash-out, P2P, or merchant pay. If never verified, close and consider STR (EMI 12.IV).</p>
+              <p><strong>Regulations:</strong> CCOF F.1.v.c · EMI 12.III &amp; 12.IV · AML incomplete CDD.</p>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 13px; color: #cbd5e1;">
+                <div><strong>Ops Controls:</strong> Compliance control—payments engine MUST fail closed; if verification never completes, close account and evaluate STR.</div>
+                <div><strong>System Invariants:</strong> <code>DEBIT_BLOCKED</code> flag passed to wallets &amp; payments; any debit attempt logs <code>DEBIT_BLOCK_KYC</code>.</div>
+              </div>
+            </div>
+
+            <!-- J4 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #7c3aed; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #a78bfa;">J4 · Remote Methods Fail (Video KYC / Partner)</h3>
+                <span class="pill" style="background: #7c3aed; color: #fff;">Onboarding Fallback</span>
+              </div>
+              <p><strong>Summary:</strong> BV, J2, and Rung C debit block failed to verify customer. CCOF requires recorded video KYC + Verisys with reasons, or third-party bank reliance. Agents must not issue e-money instruments (EMI 17.VII).</p>
+              <p><strong>Outcome:</strong> <code>VIDEO_KYC</code> completed and wallet decision follows strength, or partner bank reliance, or J8 decline.</p>
+              <p><strong>Regulations:</strong> CCOF F.1.v.d–f &amp; G.2 · EMI 12.V &amp; 17.VII · AML CDD.</p>
+            </div>
+
+            <!-- J5 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #b91c1c; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #f87171;">J5 · Sanctions or Proscribed-Person Hit</h3>
+                <span class="pill" style="background: #b91c1c; color: #fff;">Hard Stop / Gate</span>
+              </div>
+              <p><strong>Summary:</strong> Pre-screening finds applicant or associated person on UNSC designated lists or ATA 1997 proscribed lists. Services MUST NOT be provided. Zero tipping-off. Screening Moment 1 of 4.</p>
+              <p><strong>Outcome:</strong> <code>DECLINED</code> / relationship refused. Possible STR to FMU. Zero tipping-off; generic customer decline text.</p>
+              <p><strong>Regulations:</strong> CCOF F.4 · EMI 12.III, IX, X · AML TFS · STR · Tipping-off prohibition.</p>
+            </div>
+
+            <!-- J6 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #b0892e; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #fde047;">J6 · High-Risk Customer (Enhanced Due Diligence - EDD)</h3>
+                <span class="pill" style="background: #b0892e; color: #fff;">EDD Gate</span>
+              </div>
+              <p><strong>Summary:</strong> Customer Risk Profile (CRP) rates applicant HIGH risk. EDD applies: additional evidence (source of funds/wealth), recorded video KYC, and senior management approval required before activation.</p>
+              <p><strong>Outcome:</strong> <code>EDD_APPROVED</code> and senior sign-off to onboard — or J8 decline if EDD refused.</p>
+              <p><strong>Regulations:</strong> CCOF G · EMI 12.V · AML EDD.</p>
+            </div>
+
+            <!-- J7 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #0ea5e9; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #38bdf8;">J7 · Save and Resume Within 30 Days</h3>
+                <span class="pill" style="background: #0ea5e9; color: #fff;">Session Rule</span>
+              </div>
+              <p><strong>Summary:</strong> Online application saves ongoing session server-side, resumable up to 30 days using the same tracking ID without restarting. After 30 days, status becomes <code>EXPIRED</code>.</p>
+              <p><strong>Regulations:</strong> CCOF J.iii, J.iv, I, K.iv · BPRD 04 re-auth.</p>
+            </div>
+
+            <!-- J8 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #64748b; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #94a3b8;">J8 · Decline with Written Reason</h3>
+                <span class="pill" style="background: #64748b; color: #fff;">Terminal Outcome</span>
+              </div>
+              <p><strong>Summary:</strong> Terminal negative outcome produces specific written reason in English and Urdu, retains tracking ID for lookup, and complies with TAT communication rules.</p>
+              <p><strong>Regulations:</strong> CCOF I.2–I.4 · EMI 12.IV · AML incomplete CDD · No tipping-off.</p>
+            </div>
+
+            <!-- J9 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #0891b2; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #22d3ee;">J9 · New Device After Onboarding</h3>
+                <span class="pill" style="background: #0891b2; color: #fff;">Lifecycle Security</span>
+              </div>
+              <p><strong>Summary:</strong> Registered customer accessing from new phone must complete NADRA BV, receive immediate alerts on old channels, wait 2-hour cooling-off, and register device fingerprint (BPRD 04).</p>
+              <p><strong>Regulations:</strong> BPRD 04 A.i.b, A.iii, A.v–viii · CCOF K.</p>
+            </div>
+
+            <!-- J10 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #be185d; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #f472b6;">J10 · Continuous Screening &amp; Transaction Monitoring</h3>
+                <span class="pill" style="background: #be185d; color: #fff;">Ongoing Compliance</span>
+              </div>
+              <p><strong>Summary:</strong> Post-issuance list updates, periodic re-screens, and transaction monitoring rules detect sanctions matches or fraud anomalies. Instantly sets <code>MONITORING_HOLD</code>. Fail closed on provider error.</p>
+              <p><strong>Regulations:</strong> AML ongoing monitoring · EMI 12.IX–X · BPRD 04 D · 10-year records.</p>
+            </div>
+
+            <!-- J11 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #ea580c; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #fb923c;">J11 · Provider Timeout (Fail Closed)</h3>
+                <span class="pill" style="background: #ea580c; color: #fff;">Fail-Closed Gate</span>
+              </div>
+              <p><strong>Summary:</strong> External provider (NADRA, screening, SMS/OTP) times out or fails. System MUST NOT auto-approve. Status maps to <code>VERIFICATION_PENDING</code>. Customer queued for retry.</p>
+              <p><strong>Regulations:</strong> AML complete CDD requirement · CCOF TAT discrepancy notice · EMI 12.III.</p>
+            </div>
+
+            <!-- J12 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #4338ca; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #818cf8;">J12 · Duplicate CNIC (Max 1 Wallet Per EMI)</h3>
+                <span class="pill" style="background: #4338ca; color: #fff;">Uniqueness Invariant</span>
+              </div>
+              <p><strong>Summary:</strong> CNIC holder may obtain only ONE active e-money instrument per EMI (EMI 12.VII). Prevents account enumeration by returning generic response to unauthenticated requests.</p>
+              <p><strong>Regulations:</strong> EMI 12.VII · BPRD 04 A.ix enumeration control.</p>
+            </div>
+
+            <!-- J13 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #0f766e; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #2dd4bf;">J13 · Limit / Category Upgrade</h3>
+                <span class="pill" style="background: #0f766e; color: #fff;">Category Upgrade</span>
+              </div>
+              <p><strong>Summary:</strong> Wallet category change (Verisys → Biometric → Enhanced PKR 1,000,000) requires re-verification and re-screening. Enhanced band requires 1 Annexure-J document, CNIC–SIM pairing, in-house TMS, and detailed CRP. 2-hour cooling-off applies.</p>
+              <p><strong>Regulations:</strong> CCOF F.1 · EMI 14.II–III &amp; 14.VI · Annexure-J · BPRD 04 cooling-off.</p>
+            </div>
+
+            <!-- J14 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #0369a1; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #38bdf8;">J14 · Mobile, Email or Password Change</h3>
+                <span class="pill" style="background: #0369a1; color: #fff;">Credential Control</span>
+              </div>
+              <p><strong>Summary:</strong> Modification of registered mobile, email, or password requires NADRA BV from registered device, short-code OTP, alerts to old channels, and 2-hour cooling-off (BPRD 04 via CCOF K).</p>
+              <p><strong>Regulations:</strong> BPRD 04 A.i.c, A.iii, A.viii · CCOF K.i.b &amp; F.1.</p>
+            </div>
+
+            <!-- J15 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #a21caf; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #f0abfc;">J15 · Parent-Linked Minor Wallet</h3>
+                <span class="pill" style="background: #a21caf; color: #fff;">Minor Product</span>
+              </div>
+              <p><strong>Summary:</strong> EMI §14.IV–V allows minor wallet ONLY when opened inside authenticated parent/guardian's app. Guardian signs undertaking. Basic minor: Verisys, 50k cap, funded ONLY from parent wallet. Adult 1m limits do not apply to minors.</p>
+              <p><strong>Regulations:</strong> EMI 14.IV–V · EMI 12 CDD for both · CCOF associated-person CDD &amp; screening.</p>
+            </div>
+
+            <!-- J16 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #57534e; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #d6d3d1;">J16 · Close, Redeem, Release CNIC</h3>
+                <span class="pill" style="background: #57534e; color: #fff;">Redemption / Exit</span>
+              </div>
+              <p><strong>Summary:</strong> EMI §15 requires e-money redemption at par without closure charges. NADRA BV required for cash redemption. 10-year record retention enforced after closure.</p>
+              <p><strong>Regulations:</strong> EMI 15.I–III &amp; 12.IV &amp; 24.II · AML exit CDD · 10-year retention.</p>
+            </div>
+
+            <!-- J17 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #c2410c; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #ff8800;">J17 · Periodic CDD / Expired CNIC</h3>
+                <span class="pill" style="background: #c2410c; color: #fff;">CDD Refresh</span>
+              </div>
+              <p><strong>Summary:</strong> Timed CCOF obligations (CNIC expiry, expired ID + token 3-month window, address change, periodic risk review) require identity data refresh and re-screening (Screening Moment 3).</p>
+              <p><strong>Regulations:</strong> AML ongoing CDD · CCOF Table-A footnote · EMI 12.I live ID.</p>
+            </div>
+
+            <!-- J18 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #1d4ed8; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #60a5fa;">J18 · Non-Resident / Foreign IDs (NICOP, POC, ARC, POR, NRP)</h3>
+                <span class="pill" style="background: #1d4ed8; color: #fff;">Overseas / Foreign ID</span>
+              </div>
+              <p><strong>Summary:</strong> CCOF C.5 enables digital onboarding for NICOP, POC, POR, or ARC holders. Non-Resident Pakistanis (NRP) abroad use Verisys exception until NADRA BV abroad exists. Not an RDA account.</p>
+              <p><strong>Regulations:</strong> CCOF C.5 &amp; F.1.iv.b · EMI 12.I · AML residency &amp; tax (FATCA/CRS).</p>
+            </div>
+
+            <!-- J19 -->
+            <div class="kyc-card" style="background: #1e293b; border-left: 4px solid #9a3412; padding: 18px; border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; color: #fb923c;">J19 · Cash-In / Cash-Out at Till or ATM</h3>
+                <span class="pill" style="background: #9a3412; color: #fff;">Cash Operations</span>
+              </div>
+              <p><strong>Summary:</strong> Street cash deposit (cash-in) at agent till requires NADRA BV (CCOF/BPRD). ATM cash-out requires 2FA (EMI 14.II.d). Agent cash-out requires BV or 2FA where BVS is constrained. IBFT load is 15.II.a.</p>
+              <p><strong>Regulations:</strong> EMI 14.II.d &amp; 15.II.a · CCOF BVS at agent till · BPRD 04 2FA.</p>
+            </div>
+          </div>
+        </section>
+
         ${workflowPanel(
           "send",
           "blue",

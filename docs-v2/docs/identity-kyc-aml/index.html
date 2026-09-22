@@ -135,7 +135,7 @@
       </div>
 
       <h2 id="journeys-summary">Named KYC Journeys Registry (J1–J19)</h2>
-      <p>J1 is the shared onboarding spine. All other journeys are named operational branches of the single EMI wallet lifecycle.</p>
+      <p>J1 is the shared onboarding spine. All other journeys are named operational branches of the single EMI wallet lifecycle. Each journey carries its own regulatory rules, customer steps, operational controls, and system invariants.</p>
 
       <div class="table-wrap vocab-table">
         <table>
@@ -162,6 +162,161 @@
             <tr><td><strong>J19</strong></td><td>Cash-In / Cash-Out at Till/ATM</td><td>After Wallet Exists</td><td>Cash deposit/withdrawal at agent/ATM</td><td>NADRA BV at till for cash-in; 2FA at ATM; BV/2FA at agent.</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <h3 id="j1-j19-deep-dive">Detailed Specifications for Named Journeys (J1–J19)</h3>
+      <div style="display: grid; gap: 20px; margin-top: 15px;">
+        <!-- J1 -->
+        <div style="background: #1e293b; border-left: 4px solid #059669; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #34d399;">J1 · Clean Biometric Onboarding (Primary Spine)</h4>
+          <p><strong>Trigger / From:</strong> Spine Steps 1–9 pass; NADRA Biometric succeeds.</p>
+          <p><strong>Customer Flow:</strong> Opens app (bilingual UI); binds device via short-code OTP; accepts terms &amp; 30-day save notice; captures CCOF Table-A ∪ EMI 12.I fields + live CNIC + live selfie; completes NADRA biometric; waits mandatory 2-hour cooling-off window; wallet activates at PKR 400,000 monthly load ceiling.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Verifies BV came from NADRA; stores pre-screen list version; <code>APPLICATION_STARTED</code> tracking ID stored before NADRA call; <code>WALLET_ACTIVE</code> issued only after 4 gates pass.</p>
+        </div>
+
+        <!-- J2 -->
+        <div style="background: #1e293b; border-left: 4px solid #1b6b93; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #38bdf8;">J2 · Biometric Not Possible (Verisys Fallback)</h4>
+          <p><strong>Trigger / From:</strong> Spine Step 10 when BV cannot be performed for SBP-listed genuine reasons (age &gt; 60, disability, unclear prints, NRP abroad).</p>
+          <p><strong>Customer Flow:</strong> BV capture fails or declared reason applies; runs NADRA Verisys + CNIC-MSISDN SIM pairing + OTP/call-back + live photo; 2-hour cooling-off; wallet activates at PKR 50,000 monthly load ceiling.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Reason code logged in writing; call-back uses negative step-wise confirmation; <code>VERISYS_PASSED</code> requires Verisys + pairing + OTP all true.</p>
+        </div>
+
+        <!-- J3 -->
+        <div style="background: #1e293b; border-left: 4px solid #d97706; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #fbbf24;">J3 · Verisys with Debit Block</h4>
+          <p><strong>Trigger / From:</strong> Verisys succeeded but CNIC-MSISDN pairing or OTP/call-back failed.</p>
+          <p><strong>Customer Flow:</strong> Instrument opened in restricted <code>DEBIT_BLOCKED</code> state. Customer sees pending verification requirements; all debit attempts rejected with <code>DEBIT_BLOCK_KYC</code>.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Payments engine MUST fail closed; if verification never completes, close account and evaluate STR (EMI 12.IV).</p>
+        </div>
+
+        <!-- J4 -->
+        <div style="background: #1e293b; border-left: 4px solid #7c3aed; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #a78bfa;">J4 · Remote Methods Fail (Video KYC / Partner)</h4>
+          <p><strong>Trigger / From:</strong> Remote rungs A–C exhausted.</p>
+          <p><strong>Customer Flow:</strong> Scheduled recorded video interview or partner bank branch direction. Video KYC checks original ID, live presence, and policy questions.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Video recording saved as encrypted evidence object; retention 10 years per CCOF G.2; officers prevented from viewing sanctions details to avoid tipping-off.</p>
+        </div>
+
+        <!-- J5 -->
+        <div style="background: #1e293b; border-left: 4px solid #b91c1c; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #f87171;">J5 · Sanctions / Proscribed Person Hit</h4>
+          <p><strong>Trigger / From:</strong> Pre-screening match against UNSC or ATA 1997 lists.</p>
+          <p><strong>Customer Flow:</strong> Immediate hard stop. Receives legally safe generic decline message. Zero customer tipping-off.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> High-severity maker-checker; TFS freeze applied; internal STR evaluated; <code>PRE_SCREEN_HIT</code> immutable in Postgres.</p>
+        </div>
+
+        <!-- J6 -->
+        <div style="background: #1e293b; border-left: 4px solid #b0892e; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #fde047;">J6 · High-Risk Customer (Enhanced Due Diligence - EDD)</h4>
+          <p><strong>Trigger / From:</strong> Customer Risk Profile (CRP) scores applicant HIGH risk.</p>
+          <p><strong>Customer Flow:</strong> Asked for additional income/wealth evidence and video interview. On approval, wallet activates with enhanced monitoring.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> <code>RISK_HIGH_EDD</code> blocks wallet activation until senior management sign-off; ongoing monitoring handed to TMS (J10).</p>
+        </div>
+
+        <!-- J7 -->
+        <div style="background: #1e293b; border-left: 4px solid #0ea5e9; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #38bdf8;">J7 · Save and Resume Within 30 Days</h4>
+          <p><strong>Trigger / From:</strong> Customer pauses onboarding session.</p>
+          <p><strong>Customer Flow:</strong> Returns within 30 days, authenticates via 2FA, and resumes onboarding seamlessly from saved state.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Device holds session pointer only (no PII); re-checks device bind and screening list version on resume; expires after 30 days.</p>
+        </div>
+
+        <!-- J8 -->
+        <div style="background: #1e293b; border-left: 4px solid #64748b; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #94a3b8;">J8 · Decline with Written Reason</h4>
+          <p><strong>Trigger / From:</strong> Terminal negative outcome across any journey.</p>
+          <p><strong>Customer Flow:</strong> Receives written notice (in-app + SMS/email) with compliant reason code in English &amp; Urdu. Tracking ID retained.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Internal reason code stored separately from customer text; discrepancy notice sent inside TAT before decline.</p>
+        </div>
+
+        <!-- J9 -->
+        <div style="background: #1e293b; border-left: 4px solid #0891b2; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #22d3ee;">J9 · New Device After Onboarding</h4>
+          <p><strong>Trigger / From:</strong> Active customer logs in from unbound device.</p>
+          <p><strong>Customer Flow:</strong> Completes NADRA BV in-app; receives immediate alerts on old mobile/email; waits 2-hour cooling-off before device is activated.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Max device limit enforced; multiple CNICs per device triggers fraud investigation; password reset blocked on unbound device.</p>
+        </div>
+
+        <!-- J10 -->
+        <div style="background: #1e293b; border-left: 4px solid #be185d; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #f472b6;">J10 · Continuous Screening &amp; Transaction Monitoring</h4>
+          <p><strong>Trigger / From:</strong> List update, periodic re-screen, or TMS rule fire.</p>
+          <p><strong>Customer Flow:</strong> Transactions or app access placed on <code>MONITORING_HOLD</code>. Zero customer tipping-off.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Fail closed on vendor error (HOLD, never CLEAR); STR filed regardless of amount if suspicion exists; 10-year audit records.</p>
+        </div>
+
+        <!-- J11 -->
+        <div style="background: #1e293b; border-left: 4px solid #ea580c; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #fb923c;">J11 · Provider Timeout (Fail Closed)</h4>
+          <p><strong>Trigger / From:</strong> Provider timeout or technical error.</p>
+          <p><strong>Customer Flow:</strong> Sees "Verification delayed / try again" with tracking ID. Queued for retry.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Maps to <code>VERIFICATION_PENDING</code>, never <code>APPROVED</code>; PII not cached on client or error logs.</p>
+        </div>
+
+        <!-- J12 -->
+        <div style="background: #1e293b; border-left: 4px solid #4338ca; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #818cf8;">J12 · Duplicate CNIC (Max 1 Wallet Per EMI)</h4>
+          <p><strong>Trigger / From:</strong> Spine Step 7 CNIC uniqueness check.</p>
+          <p><strong>Customer Flow:</strong> Returning customer authenticated and routed to existing wallet. Unauthenticated request gets generic response.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Datastore enforces 1 active wallet per CNIC per EMI (EMI 12.VII); duplicate CNIC + new mobile investigated for takeover.</p>
+        </div>
+
+        <!-- J13 -->
+        <div style="background: #1e293b; border-left: 4px solid #0f766e; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #2dd4bf;">J13 · Limit / Category Upgrade</h4>
+          <p><strong>Trigger / From:</strong> Customer upgrade request or successful later BV.</p>
+          <p><strong>Customer Flow:</strong> Re-verifies for target band (Annexure-J income doc + SIM pairing for 1m band); waits 2-hour cooling-off on new limit.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Re-run verification &amp; screening (Screening Moment 2); verify Annexure-J doc in-house; EMI 14.VI exclusions tracked separately.</p>
+        </div>
+
+        <!-- J14 -->
+        <div style="background: #1e293b; border-left: 4px solid #0369a1; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #38bdf8;">J14 · Mobile, Email or Password Change</h4>
+          <p><strong>Trigger / From:</strong> Credential change request from registered device.</p>
+          <p><strong>Customer Flow:</strong> Completes NADRA BV; receives immediate alerts on old channels; 2-hour cooling-off before change takes effect.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Password reset on unbound device rejected; SIM change re-checks CNIC-MSISDN pairing; old channels remain active during window.</p>
+        </div>
+
+        <!-- J15 -->
+        <div style="background: #1e293b; border-left: 4px solid #a21caf; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #f0abfc;">J15 · Parent-Linked Minor Wallet</h4>
+          <p><strong>Trigger / From:</strong> Guardian initiates creation inside guardian's app.</p>
+          <p><strong>Customer Flow:</strong> Guardian uploads child ID (B-Form / juvenile CNIC), signs undertaking, chooses minor band (Verisys 50k or BV freelancer 400k).</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Both parent and child screened (hit on either = J5 stop); basic minor funded ONLY from parent wallet; adult 1m limits prohibited.</p>
+        </div>
+
+        <!-- J16 -->
+        <div style="background: #1e293b; border-left: 4px solid #57534e; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #d6d3d1;">J16 · Close, Redeem, Release CNIC</h4>
+          <p><strong>Trigger / From:</strong> Customer close request, unverified expiry, or TFS exit.</p>
+          <p><strong>Customer Flow:</strong> Completes BV for cash redemption or 2FA IBFT to own bank account; receives balance at par.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> 3 distinct closure reasons/files; redemption at par (EMI §15); 10-year record retention enforced (EMI 24.II).</p>
+        </div>
+
+        <!-- J17 -->
+        <div style="background: #1e293b; border-left: 4px solid #c2410c; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #ff8800;">J17 · Periodic CDD / Expired CNIC</h4>
+          <p><strong>Trigger / From:</strong> CNIC expiry, address change, or periodic review clock.</p>
+          <p><strong>Customer Flow:</strong> Notified in-app + SMS/email; uploads renewed CNIC live image &amp; selfie; confirms legal particulars.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Discrepancy notice sent before restriction; re-screening executed (Screening Moment 3); 3-month token clock enforced.</p>
+        </div>
+
+        <!-- J18 -->
+        <div style="background: #1e293b; border-left: 4px solid #1d4ed8; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #60a5fa;">J18 · Non-Resident / Foreign IDs (NICOP, POC, ARC, POR, NRP)</h4>
+          <p><strong>Trigger / From:</strong> National data capture when ID is non-resident CNIC.</p>
+          <p><strong>Customer Flow:</strong> Selects ID type (NICOP/POC/POR/ARC); provides foreign address/residency proof; Verisys path used abroad.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Passport-only goes J4/face-to-face; FATCA/CRS tax fields captured; confirm not an RDA bank product.</p>
+        </div>
+
+        <!-- J19 -->
+        <div style="background: #1e293b; border-left: 4px solid #9a3412; padding: 16px; border-radius: 6px;">
+          <h4 style="margin: 0 0 8px 0; color: #fb923c;">J19 · Cash-In / Cash-Out at Till or ATM</h4>
+          <p><strong>Trigger / From:</strong> Cash deposit or withdrawal initiated at agent/ATM.</p>
+          <p><strong>Customer Flow:</strong> Agent till cash-in: completes NADRA finger BV at till. ATM cash-out: enters OTP/2FA.</p>
+          <p><strong>Ops &amp; System Invariants:</strong> Agent cannot bypass till BV for cash-in; real-time TigerBeetle posting with biometric/2FA proof metadata.</p>
+        </div>
       </div>
 
       <h2 id="gates-cooling">Activation Gate &amp; 2-Hour Cooling-Off Rule</h2>
