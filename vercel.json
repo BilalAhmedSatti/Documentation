@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    { "source": "/final-documentation", "destination": "/final-documentation/index.html" },
+    { "source": "/final-documentation/(.*)", "destination": "/final-documentation/$1" },
+    { "source": "/docs-v2", "destination": "/docs-v2/index.html" },
+    { "source": "/docs-v2/(.*)", "destination": "/docs-v2/$1" },
     { "source": "/", "destination": "/workflow-demo/index.html" },
     { "source": "/(.*)", "destination": "/workflow-demo/$1" }
   ]

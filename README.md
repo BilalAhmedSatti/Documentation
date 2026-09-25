@@ -1,6 +1,6 @@
 # Documentation
 
-Banking platform materials in one repo — two deployable sites.
+Banking platform materials in one repo — three deployable sites.
 
 ## 1) Workflow demo (existing)
 
@@ -10,7 +10,9 @@ Interactive swimlane diagrams.
 npm run demo
 ```
 
-**Vercel:** Root Directory = `workflow-demo` (or repo root with the existing root `vercel.json` rewrite).
+**Vercel:** Root URL (`/`) rewrites to `workflow-demo`.
+
+Live: https://documentation-docs10.vercel.app/
 
 ## 2) Platform Docs v2 (Digital Banking only)
 
@@ -22,13 +24,20 @@ npm run docs-v2
 
 Open `http://localhost:5175` → lands on **Where We Stand**.
 
-**Vercel (new project):**
+**Vercel:** same project at `/docs-v2`, or a new project with Root Directory = `docs-v2`.
 
-1. Add New → Project → same GitHub repo  
-2. Framework: **Other**  
-3. Root Directory: **`docs-v2`**  
-4. Build / output: leave empty  
-5. Deploy → new URL (e.g. `docs-v2-xxx.vercel.app`)
+## 3) Final Documentation (KYC Journey Docs J1–J19)
+
+Standalone Pakistan EMI KYC docs — Domain Learning, SBP audit, journeys J1–J19, interactive workflows.
+
+```bash
+npx --yes serve -l 5180 final-documentation
+```
+
+**Vercel (already on this project):**  
+https://documentation-docs10.vercel.app/final-documentation/
+
+Or **Add New Project** → import **Documentation** again → Root Directory = `final-documentation`.
 
 ## Also available
 
